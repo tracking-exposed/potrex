@@ -1,0 +1,14 @@
+{
+  "schema": { 
+      "supporters": "supporters",
+      "videos": "videos",
+      "alarms": "alarms",
+      "sequences": "sequences",
+      "commitments": "commitments"
+  },
+  "mongodb": "mongodb://localhost/potrex",
+  "port": 10000,
+  "tabtime": 20,
+  "interface": "0.0.0.0",
+  "htmlMaxAmount": 1000
+}
