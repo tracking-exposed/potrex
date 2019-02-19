@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 rm -rf ./dist
+mkdir ./dist
 NODE_ENV=production node_modules/.bin/webpack -p
 
 echo "Manually removing 'localhost:10000' from the manifest.json"

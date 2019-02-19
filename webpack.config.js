@@ -25,7 +25,6 @@ console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel:
 const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
-        popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
         background: path.resolve(__dirname, 'src/chrome/background/index.js'),
     },
     BUILD: path.resolve(__dirname, 'build'),
@@ -57,6 +56,7 @@ const PLUGINS = [
 ];
 
 const PROD_PLUGINS = [
+    /*
     new webpack.optimize.UglifyJsPlugin({
         compress: {
             screw_ie8: true,
@@ -67,6 +67,7 @@ const PROD_PLUGINS = [
         },
         sourceMap: true
     }),
+    */
     new webpack.LoaderOptionsPlugin({
         debug: false,
         minimize: true

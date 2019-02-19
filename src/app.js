@@ -51,16 +51,12 @@ const bo = chrome || browser;
 // Everything starts from here.
 function boot () {
 
-    if(window.location.origin !== 'https://www.youtube.com') {
-        /* we are on .tracking.exposed because this + youtube.com
+    if(window.location.origin !== 'https://www.pornhub.com') {
+        /* we are on .tracking.exposed because this + pornhub.com
          * are the only two permitted domain where the extension run */
-        if(_.isUndefined($("#extension--parsable").html())) {
-            console.log(`"error?" the page ${window.document.location.href} has nothing to be processed by the ytTREX extension`);
-            return null;
-        } else {
-            $(".extension-missing").hide();
-            /* this call the API `handshake`, which state a commitment of playing the videos
-             * on the list, in this way, the result can be linked together */
+
+        console.log("We're on pornhub.tracking.exposed? (ignored)", window.location.origin);
+        /*
             return remoteLookup(response => {
                 console.log("remoteLookup answer with:", response);
                 var pseudoName = JSON.parse(response.response).p;
@@ -68,14 +64,14 @@ function boot () {
                 $("#userName").text(pseudonym.get());
                 $(".extension-present").show();
             });
-        }
+         */
     }
 
     // this get executed only on youtube.com
-    console.log(`yttrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
+    console.log(`potrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
     console.log(config);
 
-    // is an hidden div, created on youtube.com domain,
+    // is an hidden div, created on pornhub.com domain,
     // visibile when the recording is triggered
     createLoadiv();
 

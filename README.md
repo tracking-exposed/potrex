@@ -23,3 +23,13 @@ npm start
 - we are researcher
 - this is free software
 - this can be extended and license of backend is AGPL
+
+## Reminder 
+
+We should fix this popup because the MaterialUi was not working 
+
+    deleted:    ../chrome/popup/components/infoBox.js
+    deleted:    ../chrome/popup/components/popup.js
+    deleted:    ../chrome/popup/components/settings.js
+    deleted:    ../chrome/popup/index.js
+

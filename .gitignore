@@ -10,8 +10,6 @@
 *.sublime-workspace
 *.sublime-workspace
 
-extension.zip
-
 .env
 
 build/*
@@ -22,5 +20,6 @@ backend/dist/*
 backend/farfalla/*
 
 node_modules/*
+node_modules
 backend/node_modules/*
 package-lock.json
