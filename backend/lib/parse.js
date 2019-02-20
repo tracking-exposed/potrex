@@ -42,7 +42,7 @@ function fetchMetadata(config) {
                 }
             },
             _.get(defaults, 'requirements'),
-            _.set({}, defaults.parserName, {'$exists': false} )))
+            _.set({ size: { $gt: 200 } }, defaults.parserName, {'$exists': false} )))
         .tap(report("videos retrieved matching the time window"));
 };
 
