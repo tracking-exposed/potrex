@@ -67,11 +67,11 @@ const PROD_PLUGINS = [
         },
         sourceMap: true
     }),
-    */
     new webpack.LoaderOptionsPlugin({
         debug: false,
         minimize: true
     })
+    */
 
     // Add additional production plugins
 ];

@@ -141,12 +141,9 @@ function hrefUpdateMonitor() {
 }
 
 function acquireVideo (elem) {
-    /* there is not yet a client-side URL check, but this event get triggered only when a 
-     * new 'video Title' appear */
     console.log(`acquireVideo: ${window.location.href}`);
-
-    /* the <ytd-app> represent the whole webapp root element */
-    hub.event('newVideo', { element: $('ytd-app').html(), href: window.location.href });
+    /* we simply take the -fucking- everything */
+    hub.event('newVideo', { element: $('body').html(), href: window.location.href });
 }
 
 // The function `localLookup` communicates with the **action pages**

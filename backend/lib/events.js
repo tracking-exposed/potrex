@@ -43,13 +43,14 @@ function saveVideo(body, supporter) {
         href: body.href,
         hour: moment(body.clientTime).format("YYYY-MM-DD HH:mm:SS"),
     });
-    var isVideo = body.href.match(/v=/) ? true : false;
+    var isVideo = body.href.match(/view_video\.php/) ? true : false;
     var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";
     var video = {
         id: id,
         href: body.href,
         isVideo: isVideo,
         htmlOnDisk: fdest,
+        size: _.size(body.element),
         incremental: body.incremental,
         publicKey: supporter.publicKey,
         p: supporter.p,
@@ -59,7 +60,7 @@ function saveVideo(body, supporter) {
     };
 
     if(isVideo)
-        video.videoId = _.replace(body.href, /.*v=/, '');
+        video.videoId = _.replace(body.href, /.*view_video\.php\?viewkey=/, '');
 
     debug("Saving entry (videos: %s) user %s file %s (%d bytes)",
         isVideo ? video.videoId : "false", supporter.p, fdest, _.size(body.element)
