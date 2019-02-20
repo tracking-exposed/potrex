@@ -162,7 +162,7 @@ app.get('/robots.txt', function(req, res) {
     res.sendFile(__dirname + '/dist/robots.txt');
 });
 app.get('/potrex-extension.zip', function(req, res) {
-    res.sendFile(__dirname + '/../potrex-extension-0.0.1.zip');
+    res.sendFile(__dirname + '/dist/potrex-extension-0.0.1.zip');
 });
 
 /* development: the local JS are pick w/out "npm run build" every time, and
