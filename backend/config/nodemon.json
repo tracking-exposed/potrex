@@ -10,6 +10,9 @@
   "ignore": [
     "sections/webscripts/*.js"
   ],
+  "env": {
+    "DEBUG": "potrex,lib:*"
+  },
   "verbose": true,
   "exitcrash": false,
   "ext": "js css pug styl"

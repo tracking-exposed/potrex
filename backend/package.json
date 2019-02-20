@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "./build.sh",
-    "watch": "nodemon --config config/nodeamon.json app",
-    "start": "DEBUG=lib:*,-potrex node app"
+    "watch": "nodemon --config config/nodemon.json app",
+    "start": "DEBUG=lib:*,potrex node app"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/potrex/graphs/contributors",
   "license": "GPL-3.0",
