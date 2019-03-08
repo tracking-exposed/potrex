@@ -16,7 +16,7 @@ function extractSubVideo(htmln, n) {
     var l = htmln.getAttribute('href');
 
     if(!t || !l) {
-        debug("%d] Brokned subVideo: t[%s], l[%s]", n, t, l);
+        debug("%d] Broked subVideo: t[%s], l[%s]", n, t, l);
         return null;
     }
 

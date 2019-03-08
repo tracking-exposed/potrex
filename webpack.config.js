@@ -26,6 +26,7 @@ const PATHS = {
     APPS: {
         app: path.resolve(__dirname, 'src/app.js'),
         background: path.resolve(__dirname, 'src/chrome/background/index.js'),
+        popup: path.resolve(__dirname, 'src/chrome/popup/index.js'),
     },
     BUILD: path.resolve(__dirname, 'build'),
     DIST: path.resolve(__dirname, 'dist'),
@@ -67,11 +68,11 @@ const PROD_PLUGINS = [
         },
         sourceMap: true
     }),
+    */
     new webpack.LoaderOptionsPlugin({
         debug: false,
         minimize: true
     })
-    */
 
     // Add additional production plugins
 ];
