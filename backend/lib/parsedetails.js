@@ -44,18 +44,33 @@ function getRelated(html) {
   _.each(relatedUrls, function(e) {
     let t = e.getAttribute('title');
     let h = e.getAttribute('href');
-    let k = h.match(/viewkey=/);
+    let k = h ? h.match(/viewkey=/) : null;
 
     if(!t || !h || !k) return;
 
     related.push({ 
         title: t,
-        href: l,
-        videoId: h.replace(/.*viewkey=/)
-    };
+        href: h,
+        videoId: h.replace(/.*viewkey=/, '')
+    });
   });
   debug("From %d data-related-url found %d related", _.size(relatedUrls), _.size(related));
   return related; 
+};
+
+function getCategories(html) {
+  const dom = new JSDOM(html);
+  const D = dom.window.document;
+  const cats = D.querySelectorAll('.categoriesWrapper');
+
+  if(!_.size(cats) !== 1)
+    debug("Odd? the categories are not 1? %d", _.size(cats));
+
+  let categories = [];
+  _.each(cats[0].querySelectorAll('a'), function(e) {
+    categories.push(e.textContent);
+  });
+  return categories;
 };
 
 
@@ -63,4 +78,5 @@ module.exports = {
     attributeURL:attributeURL,
     getMetadata: getMetadata,
     getRelated: getRelated,
+    getCategories: getCategories
 };

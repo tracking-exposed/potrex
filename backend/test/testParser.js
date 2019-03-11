@@ -64,11 +64,30 @@ describe("Load data (database and HTML)", function() {
       });
   });
 
-  it(`Check video metadata extraction from page ${_.size(fsloaded)} videos`, function() {
+  it(`Check video metadata extraction from ${_.size(fsloaded)} videos`, function() {
     _.each(fsloaded, function(video) {
       let meta = parsedet.getMetadata(video.html);
-      expect(meta.title).to.be.instanceOf(String);
+      expect(_.size(meta.title)).to.be.gt(10);
     });
   });
+
+  it(`Check video related extraction from ${_.size(fsloaded)} videos`, function() {
+    _.each(fsloaded, function(video) {
+      let related = parsedet.getRelated(video.html);
+      debug("%s", JSON.stringify(related, undefined, 2));
+      expect(related).to.have.lengthOf(8);
+
+    });
+  });
+
+  it(`Check video categories extraction from ${_.size(fsloaded)} videos`, function() {
+    _.each(fsloaded, function(video) {
+      let categories = parsedet.getCategories(video.html);
+      debug("%s", JSON.stringify(categories, undefined, 2));
+    });
+  });
+
+
+
 
 });

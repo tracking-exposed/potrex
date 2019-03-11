@@ -16,6 +16,7 @@
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.7",
     "bs58": "^3.1.0",
+    "chai": "^4.2.0",
     "cookie": "^0.3.1",
     "cors": "^2.8.1",
     "debug": "^2.2.0",
@@ -24,16 +25,15 @@
     "jquery": "^3.0.0",
     "jsdom": "^12.0.0",
     "lodash": "^4.17.11",
+    "mocha": "^5.2.0",
     "moment": "^2.14.1",
     "mongodb": "^2.1.8",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
     "nodemon": "^1.18.9",
     "pug": "^2.0.0-beta11",
-    "request": "^2.75.0",
+    "request": "^2.88.0",
     "stylus": "^0.54.5",
-    "tweetnacl": "^0.14.3",
-    "chai": "^4.2.0",
-    "mocha": "^5.2.0"
+    "tweetnacl": "^0.14.3"
   }
 }
