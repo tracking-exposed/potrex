@@ -26,7 +26,7 @@ var writeOne = function(cName, dataObject) {
     .return(dataObject);
 };
 
-function updateOne(cName, selector, updated) {
+var updateOne = function(cName, selector, updated) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
@@ -50,7 +50,12 @@ function writeMany(cName, dataObjects) {
         return db
             .collection(cName)
             .insertMany(dataObjects);
-    });
+    })
+};
+
+function readOne(cName, selector, sorter) {
+    return read(cName, selector, sorter)
+        .then(_.first);
 };
 
 function read(cName, selector, sorter) {
@@ -63,8 +68,7 @@ function read(cName, selector, sorter) {
             .toArray();
     })
     .tap(function(rv) {
-        debugread("read in %s by %j sort by %j → read %d objects", 
-            cName, selector, sorter, _.size(rv) );
+        debugread("R %s %j → %d objs", cName, selector, _.size(rv));
     });
 };
 
@@ -78,7 +82,7 @@ function remove(cName, selector) {
         return db
             .collection(cName)
             .remove(selector);
-    });
+    })
 };
 
 var readLimit = function(cName, selector, sorter, limitN, past) {
@@ -93,39 +97,58 @@ var readLimit = function(cName, selector, sorter, limitN, past) {
             .toArray()
     })
     .tap(function(rv) {
-        debug("readLimit in %s %j →  %d", cName, selector, _.size(rv) );
+        debugread("RL %s %j %s %s →  %d objs", cName, selector,
+            limitN ? "limit " + limitN : "",
+            past ? "skip " + past : "",
+            _.size(rv)
+        );
     })
     .catch(function(errstr) {
-        debug("Error in readLimit: %s (%s)", errstr, cName);
+        debug("Error in readLimit!: %s", errstr);
         return [];
     });
 };
 
-var countByMatch = function(cName, selector) {
-    debugcount("countByMatch in %s by %j", cName, selector);
+function count(cName, selector) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .find(selector)
-            .count();
+            .count(selector);
+    })
+    .tap(function(result) {
+        debugcount("count in %s by %j = %d", cName, selector, result);
     });
 };
 
-var aggregate = function(cName, match, group) {
+function grouping(cName, match, group) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .aggregate([
+            .grouping([
                 { $match: match },
                 { $group: group }
             ])
             .toArray();
     })
     .tap(function(ret) {
-        debug("aggregate %s match %s group %s → %d entries",
+        debug("grouping %s match %s group %s → %d entries",
             cName, JSON.stringify(match),
             JSON.stringify(group), _.size(ret));
-    });
+    })
+};
+
+function aggregate(cName, pipeline) {
+    return Promise.using(dbConnection(), function(db) {
+        return db
+            .collection(cName)
+            .aggregate(pipeline)
+            .toArray();
+    })
+    .tap(function(ret) {
+        debug("aggregate in %s pipeline %j results for %d entry",
+            cName, _.map(pipeline, _.keys), _.size(ret)
+        );
+    })
 };
 
 var countByDay = function(cName, timeVarName, filter, aggext) {
@@ -155,10 +178,20 @@ var countByDay = function(cName, timeVarName, filter, aggext) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .aggregate(totalQ)
+            .grouping(totalQ)
             .toArray()
             .catch(function(error) {
-                debug("Error in countByDay: %s (%s)", error, cName);
+                var alarms = require('./alarms');
+                alarms.reportAlarm({
+                    caller: "countByDay",
+                    what: error,
+                    info: { cName: cName,
+                            timeVarName: timeVarName,
+                            filter: filter,
+                            aggext: aggext
+                    }
+                });
+                debug("mongo error: %s (%s)", error, cName);
                 return [];
             });
     })
@@ -174,7 +207,7 @@ var countByObject = function(cName, idobj) {
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .aggregate([
+            .grouping([
                 {
                   $group: {
                     _id: idobj,
@@ -185,10 +218,16 @@ var countByObject = function(cName, idobj) {
             ])
             .toArray()
             .catch(function(error) {
-                debug("Error in countByObject %s (%s)", error, cName);
+                var alarms = require('./alarms');
+                alarms.reportAlarm({
+                    caller: "countByObject",
+                    what: error,
+                    info: { cName: cName, idobj: idobj }
+                });
+                debug("MongoQuery %s error: %s", cName, error);
                 return [];
             });
-    });
+    })
 };
 
 function updateMany(cName, elist) {
@@ -206,21 +245,28 @@ function updateMany(cName, elist) {
                 .collection(cName)
                 .update({'id': e.id}, e);
         });
-    });
+    })
 };
 
 function lookup(cName, query, sequence) {
+    // debug("lookup on %s of %j + %j", cName, query, sequence);
 
     return Promise.using(dbConnection(), function(db) {
         return db
             .collection(cName)
-            .aggregate([ query, sequence ])
+            .grouping([ query, sequence ])
             .toArray()
             .catch(function(error) {
-                debug("Error in lookup: %s (%s)", error, cName);
+                var alarms = require('./alarms');
+                alarms.reportAlarm({
+                    caller: "lookup",
+                    what: error,
+                    info: { cName: cName, query: query, sequence: sequence }
+                });
+                debug("MongoQuery %s error: %s", cName, error);
                 return [];
             });
-    });
+    })
 };
 
 function save(cName, doc) {
@@ -259,10 +305,12 @@ module.exports = {
     writeMany: writeMany,
     readLimit: readLimit,
     countByDay: countByDay,
-    countByMatch: countByMatch,
+    count: count,
     countByObject: countByObject,
     read: read,
+    readOne: readOne,
     remove: remove,
+    grouping: grouping,
     aggregate: aggregate,
     updateMany: updateMany,
     lookup: lookup,
@@ -270,3 +318,4 @@ module.exports = {
     createIndex: createIndex,
     distinct: distinct
 };
+

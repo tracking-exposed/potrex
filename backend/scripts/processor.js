@@ -29,7 +29,7 @@ function extractSubVideo(htmln, n) {
     return 0;
 };
 
-function parseVideoPage(metadata, html) {
+function OLD(metadata, html) {
 
     var retval = null;
 
@@ -53,7 +53,7 @@ function parseVideoPage(metadata, html) {
 
         let subVideosNfo = D.querySelectorAll('[data-related-url]');
         debug("Found %d subVideos in [%s]", _.size(subVideosNfo), vTitle);
-        var subVideos = _.compact(_.map(subVideosNfo, extractSubVideo));
+        var subVideos = _.compact(_.map(subVideosNfo, extractSubVideo));
         debug("Extracted with precision %d", _.size(subVideos));
 
         /* more info? viewers, etc and shit? analysis and extraction goes here */
@@ -73,6 +73,12 @@ function parseVideoPage(metadata, html) {
     retval.videoParser = true;
     debug("%s %s [%s], %j", retval.href, retval.id, retval.title, stats);
     return retval;
+};
+
+function parseVideoPage(metadata, html) {
+    const urlInfo = parsedetails.attributeURL(metadata.href);
+
+    throw new Error("x");
 };
 
 var videoPage = {

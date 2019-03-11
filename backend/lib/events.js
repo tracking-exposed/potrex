@@ -41,10 +41,12 @@ function saveVideo(body, supporter) {
     var id = utils.hash({
         pubkey: supporter.publicKey,
         href: body.href,
-        hour: moment(body.clientTime).format("YYYY-MM-DD HH:mm:SS"),
+        when: moment(body.clientTime).format("YYYY-MM-DD HH:mm:SS"),
     });
+
     var isVideo = body.href.match(/view_video\.php/) ? true : false;
     var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";
+
     var video = {
         id: id,
         href: body.href,
@@ -59,6 +61,7 @@ function saveVideo(body, supporter) {
         savingTime: new Date(),
     };
 
+    /* optional fields */
     if(isVideo)
         video.videoId = _.replace(body.href, /.*view_video\.php\?viewkey=/, '');
 

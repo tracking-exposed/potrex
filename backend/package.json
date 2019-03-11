@@ -6,7 +6,8 @@
   "scripts": {
     "build": "./build.sh",
     "watch": "nodemon --config config/nodemon.json app",
-    "start": "DEBUG=lib:*,potrex node app"
+    "start": "DEBUG=lib:*,potrex node app",
+    "test": "./node_modules/.bin/mocha"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/potrex/graphs/contributors",
   "license": "GPL-3.0",
@@ -31,6 +32,8 @@
     "pug": "^2.0.0-beta11",
     "request": "^2.75.0",
     "stylus": "^0.54.5",
-    "tweetnacl": "^0.14.3"
+    "tweetnacl": "^0.14.3",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
   }
 }
