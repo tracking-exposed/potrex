@@ -74,20 +74,15 @@ describe("Load data (database and HTML)", function() {
   it(`Check video related extraction from ${_.size(fsloaded)} videos`, function() {
     _.each(fsloaded, function(video) {
       let related = parsedet.getRelated(video.html);
-      debug("%s", JSON.stringify(related, undefined, 2));
       expect(related).to.have.lengthOf(8);
-
     });
   });
 
   it(`Check video categories extraction from ${_.size(fsloaded)} videos`, function() {
     _.each(fsloaded, function(video) {
       let categories = parsedet.getCategories(video.html);
-      debug("%s", JSON.stringify(categories, undefined, 2));
+      expect(_.last(categories)[0] === '+').to.not.be(true):
     });
   });
-
-
-
 
 });

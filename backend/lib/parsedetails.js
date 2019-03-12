@@ -22,17 +22,28 @@ function attributeURL(href) {
 function getMetadata(html) {
   const dom = new JSDOM(html);
   const D = dom.window.document;
+  
+  const vTitle = D.querySelectorAll("h1")[0].querySelector("span").textContent;
+  const views = D.querySelector('div.views');
 
-  let vTitle = null;
+  let counting = -1;
   try {
-      vTitle = D.querySelectorAll("h1")[0].querySelector("span").textContent;
-  } catch(error) { }
+    counting = _.parseInt(views
+        .querySelector(".count").textContent.replace(/,/, ''));
+  } catch(err) {
+    debug("Views extractor failure (%s): %s",
+        viewx.textContent, err);
+  }
 
-  debugger;
+  const starname = D.querySelector('[data-mxptext]').getAttribute('data-mxptext')
+  const starurl = D.querySelector('[data-mxptext]').getAttribute('href')
+
   return {
     title: vTitle,
+    views: counting,
+    actor: starname,
+    actorPagE: starurl
   };
-
 };
 
 function getRelated(html) {
@@ -54,6 +65,7 @@ function getRelated(html) {
         videoId: h.replace(/.*viewkey=/, '')
     });
   });
+
   debug("From %d data-related-url found %d related", _.size(relatedUrls), _.size(related));
   return related; 
 };
@@ -63,12 +75,13 @@ function getCategories(html) {
   const D = dom.window.document;
   const cats = D.querySelectorAll('.categoriesWrapper');
 
-  if(!_.size(cats) !== 1)
+  if(_.size(cats) !== 1)
     debug("Odd? the categories are not 1? %d", _.size(cats));
 
   let categories = [];
   _.each(cats[0].querySelectorAll('a'), function(e) {
-    categories.push(e.textContent);
+    if(!_.startsWith(e.textContent, '+'))
+        categories.push(e.textContent);
   });
   return categories;
 };

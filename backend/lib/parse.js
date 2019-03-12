@@ -20,7 +20,6 @@ function fetchMetadata(config) {
     /* if since or until are specify, use the command, 
      * otherwise use keep the default: last hour */
     if( nconf.get('since') || nconf.get('until') ) {
-        debug("Remind: if you specify only one 'since' or 'until', the default is from the config");
         defaults.since = nconf.get('since') ? nconf.get('since') : config.since;
         defaults.until = nconf.get('until') ? nconf.get('until') : config.until;
     }
@@ -31,8 +30,11 @@ function fetchMetadata(config) {
         defaults.until = moment().format("YYYY-MM-DD 23:59:59");
         defaults.requirements = { id : nconf.get('id') };
     }
-    debug("⭐ since: %s until %s%s", defaults.since, defaults.until,
-        defaults.requiremenets ? "[+special id requested!]" : "");
+
+    debug("since %s until %s repeat %s [special req %s]",
+        defaults.since, defaults.until, config.repeat,
+        defaults.requirements ? defaults.requirements : "none"
+    );
 
     return mongo
         .read(nconf.get('schema').videos, _.extend({
@@ -42,8 +44,11 @@ function fetchMetadata(config) {
                 }
             },
             _.get(defaults, 'requirements'),
-            _.set({ size: { $gt: 200 } }, defaults.parserName, {'$exists': false} )))
+            _.set({ size: { $gt: 200 } }, defaults.parserName, {
+                '$exists': !!nconf.get('repeat') ? true : false
+            })))
         .tap(report("videos retrieved matching the time window"));
+    // REMIND: you are not using the 'processed' metadata
 };
 
 function report(text, objs) {
