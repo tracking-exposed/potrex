@@ -9,12 +9,24 @@ var nconf = require('nconf');
 
 var dbConnection = function() {
     var url = nconf.get('mongodb');
+    // debug("using mongourl %s", url);
     return mongodb
         .MongoClient
         .connectAsync(url)
         .disposer(function(db) {
             return db.close();
         });
+};
+
+function doesMongoWorks() {
+    return Promise.using(dbConnection(), function(db) {
+        return db
+            .listCollections()
+            .toArray();
+    })
+    .map(function(entry) {
+        return _.get(entry, 'name');
+    });
 };
 
 var writeOne = function(cName, dataObject) {
@@ -181,17 +193,7 @@ var countByDay = function(cName, timeVarName, filter, aggext) {
             .grouping(totalQ)
             .toArray()
             .catch(function(error) {
-                var alarms = require('./alarms');
-                alarms.reportAlarm({
-                    caller: "countByDay",
-                    what: error,
-                    info: { cName: cName,
-                            timeVarName: timeVarName,
-                            filter: filter,
-                            aggext: aggext
-                    }
-                });
-                debug("mongo error: %s (%s)", error, cName);
+                debug("countByDay error: %s (%s)", error, cName);
                 return [];
             });
     })
@@ -218,33 +220,9 @@ var countByObject = function(cName, idobj) {
             ])
             .toArray()
             .catch(function(error) {
-                var alarms = require('./alarms');
-                alarms.reportAlarm({
-                    caller: "countByObject",
-                    what: error,
-                    info: { cName: cName, idobj: idobj }
-                });
-                debug("MongoQuery %s error: %s", cName, error);
+                debug("countByObject error: %s (%s)", error, cName);
                 return [];
             });
-    })
-};
-
-function updateMany(cName, elist) {
-    /* elist is supposed to have "_id" field */
-    _.each(elist, function(e) {
-        if(_.isUndefined(e['id'])) {
-            debug("Error with elements %s", JSON.stringify(e, undefined, 2));
-            throw new Error("we need id in every element");
-        }
-    });
-    debug("updateMany in %s with %d elements", cName, _.size(elist));
-    return Promise.each(elist, function(e) {
-        return Promise.using(dbConnection(), function(db) {
-            return db
-                .collection(cName)
-                .update({'id': e.id}, e);
-        });
     })
 };
 
@@ -257,13 +235,7 @@ function lookup(cName, query, sequence) {
             .grouping([ query, sequence ])
             .toArray()
             .catch(function(error) {
-                var alarms = require('./alarms');
-                alarms.reportAlarm({
-                    caller: "lookup",
-                    what: error,
-                    info: { cName: cName, query: query, sequence: sequence }
-                });
-                debug("MongoQuery %s error: %s", cName, error);
+                debug("lookup in %s error: %s", cName, error);
                 return [];
             });
     })
@@ -299,6 +271,7 @@ function distinct(cName, field, query) {
 };
 
 module.exports = {
+    doesMongoWorks: doesMongoWorks,
     updateOne: updateOne,
     upsertOne: upsertOne,
     writeOne: writeOne,
@@ -312,7 +285,6 @@ module.exports = {
     remove: remove,
     grouping: grouping,
     aggregate: aggregate,
-    updateMany: updateMany,
     lookup: lookup,
     save: save,
     createIndex: createIndex,
