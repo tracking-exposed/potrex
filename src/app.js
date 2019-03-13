@@ -7,7 +7,7 @@
 //  - a content script
 //  - event pages.
 //
-// The **content script** is the JavaScript code injected into the youtube.com
+// The **content script** is the JavaScript code injected into the pornhub.com
 // website. It can interact with the elements in the page to scrape the data and
 // prepare the payload to be sent to the API.
 //
@@ -19,9 +19,6 @@
 // (the name is **background** for historical reasons and it might be subject of changes
 // in the future).
 //
-// Naming:
-//   - videoSequence is a list of youtube videos
-//   - comparativePage is the place where users accept to reproduce a videoSequence
 
 // # Code
 
@@ -67,7 +64,7 @@ function boot () {
          */
     }
 
-    // this get executed only on youtube.com
+    // this get executed only on pornhub.com
     console.log(`potrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
     console.log(config);
 

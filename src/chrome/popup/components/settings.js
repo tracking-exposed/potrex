@@ -50,7 +50,7 @@ export default class Settings extends React.Component {
 
         return (
             <Card>
-                <CardHeader title='Consider the option below only if you belong to a research group' />
+                <CardHeader title='Mark your contribution with your tag' />
 
                 <CardText>
                     <div>

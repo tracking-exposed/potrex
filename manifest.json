@@ -3,10 +3,10 @@
 
   "name": "potrex",
 
-  "short_name": "potrex",
-  "description": "This browser extension is a minor experiment we are conducting, it is not yet intended for mainstream usage",
-  "version": "0.2.0",
-  "author": "challenge algorithms and big data monopolist with https://tracking.exposed",
+  "short_name": "data porn: 2019 olimpic game",
+  "description": "This browser extension make you join to the PH algorithm analysis. Our reference website is SAFE FOR WORK",
+  "version": "0.2.1",
+  "author": "humans and robots, challenging algorithm hegemony with https://tracking.exposed",
 
   "icons": {
       "16": "yttrex16.png",

@@ -57,7 +57,6 @@ const PLUGINS = [
 ];
 
 const PROD_PLUGINS = [
-    /*
     new webpack.optimize.UglifyJsPlugin({
         compress: {
             screw_ie8: true,
@@ -68,7 +67,6 @@ const PROD_PLUGINS = [
         },
         sourceMap: true
     }),
-    */
     new webpack.LoaderOptionsPlugin({
         debug: false,
         minimize: true

@@ -11,19 +11,19 @@ const Popup = React.createClass({
     render () {
         return (
             <div style={styles}>
-                <p>Service managed by 
+                <p>This belong to the research family of 
                     <span> </span>
-                    <a href='https://youtube.tracking.exposed'>ytTREX</a>,
+                    <a href='https://youtube.tracking.exposed'>ytTREX</a>, our
                     <span> </span>
-                    <a href='https://tracking.exposed'>manifesto</a>,
+                    <a href='https://tracking.exposed'>manifesto</a>, and
                     <span> </span>
-                    <a href='https://github.com/tracking-exposed/ytTREX'>code</a>
+                    <a href='https://facebook.tracking.exposed'>fbTREX</a>
                 </p>
                 <InfoBox {...this.props} />
+                <Settings {...this.props} />
             </div>
         );
     }
-    //            <Settings {...this.props} />
 });
 
 export default Popup;

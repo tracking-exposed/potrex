@@ -26,19 +26,20 @@ const InfoBox = React.createClass({
 
         return (
             <Card style={cardStyle}>
-                <span style={h1style}>Tailored algorithms?</span>
+                <span style={h1style}>algorithms are everywhere!</span>
+                <span style={h1style}>especially in pornhub ;)</span>
 
                 <a target='_blank' href={personalLink}>
                     <img style={imgstyle} src='/youtube-trex-logo.png' />
                 </a>
                 <a target='_blank' href={personalLink}>
-                    <span style={h1style}>try</span>
+                    <span style={h1style}>play some</span>
                 </a>
                 <span> </span>
                 <a target='_blank' href={personalLink}>
                     <span style={h1style}>
                         <span style={star}> ☆ </span>
-                            divergency!
+                            data porn!
                         <span style={star}> ☆ </span>
                     </span>
                 </a>
