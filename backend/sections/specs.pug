@@ -15,29 +15,24 @@ html
 
     meta(property="og:title" content="pornhub.tracking.exposed")
     meta(property="og:type" content="website")
-    meta(property="og:description" content="pornhub.TREX is a browser extension to collect the related video suggested by pornhub algorthim. giulia please review this included content")
-    meta(property="og:url" content="https://pornhub.tracking.exposed")
+    meta(property="og:description" content="pornhub.TREX API specification. Giulia please review this included content")
+    meta(property="og:url" content="https://pornhub.tracking.exposed/specs")
     meta(property="og:image" content="https://pornhub.tracking.exposed/images/pornhub-trex-logo.png")
     meta(property="og:image:width" content="1000")
     meta(property="og:image:height" content="1000")
 
-    title pornhub.tracking.exposed
+    title specs of pornhub.tracking.exposed
 
   body
 
     include header
     
     .container-fluid.padded
-        h1 pornhub.tracking.exposed
-    
-    .container-fluid.padded
-        h2 
-            i HERE WE SHOULD HAVE AN IMPACTFUL VISUALIZATION ON WHY and HOW ALGORITHM WORKS
-
-    .container-fluid.padded
-        p Get the extension, for:
-            a(href="") Firefox
-            |, 
-            a(href="https://chrome.google.com/webstore/detail/potrex/opdgglojgcnjmpncchhfanbojjjopnnk") Chrome
-            |.
+        h1 API
+        p The basic API which so far, all the results are based upon is /api/v1/basic
+        p If called without any parameters, it returns one object for every video observed by an installed browser extension. Please keep in mind, you can have the same videoId repeated, and even the same pseudonym repeased. The focus of this project, is observing how and when the 
+            i related
+            |  changes (and they might not even change). 
+            i id
+            |  is guarantee to be unique in the dataset.
 

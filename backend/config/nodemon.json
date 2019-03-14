@@ -1,17 +1,16 @@
 {
   "watch": [
-    "bin/*.js",
+    "app.js",
     "lib/*.js",
     "sections/*.pug",
     "sections/*/*.pug",
-    "styles/*.styl",
     "dist/**"
   ],
   "ignore": [
     "sections/webscripts/*.js"
   ],
   "env": {
-    "DEBUG": "potrex,lib:*"
+    "DEBUG": "potrex,lib:*,-lib:mongo:read"
   },
   "verbose": true,
   "exitcrash": false,

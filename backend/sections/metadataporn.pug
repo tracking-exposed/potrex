@@ -12,6 +12,10 @@ html
     script(type='text/javascript', src='/js/jquery.js')
     script(type='text/javascript', src='/js/collapse.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
+    script(type='text/javascript', src='/js/moment.min.js')
+    script(type='text/javascript', src='/js/isotope.pkgd.min.js')
+
+    script(type='text/javascript', src='/js/local/metadataporn.js')
 
     meta(property="og:title" content="pornhub.tracking.exposed")
     meta(property="og:type" content="website")
@@ -23,21 +27,21 @@ html
 
     title pornhub.tracking.exposed
 
-  body
+  body(onload="metadataporn()")
 
     include header
-    
-    .container-fluid.padded
-        h1 pornhub.tracking.exposed
-    
-    .container-fluid.padded
-        h2 
-            i HERE WE SHOULD HAVE AN IMPACTFUL VISUALIZATION ON WHY and HOW ALGORITHM WORKS
+   
+    .container-fluid.padded#loading
+        h1.center Loading page
 
-    .container-fluid.padded
-        p Get the extension, for:
-            a(href="") Firefox
-            |, 
-            a(href="https://chrome.google.com/webstore/detail/potrex/opdgglojgcnjmpncchhfanbojjjopnnk") Chrome
-            |.
+    .container-fluid.padded#loaded
+        h1 metadata porn, based on the last 69 impression collected
+        p The first was 
+            span#first
+            | the 69th is from
+            span#last
+            |, this dataset covers
+            span#humanized
+            | of time.
+        
 

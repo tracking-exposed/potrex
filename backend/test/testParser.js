@@ -81,7 +81,7 @@ describe("Load data (database and HTML)", function() {
   it(`Check video categories extraction from ${_.size(fsloaded)} videos`, function() {
     _.each(fsloaded, function(video) {
       let categories = parsedet.getCategories(video.html);
-      expect(_.last(categories)[0] === '+').to.not.be(true):
+      expect(_.last(categories)[0] === '+').to.be.equal(false);
     });
   });
 

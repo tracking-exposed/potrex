@@ -97,62 +97,20 @@ app.use(bodyParser.json({limit: '4mb'}));
 app.use(bodyParser.urlencoded({limit: '4mb', extended: true}));
 
 
-/* This is import and validate the key */
-app.post('/api/v:version/validate', function(req, res) {
-    return dispatchPromise('validateKey', req, res);
-});
 /* This to actually post the event collection */
 app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
 
-/* handshake to: 1) get the pseudoNym for the page, and 2) notify to associate videoId to the testId */
-app.post('/api/v:version/handshake', function(req, res) {
-    return dispatchPromise('handshake', req, res);
-});
-
-/* this is to retrieve their own sumitted videos metadata */
-app.get('/api/v1/backlog/:publicKey', function(req, res) {
-    return dispatchPromise('getUserBacklog', req, res);
-});
-
-/* this is to retrieve the information block used to populate personal page */
-app.get('/api/v1/personal/:publicKey', function(req, res) {
-    return dispatchPromise('getPersonalBlob', req, res);
-});
-
-/* useful revision page */
-app.get('/revision/:htmlId', function(req, res) {
-    req.params.page = 'revision';
-    return dispatchPromise('getPage', req, res);
-});
 app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
 
-/* sequence API */
-app.get('/api/v1/sequence/:testId/:name', function(req, res) {
-    return dispatchPromise('getSequence', req, res);
-});
-/* create a new sequence */
-app.get('/api/v1/sequence/:publicKey/:idList/:name', function(req, res) {
-    return dispatchPromise('createSequence', req, res);
-});
-/* get the results of a sequence */
-app.get('/api/v1/results/:testId/:name', function(req, res) {
-    return dispatchPromise('getResults', req, res);
+/* This is the beginning project, this is a new tes to see how much does make sense */
+app.get('/api/v1/basic/:options?', function(req, res) {
+    return dispatchPromise('getBasicData', req, res);
 });
 
-/* divergency page */
-app.get('/[dD]/:testId/:name', function(req, res) {
-    req.params.page = 'divergency';
-    return dispatchPromise('getPage', req, res);
-});
-/* divergency results page */
-app.get('/[rR]/:testId/:name', function(req, res) {
-    req.params.page = 'results';
-    return dispatchPromise('getPage', req, res);
-});
 
 /* static files, independent by the API versioning */
 app.get('/favicon.ico', function(req, res) {
@@ -160,9 +118,6 @@ app.get('/favicon.ico', function(req, res) {
 });
 app.get('/robots.txt', function(req, res) {
     res.sendFile(__dirname + '/dist/robots.txt');
-});
-app.get('/potrex-extension.zip', function(req, res) {
-    res.sendFile(__dirname + '/dist/potrex-extension-0.0.1.zip');
 });
 
 /* development: the local JS are pick w/out "npm run build" every time, and
@@ -181,6 +136,11 @@ app.use('/images', express.static(__dirname + '/dist/images'));
 app.use('/fonts', express.static(__dirname + '/dist/fonts'));
 app.use('/static', express.static(__dirname + '/dist/static'));
 
+/* revision page */
+app.get('/revision/:htmlId', function(req, res) {
+    req.params.page = 'revision';
+    return dispatchPromise('getPage', req, res);
+});
 /* last one, page name catch-all */
 app.get('/:page*', function(req, res) {
     return dispatchPromise('getPage', req, res);

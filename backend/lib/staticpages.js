@@ -19,10 +19,9 @@ var pugCompiler = function(filePrefix) {
 
 var pageMap = {
   'revision': pugCompiler('revision'),
-  'personal': pugCompiler('personal/landing'),
-  'divergency': pugCompiler('divergency'),
   'results': pugCompiler('results'),
-  'technicalities': pugCompiler('technicalities'),
+  'specs': pugCompiler('specs'),
+  'metadataporn': pugCompiler('metadataporn'),
   'about-us': pugCompiler('about'),
   '/': pugCompiler('index'),
   '404': pugCompiler('404')
