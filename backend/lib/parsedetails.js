@@ -63,25 +63,37 @@ function getMetadata(html) {
 function getRelated(html) {
   const dom = new JSDOM(html);
   const D = dom.window.document;
-  const relatedUrls = D.querySelectorAll('[data-related-url]');
+  const relatedUrls = D.querySelectorAll('ul#relatedVideosCenter > li');
+  console.log(D.querySelectorAll('ul#relatedVideosCenter > li').length);
+
   let related = [];
 
   _.each(relatedUrls, function(e) {
-    let t = e.getAttribute('title');
-    let h = e.getAttribute('href');
+    const t = e.querySelector('img').getAttribute('alt')
+    const thumbnail  = e.querySelector('img').getAttribute('src')
+    const link = e.querySelector('a');
+    let h = link.getAttribute('href');
     let k = h ? h.match(/viewkey=/) : null;
 
     if(!t || !h || !k) return;
 
+    let rating = e.querySelector('.value');
+    let view = e.querySelector('.views > var');
+    let duration = e.querySelector('.duration');
+
     related.push({ 
+        thumbnail,
         title: t,
         href: h,
+        rating: rating.textContent,
+        views: view.textContent,
+        duration: duration.textContent,
         videoId: h.replace(/.*viewkey=/, '')
     });
   });
 
-  debug("From %d data-related-url found %d related", _.size(relatedUrls), _.size(related));
-  return related; 
+  debug("From %d related",  _.size(related));
+  return { related };
 };
 
 function getCategories(html) {
@@ -97,7 +109,7 @@ function getCategories(html) {
     if(!_.startsWith(e.textContent, '+'))
         categories.push(e.textContent);
   });
-  return categories;
+  return { categories: categories };
 };
 
 
