@@ -15,35 +15,56 @@ const { JSDOM } = jsdom;
 
 nconf.argv().env().file({ file: "config/settings.json" });
 
-var stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
+var stats = { error: 0, success: 0 };
 
 function parseVideoPage(metadata, html) {
 
-    debug("Processing video %s", metadata.videoId);
+    debug("Processing HTML %s scraped from %s", metadata.id, metadata.href);
     let retval = null;
 
     try {
         const urlInfo = parsedet.attributeURL(metadata.href);
-        const meta = parsedet.getMetadata(html);
-        const related = parsedet.getRelated(html);
-        const categories = parsedet.getCategories(html);
-
-        retval = _.extend(metadata, urlInfo, meta, {
-            categories,
-            related,
-            processed: true,
-            skipped: false
-        });
-
-        stats.success++;
-
+        retval = _.extend(metadata, urlInfo);
     } catch(error) {
-        debug("unacceptable error! [%s] from %s: %s", metadata.href, metadata.clientTime, error);
         stats.error++;
-        retval = _.extend(metadata, { processed: false, skipped: false });
+        debug("-------------- fail in attributeURL [%s]: %s", metadata.href, metadata.clientTime, error);
+        return _.extend(metadata, { processed: false, error: 'attributeURL' });
     }
-    retval.videoParser = true;
-    debug("%s %s processed\t%s", retval.href, retval.id, retval.processed);
+
+    try {
+        const meta = parsedet.getMetadata(html);
+        retval = _.extend(retval, meta);
+    } catch(error) {
+        stats.error++;
+        debug("-------------- fail in getMetadata of [%s]: %s", metadata.href, error);
+        return _.extend(metadata, { processed: false, error: 'getMetadata' });
+    }
+
+    try {
+        const related = parsedet.getRelated(html);
+        retval = _.extend(retval, related);
+    } catch(error) {
+        stats.error++;
+        debug("-------------- fail in getRelated [%s]: %s", metadata.href, error);
+        return _.extend(metadata, { processed: false, error: 'getRelated' });
+    }
+
+    try {
+        const categories = parsedet.getCategories(html);
+        retval = _.extend(retval, categories);
+    } catch(error) {
+        stats.error++;
+        debug("-------------- fail in getCategories [%s]: %s", metadata.href, error);
+        return _.extend(metadata, { processed: false, error: 'getCategories' });
+    }
+
+    retval = _.extend(retval, {
+        processed: true,
+        videoParser: true
+    });
+
+    stats.success++;
+    debug("OK: %j", stats);
     return retval;
 };
 

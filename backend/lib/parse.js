@@ -10,6 +10,8 @@ nconf.argv().env().file({ file: "config/settings.json" });
 
 function fetchMetadata(config) {
 
+    const repeat = !!nconf.get('repeat');
+
     var defaults = {
         "since": moment().subtract(1, 'h').toISOString(),
         "until": moment().format('YYYY-MM-DD 23:59:59'),
@@ -31,8 +33,8 @@ function fetchMetadata(config) {
         defaults.requirements = { id : nconf.get('id') };
     }
 
-    debug("since %s until %s repeat %s [special req %s]",
-        defaults.since, defaults.until, config.repeat,
+    debug("since %s until %s repeat %s [special req %j]",
+        defaults.since, defaults.until, repeat,
         defaults.requirements ? defaults.requirements : "none"
     );
 
@@ -45,7 +47,7 @@ function fetchMetadata(config) {
             },
             _.get(defaults, 'requirements'),
             _.set({ size: { $gt: 200 } }, defaults.parserName, {
-                '$exists': !!nconf.get('repeat') ? true : false
+                '$exists': repeat 
             })))
         .tap(report("videos retrieved matching the time window"));
     // REMIND: you are not using the 'processed' metadata

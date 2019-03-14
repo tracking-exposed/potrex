@@ -43,30 +43,25 @@ function saveVideo(body, supporter) {
         when: moment(body.clientTime).format("YYYY-MM-DD HH:mm:SS"),
     });
 
-    var isVideo = body.href.match(/view_video\.php/) ? true : false;
     var fdest = 'htmls/' + moment().format("YYYY-MM-DD") + "/" + id + ".html";
 
     var video = {
         id: id,
         href: body.href,
-        isVideo: isVideo,
         htmlOnDisk: fdest,
         size: _.size(body.element),
         incremental: body.incremental,
         publicKey: supporter.publicKey,
         p: supporter.p,
-        tagId: body.tagId,
         clientTime: new Date(body.clientTime),
         savingTime: new Date(),
     };
 
     /* optional fields */
-    if(isVideo)
-        video.videoId = _.replace(body.href, /.*view_video\.php\?viewkey=/, '');
+    if(body.tagId)
+        video.tagId = body.tagId;
 
-    debug("Saving entry (videos: %s) user %s file %s (%d bytes)",
-        isVideo ? video.videoId : "false", supporter.p, fdest, _.size(body.element)
-    );
+    debug("Saving entry %s from %s (%d bytes)", video.id, supporter.p, _.size(body.element));
 
     return mongo
         .writeOne(nconf.get('schema').videos, video)

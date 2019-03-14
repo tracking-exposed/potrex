@@ -7,7 +7,6 @@ const { JSDOM } = jsdom;
 function attributeURL(href) {
 
     if(href.match(/viewkey=/)) {
-        debug("url %s match video", href);
         return {
             href: href,
             type: 'video',
@@ -15,7 +14,7 @@ function attributeURL(href) {
         };
     }
 
-    debug("broken!");
+    debug("UNMANAGED url %s match video", href);
     return { href: href, type: null };
 };
 
@@ -31,18 +30,33 @@ function getMetadata(html) {
     counting = _.parseInt(views
         .querySelector(".count").textContent.replace(/,/, ''));
   } catch(err) {
-    debug("Views extractor failure (%s): %s",
-        viewx.textContent, err);
+    debug("Views extractor failure (%s): %s", viewx.textContent, err);
   }
 
-  const starname = D.querySelector('[data-mxptext]').getAttribute('data-mxptext')
-  const starurl = D.querySelector('[data-mxptext]').getAttribute('href')
+  /* the producer metadata */
+  let producer = {};
+  try {
+    producer = {
+        name: D.querySelector('[data-mxptext]').getAttribute('data-mxptext'),
+        href: D.querySelector('[data-mxptext]').getAttribute('href'),
+        type: 'Professional',
+    };
+  } catch(error) {
+    const ref = D.querySelectorAll('.video-detailed-info')[0].querySelector('a');
+    const v = !!D.querySelectorAll('.video-detailed-info')[0].querySelector('span.verified-icon');
+
+    producer = {
+        name: ref.textContent,
+        href: ref.getAttribute('href'),
+        verified: v,
+        type: 'Amateur'
+    };
+  } 
 
   return {
     title: vTitle,
     views: counting,
-    actor: starname,
-    actorPagE: starurl
+    producer
   };
 };
 
