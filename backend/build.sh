@@ -32,6 +32,8 @@ cd dist
 echo "copying ../static ..."
 cp -r ../static/ static
 cd static
+archives=`/bin/ls -r ../../htmls/ | tail -3`
+for a in $archives; do echo "Archiving $a..." ; tar zcf $a.tar.gz ../../htmls/$a; done
 files=`/bin/ls *.*`
 echo "<html><body>" > index.html
 for x in $files; do echo '<a href="/static/'$x'">'$x'</a>' >> index.html; done
