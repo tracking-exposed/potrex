@@ -27,8 +27,7 @@ function getMetadata(html) {
 
   let counting = -1;
   try {
-    counting = _.parseInt(views
-        .querySelector(".count").textContent.replace(/,/, ''));
+    counting = views.querySelector(".count").textContent;
   } catch(err) {
     debug("Views extractor failure (%s): %s", viewx.textContent, err);
   }
