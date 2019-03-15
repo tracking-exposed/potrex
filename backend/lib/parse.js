@@ -33,10 +33,10 @@ function fetchMetadata(config) {
         defaults.requirements = { id : nconf.get('id') };
     }
 
-    debug("since %s until %s repeat %s [special req %j]",
+    /* debug("since %s until %s repeat %s [special req %j]",
         defaults.since, defaults.until, repeat,
         defaults.requirements ? defaults.requirements : "none"
-    );
+    ); */
 
     return mongo
         .read(nconf.get('schema').videos, _.extend({
@@ -68,7 +68,7 @@ function please(config) {
     }
 
     return fetchMetadata(config)
-        .tap(report("found elements"))
+        // .tap(report("found elements"))
         .map(function(metadata) {
             return fs
                 .readFileAsync(metadata.htmlOnDisk, 'utf-8')
@@ -88,8 +88,8 @@ function please(config) {
                         .return(true);
                 });
         }, { concurrency: 1 })
-        .then(_.compact)
-        .tap(report("linked"));
+        .then(_.compact);
+        // .tap(report("linked"));
 };
 
 module.exports = {
