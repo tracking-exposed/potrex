@@ -65,7 +65,7 @@ function boot () {
     }
 
     // this get executed only on pornhub.com
-    console.log(`potrex version ${config.VERSION} build ${config.BUILD} loading; Config object:`);
+    console.log(`potrex version ${config.VERSION} build ${JSON.stringify(config.BUILD)} loading; Config object:`);
     console.log(config);
 
     // is an hidden div, created on pornhub.com domain,
@@ -103,6 +103,7 @@ function createLoadiv() {
     img.setAttribute('src', getLogoDataURI());
     div.appendChild(img);
 
+    console.log("Created toggable div id #loadiv");
     $("#loadiv").toggle();
 };
 
@@ -112,25 +113,23 @@ function hrefUpdateMonitor() {
 
     function changeHappen() {
         let diff = (window.location.href !== last);
-        // if the loader is going, is debugged but not reported, or the 
-        // HTML and URL mismatch 
-        if( diff && $("#progress").is(':visible') ) {
-            console.log(`Loading in progress for ${window.location.href} after ${last}, waiting again...`);
-            return false;
+
+        if(diff) {
+            console.log(`URL changed to be ${window.location.href} after ${last}, acquiring...`);
+            last = window.location.href;
         }
-        last = window.location.href;
         return diff;
     }
-    const periodicTimeout = 5000;
-    const iconDuration = 1200;
+    const periodicTimeout = 10000;
+    const iconDuration = 2200;
 
     window.setInterval(function() {
         if(changeHappen()) {
             $("#loadiv").toggle();
-            document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
 
             window.setTimeout(function() {
                 $("#loadiv").hide();
+                document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
             }, iconDuration);
 
         }
