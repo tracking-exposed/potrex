@@ -124,19 +124,20 @@ function hrefUpdateMonitor() {
     const iconDuration = 2200;
 
     window.setInterval(function() {
+        console.log("check if a change is happen between", last, "and", window.location.href);
         if(changeHappen()) {
             $("#loadiv").toggle();
 
             window.setTimeout(function() {
                 $("#loadiv").hide();
-                document.querySelectorAll(YT_VIDEOTITLE_SELECTOR).forEach(acquireVideo);
+                acquireVideo();
             }, iconDuration);
 
         }
     }, periodicTimeout);
 }
 
-function acquireVideo (elem) {
+function acquireVideo () {
     console.log(`acquireVideo: ${window.location.href}`);
     /* we simply take the -fucking- everything */
     hub.event('newVideo', { element: $('body').html(), href: window.location.href });
