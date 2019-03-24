@@ -49,4 +49,6 @@ this created the .json in `created/`
   * role play don't have that
   * gay don't have that
 
+## Completed in file
 
+`extended.json`, all the categories with their related, updated at 24-03-2019 from Germany IP address
