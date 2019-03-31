@@ -73,7 +73,7 @@ function radar(req) {
         results.tops[0] = _.map(considered, function(cat) {
             let ref = _.countBy(catfirst);
             let amount = _.get(ref, cat, 0);
-            let value = _.round(_.size(mix[0]) / amount, 2);
+            let value = _.round(amount / _.size(mix[0]), 2);
             return {
                 axis: cat,
                 value
@@ -83,7 +83,7 @@ function radar(req) {
         results.tops[1] = _.map(considered, function(cat) {
             let ref = _.countBy(catsecond);
             let amount = _.get(ref, cat, 0);
-            let value = _.round(_.size(mix[1]) / amount, 2);
+            let value = _.round(amount / _.size(mix[1]), 2);
             return {
                 axis: cat,
                 value
