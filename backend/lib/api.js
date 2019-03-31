@@ -10,7 +10,13 @@ var apiListVersion1 = {
     unitById:         require('./htmlunit').unitById,
 
     /* return basic data, the video-impression unit, and support optional parameters */
-    getBasicData:     require('./basic'),
+    getBasicData:     require('./basic').all,
+
+    /* return the content for one supporter only */
+    getSelectedData:  require('./basic').selected,
+
+    /* return contenr formatted for radarChart */
+    getRadarData:     require('./basic').radar,
 };
 
 module.exports = {

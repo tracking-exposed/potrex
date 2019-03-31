@@ -101,14 +101,22 @@ app.use(bodyParser.urlencoded({limit: '4mb', extended: true}));
 app.post('/api/v:version/events', function(req, res) {
     return dispatchPromise('processEvents', req, res);
 });
-
 app.get('/api/v1/html/:htmlId', function(req, res) {
     return dispatchPromise('unitById', req, res);
 });
-
 /* This is the beginning project, this is a new tes to see how much does make sense */
-app.get('/api/v1/basic/:options?', function(req, res) {
+app.get('/api/v1/basic', function(req, res) {
     return dispatchPromise('getBasicData', req, res);
+});
+app.get('/api/v1/selected/:pseudo', function(req, res) {
+    return dispatchPromise('getSelectedData', req, res);
+});
+app.get('/api/v1/radar/:pseudos', function(req, res) {
+    return dispatchPromise('getRadarData', req, res);
+});
+app.get('/radar/:pseudos?', function(req, res) {
+    req.params.page = 'radar';
+    return dispatchPromise('getPage', req, res);
 });
 
 

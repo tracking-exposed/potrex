@@ -7,9 +7,12 @@ head
   link(href='https://fonts.googleapis.com/css?family=Raleway', rel='stylesheet', type='text/css')
   // D3.js
   script(src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js', charset='utf-8')
+  // std utils
+  script(type='text/javascript', src='/js/jquery.js')
+  script(type='text/javascript', src='/js/lodash.min.js')
   // radar chart
-  script(src='radarChart.js')
-  script(src='radarLoader.js')
+  script(src='/js/local/radarChart.js')
+  script(src='/js/local/radarLoader.js')
   style.
     body {
     font-family: 'Open Sans', sans-serif;
@@ -27,5 +30,10 @@ head
     .tooltip {
     fill: #333333;
     }
-.radarChart
+
+body(onload="loader();")
+  div#note Error: you should compose the URL as 
+    code /radar/psuedonym-first-user,other-user-pseudo
+
+  .radarChart
 
