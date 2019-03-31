@@ -24,6 +24,7 @@ var pageMap = {
   'metadataporn': pugCompiler('metadataporn'),
   'about-us': pugCompiler('about'),
   '/': pugCompiler('index'),
+  'radar': pugCompiler('radar/index'),
   '404': pugCompiler('404')
 };
 
