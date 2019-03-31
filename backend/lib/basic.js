@@ -49,25 +49,55 @@ function radar(req) {
         }};
     }
 
-    let results = { list: [], pseudonyms: [] }
     return Promise.all([
         mongo.readLimit(nconf.get('schema').videos, {p: a}, { savingTime: -1}, 69, 0),
         mongo.readLimit(nconf.get('schema').videos, {p: b}, { savingTime: -1}, 69, 0)
     ])
     .then(function(mix) {
+
         if(_.size(mix[0]) < 2 || _.size(mix[1]) < 2)
             throw new Error("Not enough videos associated to one of the two pseudonymis");
 
-        let categories = _.flatten(_.map(mix[0], 'categories'));
-        categories = _.concat(categories, _.flatten(_.map(mix[1], 'categories')));
-        debugger;
+        const results = {};
+        results.pseudos = [ mix[0].p, mix[1].p ];
+
+        let catfirst = _.flatten(_.map(mix[0], 'categories'));
+        let catsecond = _.flatten(_.map(mix[1], 'categories'));
+        let categories = _.concat(catfirst, catsecond);
+
+        results.list = _.reverse(_.sortBy(_.map(_.countBy(categories), function(c, n) { return { c, n, } }), 'c'));
+
+        let considered = _.map(_.take(results.list, 20), 'n');
+
+        results.tops = [];
+        results.tops[0] = _.map(considered, function(cat) {
+            let ref = _.countBy(catfirst);
+            let amount = _.get(ref, cat, 0);
+            let value = _.round(_.size(mix[0]) / amount, 2);
+            return {
+                axis: cat,
+                value
+            };
+        });
+
+        results.tops[1] = _.map(considered, function(cat) {
+            let ref = _.countBy(catsecond);
+            let amount = _.get(ref, cat, 0);
+            let value = _.round(_.size(mix[1]) / amount, 2);
+            return {
+                axis: cat,
+                value
+            };
+        });
+
+        /* results contains 'list', 'pseudos', 'tops' */
+        return { json: results };
     })
     .catch(function(error) {
         return { json: {
             success: false,
             message: error.message
         }};
-        debugger;
     });
 };
 
