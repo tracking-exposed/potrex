@@ -12,14 +12,12 @@
 
 .env
 
-build/*
-dist/*
-docs/*
-backend/htmls/*
-backend/dist/*
-backend/farfalla/*
+extension/build/
+extension/dist/
+extension/docs/
+backend/htmls/
+backend/dist/
+backend/farfalla/
 
-node_modules/*
-node_modules
-backend/node_modules/*
-package-lock.json
+extension/node_modules/
+backend/node_modules/
