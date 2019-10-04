@@ -5,15 +5,15 @@ var _ = require('lodash');
 var moment = require('moment');
 var bodyParser = require('body-parser');
 var Promise = require('bluebird');
-var mongodb = Promise.promisifyAll(require('mongodb'));
+var mongodb = Promise.promisifyAll(require('mongodb2'));
 var debug = require('debug')('potrex');
 var nconf = require('nconf');
 var pug = require('pug');
 var cors = require('cors');
 
-var utils = require('./lib/utils');
-var APIs = require('./lib/api');
-var mongo = require('./lib/mongo');
+var utils = require('../lib/utils');
+var APIs = require('../lib/api');
+var mongo = require('../lib/mongo');
 
 var cfgFile = "config/settings.json";
 var redOn = "\033[31m";

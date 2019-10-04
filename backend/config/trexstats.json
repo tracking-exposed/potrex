@@ -1,0 +1,33 @@
+{
+    "mongoHost": "localhost",
+    "mongoPort": "27017",
+    "mongoDb": "potrex",
+
+    "stats": [
+    {
+        "name": "supporters",
+        "column": "supporters",
+        "timevar": "creationTime",
+        "variables": [
+            {
+                "name": "newcomers",
+                "selector": {}
+            }
+        ]
+    },
+    {
+        "name": "contributions",
+        "column": "videos",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "total",
+                "selector": { }
+            },
+            {
+                "name": "videos",
+                "selector": { "type": "video" }
+            }
+        ]
+    }]
+}

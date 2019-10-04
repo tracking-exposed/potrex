@@ -2,9 +2,7 @@
   "schema": { 
       "supporters": "supporters",
       "videos": "videos",
-      "alarms": "alarms",
-      "sequences": "sequences",
-      "commitments": "commitments"
+      "stats": "trexstats"
   },
   "mongodb": "mongodb://localhost/potrex",
   "port": 10000,
