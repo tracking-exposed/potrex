@@ -9,7 +9,7 @@ const mongo = require('./mongo');
 /* This api simply return the basic last 69 videos */
 function all(req) {
     return mongo
-        .readLimit(nconf.get('schema').videos, {}, { savingTime: -1}, 69, 0)
+        .readLimit(nconf.get('schema').videos, { type: "video"}, { savingTime: -1}, 69, 0)
         .map(function(e) {
             return _.omit(e, ['_id']);
         })
