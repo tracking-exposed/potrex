@@ -50,16 +50,22 @@ function radar(req) {
     }
 
     return Promise.all([
-        mongo.readLimit(nconf.get('schema').videos, {p: a}, { savingTime: -1}, 69, 0),
-        mongo.readLimit(nconf.get('schema').videos, {p: b}, { savingTime: -1}, 69, 0)
+        mongo.readLimit(nconf.get('schema').videos, {type: "video", p: a}, { savingTime: -1}, 69, 0),
+        mongo.readLimit(nconf.get('schema').videos, {type: "video", p: b}, { savingTime: -1}, 69, 0)
     ])
     .then(function(mix) {
 
-        if(_.size(mix[0]) < 2 || _.size(mix[1]) < 2)
-            throw new Error("Not enough videos associated to one of the two pseudonymis");
+        if( _.size(_.first(mix)) < 2 || _.size(_.last(mix)) < 2)
+            throw new Error("Not enough videos associated to one of the two pseudonyms");
 
         const results = {};
-        results.pseudos = [ mix[0].p, mix[1].p ];
+
+        const name1 = _.get(_.first(_.first(mix)), 'p');
+        const name2 = _.get(_.first(_.last(mix)), 'p');
+        if(_.isUndefined(name1) || _.isUndefined(name2))
+            throw new Error("Missing pseudonym");
+
+        results.pseudos = [ name1, name2 ];
 
         let catfirst = _.flatten(_.map(mix[0], 'categories'));
         let catsecond = _.flatten(_.map(mix[1], 'categories'));
@@ -69,8 +75,7 @@ function radar(req) {
 
         let considered = _.map(_.take(results.list, 20), 'n');
 
-        results.tops = [];
-        results.tops[0] = _.map(considered, function(cat) {
+        const axes1 = _.map(considered, function(cat) {
             let ref = _.countBy(catfirst);
             let amount = _.get(ref, cat, 0);
             let value = _.round(amount / _.size(mix[0]), 2);
@@ -79,8 +84,7 @@ function radar(req) {
                 value
             };
         });
-
-        results.tops[1] = _.map(considered, function(cat) {
+        const axes2 = _.map(considered, function(cat) {
             let ref = _.countBy(catsecond);
             let amount = _.get(ref, cat, 0);
             let value = _.round(amount / _.size(mix[1]), 2);
@@ -89,6 +93,14 @@ function radar(req) {
                 value
             };
         });
+
+        results.tops = [{
+            name: name1,
+            axes: axes1,
+        }, {
+            name: name2,
+            axes: axes2,
+        }];
 
         /* results contains 'list', 'pseudos', 'tops' */
         return { json: results };
