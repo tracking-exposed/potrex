@@ -17,6 +17,9 @@ var apiListVersion1 = {
 
     /* return contenr formatted for radarChart */
     getRadarData:     require('./basic').radar,
+
+    /* imported from yttrex */
+    statistics:       require('./statistics').statistics,
 };
 
 module.exports = {

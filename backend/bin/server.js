@@ -114,3 +114,7 @@ app.get('/api/v1/selected/:pseudo', function(req, res) {
 app.get('/api/v1/radar/:pseudos', function(req, res) {
     return dispatchPromise('getRadarData', req, res);
 });
+// statistics, imported from yttrex
+app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
+    return dispatchPromise('statistics')
+})
