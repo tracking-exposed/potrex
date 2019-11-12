@@ -81,7 +81,7 @@ const DEV_PLUGINS = [
         // Dunno if this is the case for every Ubuntu machine.
         urgency: 'critical',
         title: 'potrex',
-        contentImage: path.join(__dirname, 'icons', 'yttrex128.png'),
+        contentImage: path.join(__dirname, 'icons', 'potrex128.png'),
         timeout: 2,
         alwaysNotify: true
     })

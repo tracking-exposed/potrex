@@ -4,18 +4,18 @@
   "name": "potrex",
 
   "short_name": "data porn: 2019 olimpic game",
-  "description": "This browser extension make you join to the PH algorithm analysis. Our reference website is SAFE FOR WORK",
-  "version": "0.2.3",
-  "author": "humans and robots, challenging algorithm hegemony with https://tracking.exposed",
+  "description": "This browser extension enable some kind of algorithm analysis on the most popular adult website. Our website is SAFE FOR WORK",
+  "version": "0.2.4",
+  "author": "The prod humans and robots who challenge the algorithm monopolists from https://tracking.exposed",
 
   "icons": {
-      "16": "yttrex16.png",
-      "48": "yttrex48.png",
-      "128": "yttrex128.png"
+      "16": "potrex16.png",
+      "48": "potrex48.png",
+      "128": "potrex128.png"
   },
 
   "browser_action": {
-      "default_icon": "yttrex16.png",
+      "default_icon": "potrex16.png",
       "default_popup": "popup.html"
   },
 

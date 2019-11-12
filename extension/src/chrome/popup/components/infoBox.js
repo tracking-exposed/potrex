@@ -30,7 +30,7 @@ const InfoBox = React.createClass({
                 <span style={h1style}>especially in pornhub ;)</span>
 
                 <a target='_blank' href={personalLink}>
-                    <img style={imgstyle} src='/youtube-trex-logo.png' />
+                    <img style={imgstyle} src='/potrex400.png' />
                 </a>
                 <a target='_blank' href={personalLink}>
                     <span style={h1style}>play some</span>

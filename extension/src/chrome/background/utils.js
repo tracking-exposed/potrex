@@ -21,9 +21,9 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     isStudyGroup: false
                 },
 
-                logo16: bo.extension.getURL('yttrex16.png'),
-                logo48: bo.extension.getURL('yttrex48.png'),
-                logo128: bo.extension.getURL('yttrex128.png')
+                logo16: bo.extension.getURL('potrex16.png'),
+                logo48: bo.extension.getURL('potrex48.png'),
+                logo128: bo.extension.getURL('potrex128.png')
             });
         });
         return true;
