@@ -1,23 +1,23 @@
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var _ = require('lodash');
-var moment = require('moment');
-var bodyParser = require('body-parser');
-var Promise = require('bluebird');
-var mongodb = Promise.promisifyAll(require('mongodb2'));
-var debug = require('debug')('potrex');
-var nconf = require('nconf');
-var pug = require('pug');
-var cors = require('cors');
+#!/usr/bin/env node
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const _ = require('lodash');
+const moment = require('moment');
+const bodyParser = require('body-parser');
+const Promise = require('bluebird');
+const debug = require('debug')('potrex');
+const nconf = require('nconf');
+const cors = require('cors');
 
-var utils = require('../lib/utils');
-var APIs = require('../lib/api');
-var mongo = require('../lib/mongo');
+const dbutils = require('../lib/dbutils');
+const APIs = require('../lib/api');
+const security = require('../lib/security');
 
-var cfgFile = "config/settings.json";
-var redOn = "\033[31m";
-var redOff = "\033[0m";
+const cfgFile = "config/settings.json";
+const redOn = "\033[31m";
+const redOff = "\033[0m";
+
 
 nconf.argv().env().file({ file: cfgFile });
 
@@ -96,15 +96,16 @@ app.use(cors());
 app.use(bodyParser.json({limit: '4mb'}));
 app.use(bodyParser.urlencoded({limit: '4mb', extended: true}));
 
+/* -- meh
+ *
+    }, {
+        route: "/api/v1/basic",
+        implementation: require('./basic').all,
+        name: "getBasicData"
+    }]
+ */
 
-/* This to actually post the event collection */
-app.post('/api/v:version/events', function(req, res) {
-    return dispatchPromise('processEvents', req, res);
-});
-app.get('/api/v1/html/:htmlId', function(req, res) {
-    return dispatchPromise('unitById', req, res);
-});
-/* This is the beginning project, this is a new tes to see how much does make sense */
+/* LEGACY TO BE VERIFIED */
 app.get('/api/v1/basic', function(req, res) {
     return dispatchPromise('getBasicData', req, res);
 });
@@ -114,7 +115,78 @@ app.get('/api/v1/selected/:pseudo', function(req, res) {
 app.get('/api/v1/radar/:pseudos', function(req, res) {
     return dispatchPromise('getRadarData', req, res);
 });
-// statistics, imported from yttrex
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
     return dispatchPromise('statistics')
 })
+
+/* SOON TO BECOME STANDARD */
+app.get('/api/v1/last', function(req, res) {
+    return dispatchPromise('getLast', req, res);
+});
+app.get('/api/v1/videoId/:query', function(req, res) {
+    return dispatchPromise('getVideoId', req, res);
+});
+app.get('/api/v1/related/:query', function(req, res) {
+    return dispatchPromise('getRelated', req, res);
+});
+app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
+    return dispatchPromise('getVideoCSV', req, res);
+});
+app.get('/api/v1/author/:query/:amount?', function(req, res) {
+    return dispatchPromise('getByAuthor', req, res);
+});
+app.post('/api/v:version/validate', function(req, res) {
+    return dispatchPromise('validateKey', req, res);
+});
+app.post('/api/v2/events', function(req, res) {
+    return dispatchPromise('processEvents2', req, res);
+});
+app.get('/api/v1/personal/:publicKey/csv', function(req, res) {
+    return dispatchPromise('getPersonalCSV', req, res);
+});
+app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
+    return dispatchPromise('getPersonal', req, res);
+});
+app.delete('/api/v2/personal/:publicKey/selector/id/:id', (req, res) => {
+    return dispatchPromise('removeEvidence', req, res);
+});
+app.get('/api/v2/personal/:publicKey/selector/:key/:value', (req, res) => {
+    return dispatchPromise('getEvidences', req, res);
+});
+/* delete a group from your profile, create a new tagId */
+app.delete('/api/v2/profile/:publicKey/tag/:tagId', (req, res) => {
+    return dispatchPromise('removeTag', req, res);
+});
+app.post('/api/v2/profile/:publicKey/tag', (req, res) => {
+    return dispatchPromise("createTag", req, res);
+});
+
+/* update and current profile */
+app.get('/api/v2/profile/:publicKey/tag', (req, res) => {
+    return dispatchPromise('profileStatus', req, res);
+});
+app.post('/api/v2/profile/:publicKey', (req, res) => {
+    return dispatchPromise("updateProfile", req, res);
+});
+
+
+
+/* ADMIN */
+app.get('/api/v1/mirror/:key', function(req, res) {
+    return dispatchPromise('getMirror', req, res);
+});
+
+
+
+/* the remaining code */
+security.checkKeyIsSet();
+
+Promise.resolve().then(function() {
+    if(dbutils.checkMongoWorks()) {
+        debug("mongodb connection works");
+    } else {
+        console.log("mongodb is not running - check", cfgFile,"- quitting");
+        process.exit(1);
+    }
+});
+

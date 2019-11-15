@@ -2,11 +2,18 @@
   "schema": { 
       "supporters": "supporters",
       "videos": "videos",
-      "stats": "trexstats"
+      "stats": "trexstats",
+      "htmls": "htmls",
+      "metadata": "metadata",
+      "groups": "groups"
   },
-  "mongodb": "mongodb://localhost/potrex",
+
+  "mongoHost": "localhost",
+  "mongoPort": 27017,
+  "mongoDb": "potrex",
+
   "port": 10000,
-  "tabtime": 20,
   "interface": "0.0.0.0",
-  "htmlMaxAmount": 1000
+
+  "key": "invalid_default"
 }
