@@ -4,9 +4,9 @@
   "description": "pornhub.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "main": "bin/server.js",
   "scripts": {
-    "watch": "nodemon --config config/nodemon.json bin/server.js",
-    "start": "DEBUG=lib:*,potrex node bin/server",
-    "test": "./node_modules/.bin/mocha"
+    "watch": "key=fuffa elastic=disabled nodemon DEBUG=lib:*,yttrex --config config/nodemon.json bin/server",
+    "start": "elastic=disabled DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server",
+    "parserv": "elastic=disabled DEBUG=* node bin/parserv2"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/potrex/graphs/contributors",
   "license": "GPL-3.0",
