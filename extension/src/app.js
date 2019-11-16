@@ -32,14 +32,15 @@ import ReactDOMServer from 'react-dom/server';
 import uuid from 'uuid';
 import $ from 'jquery';
 import _ from 'lodash';
+import moment from 'moment';
 
 import config from './config';
 import hub from './hub';
 import { getTimeISO8601, getLogoDataURI } from './utils';
 import { registerHandlers } from './handlers/index';
-import pseudonym from './pseudonym';
 
-const YT_VIDEOTITLE_SELECTOR = 'h1.title';
+
+const PH_VIDEOTITLE_SELECTOR = 'h1.title';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -224,18 +225,18 @@ function hrefUpdateMonitor() {
         if(!diff) {
             lastVideoCNT++;
             if(lastVideoCNT > 5) {
-                console.log(lastVideoCNT, "too many repetition: stop");
+                console.log(`Ignoring this URL (${lastVideoURL}), been sent already five times`);
                 return;
             }
         }
 
         lastVideoURL = window.location.href;
         document
-            .querySelectorAll(AMZ_TITLE_SELECTOR)
+            .querySelectorAll(PH_VIDEOTITLE_SELECTOR)
             .forEach(function() {
                 console.log("Selector match in ", window.location.href,
                     ", sending", _.size($('body').html()),
-                    " <- size:", $(AMZ_TITLE_SELECTOR).length);
+                    " <- size:", $(PH_VIDEOTITLE_SELECTOR).length);
                 if( testElement($('body').html(), 'body') )
                     phase('video.send');
             });

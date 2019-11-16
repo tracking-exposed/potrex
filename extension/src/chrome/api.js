@@ -15,8 +15,8 @@ function post (apiUrl, data, cookieId) {
             xhr.open('POST', url, true);
 
             xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-YTtrex-Version', config.VERSION);
-            xhr.setRequestHeader('X-YTtrex-Build', config.BUILD);
+            xhr.setRequestHeader('X-potrex-Version', config.VERSION);
+            // xhr.setRequestHeader('X-potrex-Build', config.BUILD);
 
             if (!keypair) {
                 reject('Cannot sign payload, no keypair found!');
@@ -26,9 +26,9 @@ function post (apiUrl, data, cookieId) {
             const signature = nacl.sign.detached(decodeString(payload),
                                                  decodeKey(keypair.secretKey));
 
-            xhr.setRequestHeader('X-YTtrex-NonAuthCookieId', cookieId);
-            xhr.setRequestHeader('X-YTtrex-PublicKey', keypair.publicKey);
-            xhr.setRequestHeader('X-YTtrex-Signature', bs58.encode(signature));
+            xhr.setRequestHeader('X-potrex-NonAuthCookieId', cookieId);
+            xhr.setRequestHeader('X-potrex-PublicKey', keypair.publicKey);
+            xhr.setRequestHeader('X-potrex-Signature', bs58.encode(signature));
 
             xhr.send(payload);
             xhr.onload = function () {

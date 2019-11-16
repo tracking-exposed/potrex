@@ -14,7 +14,7 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 
 require('dotenv').load({ silent: true });
 
-const LAST_VERSION = 1;
+const LAST_VERSION = 2;
 const packageJSON = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';

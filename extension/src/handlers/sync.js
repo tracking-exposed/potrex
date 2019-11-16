@@ -12,10 +12,11 @@ var state = {
 function handleVideo (type, e) {
     state.videos.push({
         element: e.element,
-        tagId: config.settings.tagId,
         href: e.href,
+        selector: e.selector,
         incremental: state.incremental,
-        clientTime: getTimeISO8601()
+        clientTime: getTimeISO8601(),
+        randomUUID: e.randomUUID
     });
     state.incremental++;
 }
@@ -28,7 +29,7 @@ function sync (hub) {
         bo.runtime.sendMessage({ type: 'sync', payload: state.videos, userId: 'local' },
                                    (response) => hub.event('syncResponse', response));
         state.videos = [];
-    } else console.log("queue is empty");
+    } // else console.log("queue is empty");
 }
 
 export function register (hub) {
