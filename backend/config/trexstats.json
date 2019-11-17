@@ -14,8 +14,7 @@
                 "selector": {}
             }
         ]
-    },
-    {
+    }, {
         "name": "contributions",
         "column": "videos",
         "timevar": "savingTime",
@@ -27,6 +26,50 @@
             {
                 "name": "videos",
                 "selector": { "type": "video" }
+            }
+        ]
+    }, {
+        "name": "processed",
+        "column": "htmls",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "successful",
+                "selector": { "processed": true }
+            },
+            {
+                "name": "failure",
+                "selector": { "processed": false }
+            },
+            {
+                "name": "unprocessed",
+                "selector": { "processed": { "$exists": false } }
+            },
+            {
+                "name": "total",
+                "selector": { }
+            }
+        ]
+    }, {
+        "name": "metadata",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "hasTitle",
+                "selector": { "title": { "$exists": true }}
+            },
+            {
+                "name": "hasAuthor",
+                "selector": { "author": { "$exists": true }}
+            },
+            {
+                "name": "hasRelated",
+                "selector": { "related.[0]": { "$exists": true }}
+            },
+            {
+                "name": "total",
+                "selector": { }
             }
         ]
     }]

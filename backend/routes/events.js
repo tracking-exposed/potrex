@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var moment = require('moment');
 var Promise = require('bluebird');
-var debug = require('debug')('lib:events');
+var debug = require('debug')('routes:events');
 var os = require('os');
 
 var fs = Promise.promisifyAll(require('fs'));
@@ -74,7 +74,6 @@ function headerError(headers) {
 async function processEvents2(req) {
 
     const headers = processHeaders(_.get(req, 'headers'), hdrs);
-
     if(headers.error)
         return headerError(headers);
 
@@ -128,7 +127,7 @@ async function processEvents2(req) {
     const info = _.map(htmls, function(e) {
         return [ e.packet, e.size, e.selector ];
     })
-    debug("%s: %s", supporter.p, JSON.stringify(info));
+    debug("OK saved %s: %s", supporter.p, JSON.stringify(info));
 
     /* this is what returns to the web-extension */
     return { json: {
@@ -140,7 +139,7 @@ async function processEvents2(req) {
 
 const hdrs =  {
     'content-length': 'length',
-    'x-potrex-build': 'build',
+    // 'x-potrex-build': 'build',
     'x-potrex-version': 'version',
     'x-potrex-nonauthcookieid': 'supporterId',
     'x-potrex-publickey': 'publickey',

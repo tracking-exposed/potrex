@@ -7,6 +7,7 @@ const JSDOM = require('jsdom').JSDOM;
 
 const videoparser = require('../parsers/video')
 const automo = require('../lib/automo')
+const downloader = require('../parsers/downloader');
 
 nconf.argv().env().file({ file: 'config/settings.json' });
 
@@ -20,6 +21,7 @@ const id = nconf.get('id');
 let singleUse = !!nconf.get('single');
 let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
+let computedFrequency = FREQUENCY;
 
 if(backInTime != 10) {
     const humanized = moment.duration(
@@ -53,14 +55,16 @@ async function newLoop() {
                 nodatacounter, htmlFilter);
         }
         lastExecution = moment().subtract(2, 'm').toISOString();
-        await sleep(FREQUENCY * 1000)
-        /* infinite recursive loop */
-        await newLoop();
+        computedFrequency = FREQUENCY;
+        return;
+    } else {
+        computedFrequency = 0.5;
     }
 
     if(!htmls.overflow) {
         lastExecution = moment().subtract(2, 'm').toISOString();
-        debug("Matching objects %d, overflow %s",
+        debug("[%s] Matching objects %d, overflow %s",
+            moment.duration(htmls.content[0].savingTime).humanize(),
             _.size(htmls.content), htmls.overflow);
     }
     else {
@@ -72,38 +76,34 @@ async function newLoop() {
 
     const analysis = _.map(htmls.content, function(e) { 
         const envelop = {
-            impression: _.omit(e, ['html','publicKey', '_id']),
+            impression: e,
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
                     .window.document,
         }
       
         let metadata = null;
         try {
-            debug("%s [%s] %s %d.%d %s %s %s",
+            debug("%s [%s] %s %d.%d %s %s",
                 e.id.substr(0, 4),
-                moment(e.savingTime).format("HH:mm"),
+                moment(e.savingTime).format("DD/MMM HH:mm:ss"),
                 e.metadataId.substr(0, 6),
                 e.packet, e.incremental,
-                e.href.replace(/https:\/\//, ''), e.size, e.selector);
+                e.size, e.selector);
 
-            if(e.selector == ".ytp-title-channel") {
-                metadata = videoparser.adTitleChannel(envelop);
-            }
-            else if(e.selector == ".video-ads.ytp-ad-module") {
-                metadata = videoparser.videoAd(envelop);
-            }
-            else if(e.selector == "ytd-app") {
-                metadata = videoparser.process(envelop);
-            }
-            else if(e.selector == ".ytp-ad-player-overlay-instream-info") {
-                metadata = videoparser.overlay(envelop);
+            if(e.selector == "body") {
+                metadata = videoparser.page(envelop);
             }
             else {
                 console.log("Selector not supported!", e.selector);
                 return null;
             }
 
-            if(_.isNull(metadata))
+            if(!metadata) {
+                debug("Unexpected condition! metadata should never be null or undefined");
+                return null;
+            }
+
+            if(metadata.processed == false) // no debug line because is there from parsers/video.js
                 return null;
 
         } catch(error) {
@@ -111,12 +111,17 @@ async function newLoop() {
             return null;
         }
 
-        return [ envelop.impression, _.omit(metadata, ['html']) ];
+        return [ envelop.impression, metadata ];
     });
 
-    const meaningful = _.compact(analysis);
 
-    for (const entry of meaningful) {
+    let downloads = 0;
+    for (const entry of _.compact(analysis)) {
+        downloads += await downloader.update(entry);
+    }
+    debug("performed %d downloads", downloads);
+
+    for (const entry of _.compact(analysis)) {
         await automo.updateMetadata(entry[0], entry[1]);
     }
 
@@ -136,14 +141,6 @@ async function newLoop() {
     for (const html in remaining) {
         await automo.updateMetadata(html, null);
     }
-
-    if(!singleUse || htmls.overflow) {
-        await sleep(FREQUENCY * 1000)
-        await newLoop();
-    } else {
-        console.log("Single execution done!")
-        process.exit(0);
-    }
 }
 
 function sleep(ms) {
@@ -152,8 +149,19 @@ function sleep(ms) {
     })
 }
 
+async function wrapperLoop() {
+    while(true) {
+        await newLoop();
+        if(singleUse) {
+            console.log("Single execution done!")
+            process.exit(0);
+        }
+        await sleep(computedFrequency * 1000)
+    }
+}
+
 try {
-    newLoop();
+    wrapperLoop();
 } catch(e) {
     console.log("Error in newLoop", e.message);
 }

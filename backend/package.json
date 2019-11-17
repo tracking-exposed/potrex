@@ -4,7 +4,7 @@
   "description": "pornhub.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "main": "bin/server.js",
   "scripts": {
-    "watch": "key=fuffa elastic=disabled nodemon DEBUG=lib:*,yttrex --config config/nodemon.json bin/server",
+    "watch": "key=fuffa elastic=disabled DEBUG=*,-express:*,-body-parser:* nodemon --config config/nodemon.json bin/server",
     "start": "elastic=disabled DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server",
     "parserv": "elastic=disabled DEBUG=* node bin/parserv2"
   },
@@ -30,6 +30,7 @@
     "mongodb3": "npm:mongodb@3.2.3",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
+    "node-fetch": "^2.6.0",
     "nodemon": "^1.18.9",
     "pug": "^2.0.0-beta11",
     "request": "^2.88.0",

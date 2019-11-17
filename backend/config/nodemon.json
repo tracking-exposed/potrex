@@ -1,18 +1,10 @@
 {
   "watch": [
-    "app.js",
+    "bin/*.js",
     "lib/*.js",
-    "sections/*.pug",
-    "sections/*/*.pug",
-    "dist/**"
+    "routes/*.js"
   ],
-  "ignore": [
-    "sections/webscripts/*.js"
-  ],
-  "env": {
-    "DEBUG": "potrex,lib:*,-lib:mongo:read"
-  },
   "verbose": true,
   "exitcrash": false,
-  "ext": "js css pug styl"
+  "ext": "js"
 }

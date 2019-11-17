@@ -9,10 +9,17 @@ var foodWords = require('food-words');
 var hash = function(obj, fields) {
     if(_.isUndefined(fields))
         fields = _.keys(obj);
+    let print = false;
     var plaincnt = fields.reduce(function(memo, fname) {
-        return memo += fname + "∴" + _.get(obj, fname, '…miss!') + ",";
+        let content =  _.get(obj, fname);
+        if(_.isUndefined(content)) {
+            print  = true;
+            content = '…miss!';
+        }
+        return memo += fname + "∴" + content + ",";
     }, "");
-    debug("Hashing of %s", plaincnt);
+    if(print)
+        debug("Incomplete hashing of %s", plaincnt);
     sha1sum = crypto.createHash('sha1');
     sha1sum.update(plaincnt);
     return sha1sum.digest('hex');
@@ -56,9 +63,9 @@ function decodeFromBase58 (s) {
 
 function verifyRequestSignature(req) {
     // Assume that the tuple (userId, publicKey) exists in the DB.
-    var userId = req.headers['x-yttrex-userId'];
-    var publicKey = req.headers['x-yttrex-publickey'];
-    var signature = req.headers['x-yttrex-signature'];
+    var userId = req.headers['x-potrex-userId'];
+    var publicKey = req.headers['x-potrex-publickey'];
+    var signature = req.headers['x-potrex-signature'];
     var message = req.body;
 
     // FIXME: apparently with Express 4 the body is a streamed buffer,

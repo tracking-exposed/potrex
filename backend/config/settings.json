@@ -1,16 +1,20 @@
 {
   "schema": { 
       "supporters": "supporters",
-      "videos": "videos",
       "stats": "trexstats",
       "htmls": "htmls",
       "metadata": "metadata",
-      "groups": "groups"
+      "groups": "groups",
+      "thumbnails": "thumbnails",
+      "retrieved": "retrieved"
   },
 
   "mongoHost": "localhost",
   "mongoPort": 27017,
   "mongoDb": "potrex",
+
+  "pictures": "savedthumb",
+  "htmls": "savedhtmls",
 
   "port": 10000,
   "interface": "0.0.0.0",

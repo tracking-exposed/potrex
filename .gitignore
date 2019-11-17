@@ -15,7 +15,9 @@
 extension/build/
 extension/dist/
 extension/docs/
-backend/htmls/
+
+backend/savedhtmls/
+backend/savedthumb/
 backend/dist/
 backend/farfalla/
 

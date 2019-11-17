@@ -140,7 +140,6 @@ async function count(mongoc, cName, selector) {
         .countDocuments(selector);
 };
 
-
 async function createIndex(mongoc, cName, index, opt) {
     return mongoc
         .db()
