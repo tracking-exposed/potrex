@@ -1,6 +1,6 @@
 {
   "name": "potrex",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "potrex is the extension + backend for pornhub algorithm analysis. This is part of the https://tracking.exposed plan",
   "homepage": "https://github.com/tracking-exposed/potrex/",
   "bugs": "https://github.com/tracking-exposed/potrex/issues",
