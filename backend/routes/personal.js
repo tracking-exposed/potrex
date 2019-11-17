@@ -14,9 +14,7 @@ async function getPersonal(req) {
 
     const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
     debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX);
-
     const data = await automo.getSummaryByPublicKey(k, { amount, skip });
-
     data.request = {
         amount,
         skip,
