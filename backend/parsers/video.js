@@ -5,66 +5,10 @@ const debug = require('debug')('parser:video');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
-const errorlike = require('debug')('metadata:likes');
-const errorview = require('debug')('metadata:view');
-const errorrele = require('debug')('metadata:related');
-const querystring = require('querystring');
-
-
 const parsedet = require('../lib/parsedetails');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 nconf.argv().env().file({ file: "config/settings.json" });
-
-
-
-function guessTheAnchor(e) {
-    const combos = [
-        'parentNode.parentNode.children[0]', // sometime is this
-        'parentNode.parentNode.parentNode.children[0]',
-        'parentNode.parentNode.children[0].children[0]' // others is this
-    ];
-
-    const found = _.reduce(combos, function(memo, path, i) {
-        if(memo) return memo;
-        const tbt = _.get(e, path);
-        if(!tbt) return memo;
-        const href = tbt.getAttribute('href');
-        if(!href) return memo;
-
-        if(_.startsWith(href, '/product-review'))
-            return memo;
-
-        if(_.size(href) > 200) {
-            // debug("Success guessTheAnchor: %d", i);
-            return tbt;
-        }
-    }, null);
-
-    if(!found) { debug("Failure in guessTheAnchor"); debugger; }
-    return found;
-}
-
-
-function findThumbnailURL(e) {
-    const combos = [
-        'parentNode',
-        'parentNode.parentNode',
-        'parentNode.parentNode.parentNode',
-    ];
-
-    const found = _.reduce(combos, function(memo, path, i) {
-        if(memo) return memo;
-        const tbt = _.get(e, path);
-        if(!tbt) return memo;
-        const possibleURL = tbt.outerHTML.replace(/.*src="/, '').replace(/".*/, '');
-        if(possibleURL.match(/\.jpg$/))
-            return possibleURL;
-    }, null);
-
-    if(!found) { debug("Failure in findThumbnailURL"); debugger; }
-    return found;
-};
 
 function page(envelop) {
 
@@ -98,8 +42,8 @@ function page(envelop) {
     try {
         const related = parsedet.getRelated(envelop.impression.html);
         retval = _.extend(retval, related);
-        debug("Added %d keys from getRelated, total %d",
-            _.size(_.keys(related)), _.size(_.keys(retval)));
+        debug("Added %d keys from getRelated, total %d, related = %d",
+            _.size(_.keys(related)), _.size(_.keys(retval)), _.size(related.related) );
     } catch(error) {
         stats.error++;
         debug("-------------- fail in getRelated [%s]: %s", retval.href, error);
@@ -109,8 +53,8 @@ function page(envelop) {
     try {
         const categories = parsedet.getCategories(envelop.impression.html);
         retval = _.extend(retval, categories);
-        debug("Added %d keys from getCategories, total %d",
-            _.size(_.keys(categories)), _.size(_.keys(retval)));
+        debug("Added %d keys from getCategories, total %d, categories = %d",
+            _.size(_.keys(categories)), _.size(_.keys(retval)), _.size(categories.categories) );
     } catch(error) {
         stats.error++;
         debug("-------------- fail in getCategories [%s]: %s", retval.href, error);

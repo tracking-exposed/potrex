@@ -36,21 +36,27 @@ function getMetadata(html) {
   let producer = {};
   try {
     producer = {
-        name: D.querySelector('[data-mxptext]').getAttribute('data-mxptext'),
-        href: D.querySelector('[data-mxptext]').getAttribute('href'),
-        type: 'Professional',
+        name: D.querySelectorAll('[data-type="user"] > a.bolded')[0].textContent,
+        href: D.querySelectorAll('[data-type="user"] > a.bolded')[0].getAttribute('href'),
     };
   } catch(error) {
     const ref = D.querySelectorAll('.video-detailed-info')[0].querySelector('a');
-    const v = !!D.querySelectorAll('.video-detailed-info')[0].querySelector('span.verified-icon');
+    // const v = !!D.querySelectorAll('.video-detailed-info')[0].querySelector('span.verified-icon');
 
     producer = {
         name: ref.textContent,
         href: ref.getAttribute('href'),
-        verified: v,
-        type: 'Amateur'
+        // verified: v,
     };
   } 
+
+  if(producer && producer.href) {
+      if ( _.startsWith(producer.href, '/channel') ) {
+          producer.type = 'Channel';
+      } else /* startsWith /pornstar */ {
+          producer.type = 'Pornstar';
+      }
+  }
 
   return {
     title: vTitle,

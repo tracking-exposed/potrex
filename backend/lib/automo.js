@@ -35,7 +35,7 @@ async function getSummaryByPublicKey(publicKey, options) {
 
     await mongoc.close();
 
-    const fields = [ 'id','videoId', 'savingTime', 'title', 'producer', 'categories', 'related', 'views' ];
+    const fields = [ 'metadataId', 'id','videoId', 'savingTime', 'title', 'producer', 'categories', 'related', 'views' ];
     const recent = _.map(metadata, function(e) {
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
@@ -235,7 +235,7 @@ async function tofu(publicKey, version) {
 
 async function getLastHTMLs(filter, skip) {
 
-    const HARDCODED_LIMIT = 10;
+    const HARDCODED_LIMIT = 4;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const htmls = await mongo3.readLimit(mongoc,
@@ -305,6 +305,8 @@ async function updateMetadataEntry(mongoc, html, newsection) {
     /* this is not exported, it is used only by updateMetadata */
     let updates = 0;
     let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
+    if(!exists)
+        exists = {};
 
     /* this is meant to add only fields with values, and to notify duplicated
      * conflictual metadata mined, or extend labels as list */
