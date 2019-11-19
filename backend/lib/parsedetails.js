@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:parsedetails');
-
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
@@ -32,35 +31,37 @@ function getFeatured(html) {
     const D = dom.window.document;
     
     let titles = D.querySelectorAll('.sectionTitle');
-    debug("Titles (potential) sections %d", _.size(titles));
 
     const sections = _.map(titles, function(node, order) {
-        let childrens = node.children.length;
-        secondTag = node.children[1].tagName;
-        console.log(  node.children[1].getAttribute('title')  );
+        const secondTag = node.children[1].tagName;
+        if(!(node.children[1].children && node.children[1].children[0] &&
+             node.children[1].children[0].tagName) ) {
+                debug("nope in %d", order)
+                return null;
+            }
 
-        if(! (node.children[1].children && 
-            node.children[1].children[0] &&
-            node.children[1].children[0].tagName) )
-            return null;
-
+        let videos = 
+          _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), function(v) {
+            return {
+              title: v.getAttribute('data-title'),
+              duration: v.parentNode.querySelector('.duration').textContent,
+              href: v.getAttribute('href')
+            }
+          });
         if(_.startsWith(secondTag,'H')) {
             return {
                 order,
                 tagName: node.children[1].tagName,
                 href: node.children[1].children[0].getAttribute('href'),
-                display: node.children[1].children[0].textContent.trim()
+                display: node.children[1].children[0].textContent.trim(),
+                videos,
             }
         }   
         return null;
     });
 
-    // xx
-    // > titles[0].parentNode.querySelectorAll(".linkVideoThumb").
-
-
-    debug("+ %s", JSON.stringify(sections, undefined, 2));
-    debugger;
+    debug("Potential titles %d -> %s",
+        _.size(titles), _.map(sections, 'display'));
     return { sections };
 }
 

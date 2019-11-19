@@ -36,7 +36,8 @@ async function getSummaryByPublicKey(publicKey, options) {
     await mongoc.close();
 
     const fields = [ 'metadataId', 'id','videoId', 'savingTime', 'title',
-                     'producer', 'categories', 'related', 'views', 'relative' ];
+                     'producer', 'categories', 'related', 'views', 'relative',
+                    'type', 'sections' ];
     const recent = _.map(metadata, function(e) {
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);

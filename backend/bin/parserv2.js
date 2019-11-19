@@ -114,11 +114,10 @@ async function newLoop() {
     });
 
 
-    let downloads = 0;
     for (const entry of _.compact(analysis)) {
-        downloads += await downloader.update(entry);
+        if(entry.type == 'video')
+            await downloader.update(entry);
     }
-    debug("performed %d downloads", downloads);
 
     for (const entry of _.compact(analysis)) {
         await automo.updateMetadata(entry[0], entry[1]);
