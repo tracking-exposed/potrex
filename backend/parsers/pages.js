@@ -2,8 +2,6 @@ const _ = require('lodash');
 const nconf = require("nconf");
 const moment = require("moment");
 const debug = require('debug')('parser:video');
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
 
 const parsedet = require('../lib/parsedetails');
 
