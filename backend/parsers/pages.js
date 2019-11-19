@@ -28,7 +28,22 @@ function page(envelop) {
         return _.extend(retval, { processed: false, error: 'attributeURL' });
     }
 
-    debugger;
+    if(retval.type == 'home') {
+        try {
+            const featured = parsedet.getFeatured(envelop.impression.html);
+            retval = _.extend(retval, featured);
+            debug("Added %d keys from getFeatured in homepage, total %d",
+                _.size(_.keys(featured)), _.size(_.keys(retval)));
+            retval.processed = true;
+        } catch(error) {
+            stats.error++;
+            debug("-------------- fail in getFeatured of [%s]: %s", retval.href, error);
+            return _.extend(retval, { processed: false, error: 'getFeatured' });
+        }
+        return retval;
+    }
+
+    /* else, we are in type = video ... */
     try {
         const meta = parsedet.getMetadata(envelop.impression.html);
         retval = _.extend(retval, meta);

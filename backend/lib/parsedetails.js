@@ -13,10 +13,56 @@ function attributeURL(href) {
             videoId: href.replace(/.*viewkey=/, '')
         };
     }
-    console.log("----", JSON.stringify(href.split('/')));
+
+    const chunks = href.split('/');
+    if(_.size(chunks) == 4 && chunks[3] == "") {
+        /* homepage: ["https:","","www.pornhub.com",""] */
+        return {
+            href,
+            type: 'home'
+        }
+    }
+
     debug("UNMANAGED url %s match video", href);
     return { href: href, type: null };
 };
+
+function getFeatured(html) {
+    const dom = new JSDOM(html);
+    const D = dom.window.document;
+    
+    let titles = D.querySelectorAll('.sectionTitle');
+    debug("Titles (potential) sections %d", _.size(titles));
+
+    const sections = _.map(titles, function(node, order) {
+        let childrens = node.children.length;
+        secondTag = node.children[1].tagName;
+        console.log(  node.children[1].getAttribute('title')  );
+
+        if(! (node.children[1].children && 
+            node.children[1].children[0] &&
+            node.children[1].children[0].tagName) )
+            return null;
+
+        if(_.startsWith(secondTag,'H')) {
+            return {
+                order,
+                tagName: node.children[1].tagName,
+                href: node.children[1].children[0].getAttribute('href'),
+                display: node.children[1].children[0].textContent.trim()
+            }
+        }   
+        return null;
+    });
+
+    // xx
+    // > titles[0].parentNode.querySelectorAll(".linkVideoThumb").
+
+
+    debug("+ %s", JSON.stringify(sections, undefined, 2));
+    debugger;
+    return { sections };
+}
 
 function getMetadata(html) {
   const dom = new JSDOM(html);
@@ -120,6 +166,7 @@ function getCategories(html) {
 
 module.exports = {
     attributeURL:attributeURL,
+    getFeatured, getFeatured,
     getMetadata: getMetadata,
     getRelated: getRelated,
     getCategories: getCategories
