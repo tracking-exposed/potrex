@@ -28,6 +28,7 @@ function page(envelop) {
         return _.extend(retval, { processed: false, error: 'attributeURL' });
     }
 
+    debugger;
     try {
         const meta = parsedet.getMetadata(envelop.impression.html);
         retval = _.extend(retval, meta);

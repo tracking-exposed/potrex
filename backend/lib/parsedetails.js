@@ -13,7 +13,7 @@ function attributeURL(href) {
             videoId: href.replace(/.*viewkey=/, '')
         };
     }
-
+    console.log("----", JSON.stringify(href.split('/')));
     debug("UNMANAGED url %s match video", href);
     return { href: href, type: null };
 };

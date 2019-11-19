@@ -5,7 +5,7 @@ const debug = require('debug')('bin:parse2');
 const nconf = require('nconf');
 const JSDOM = require('jsdom').JSDOM;
 
-const videoparser = require('../parsers/video')
+const pagesparser = require('../parsers/pages')
 const automo = require('../lib/automo')
 const downloader = require('../parsers/downloader');
 
@@ -77,8 +77,7 @@ async function newLoop() {
     const analysis = _.map(htmls.content, function(e) { 
         const envelop = {
             impression: e,
-            jsdom: new JSDOM(e.html.replace(/\n\ +/g, ''))
-                    .window.document,
+            jsdom: new JSDOM(e.html.replace(/\n\ +/g, '')).window.document,
         }
       
         let metadata = null;
@@ -91,7 +90,7 @@ async function newLoop() {
                 e.size, e.selector);
 
             if(e.selector == "body") {
-                metadata = videoparser.page(envelop);
+                metadata = pagesparser.page(envelop);
             }
             else {
                 console.log("Selector not supported!", e.selector);

@@ -40,7 +40,7 @@ import { getTimeISO8601, getLogoDataURI } from './utils';
 import { registerHandlers } from './handlers/index';
 
 
-const PH_VIDEOTITLE_SELECTOR = 'h1.title';
+const PH_GENERIC_SELECTOR = 'h1';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -222,21 +222,23 @@ function hrefUpdateMonitor() {
             refreshUUID();
         }
 
-        if(!diff) {
-            lastVideoCNT++;
-            if(lastVideoCNT > 5) {
-                console.log(`Ignoring this URL (${lastVideoURL}), been sent already five times`);
-                return;
-            }
-        }
 
         lastVideoURL = window.location.href;
         document
-            .querySelectorAll(PH_VIDEOTITLE_SELECTOR)
+            .querySelectorAll(PH_GENERIC_SELECTOR)
             .forEach(function() {
+
+                if(!diff) {
+                    lastVideoCNT++;
+                    if(lastVideoCNT > 5) {
+                        console.log(`Ignoring this URL (${lastVideoURL}), been sent already five times`);
+                        return;
+                    }
+                }
+
                 console.log("Selector match in ", window.location.href,
                     ", sending", _.size($('body').html()),
-                    " <- size:", $(PH_VIDEOTITLE_SELECTOR).length);
+                    " <- size:", $(PH_GENERIC_SELECTOR).length);
                 if( testElement($('body').html(), 'body') )
                     phase('video.send');
             });

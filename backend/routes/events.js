@@ -100,7 +100,7 @@ async function processEvents2(req) {
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
         });
-        const isVideo = body.href.match(/v=/) ? true : false;
+        const isVideo = body.href.match(/viewkey=/) ? true : false;
         const html = {
             id,
             metadataId,
@@ -111,6 +111,7 @@ async function processEvents2(req) {
             html: body.element,
             size: _.size(body.element),
             isVideo,
+            randomUUID: body.randomUUID,
             selector: body.selector,
             incremental: body.incremental,
             packet: i,
@@ -125,9 +126,9 @@ async function processEvents2(req) {
     }
 
     const info = _.map(htmls, function(e) {
-        return [ e.packet, e.size, e.selector ];
+        return [ e.packet, e.size, e.href ];
     })
-    debug("OK saved %s: %s", supporter.p, JSON.stringify(info));
+    debug("[+] %s %s", supporter.p, JSON.stringify(info));
 
     /* this is what returns to the web-extension */
     return { json: {
