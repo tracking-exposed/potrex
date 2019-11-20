@@ -26,7 +26,20 @@ async function getSummaryByPublicKey(publicKey, options) {
 
     const metadata = await mongo3.readLimit(mongoc,
         nconf.get('schema').metadata, { publicKey: supporter.publicKey }, { savingTime: -1 },
-        options.amount, options.skip);
+        options.amount * 4, options.skip);
+        // this        * 4 is because of the duplication stripping below
+
+    const uniquified = _.reduce(metadata, function(memo, m) {
+        if(m.videoId && memo.lastVideoId == m.videoId) 
+            return memo;
+
+        memo.lastVideoId = m.videoId;
+        memo.acc.push(m);
+        return memo;
+    }, { acc: [], lastVideoId: null } );
+
+    const unique = _.take(_.sortBy(uniquified.acc, { savingTime: -1}), options.amount);
+    debug("%d - %d - %d", _.size(uniquified.acc), _.size(metadata), _.size(unique));
 
     const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
@@ -38,7 +51,8 @@ async function getSummaryByPublicKey(publicKey, options) {
     const fields = [ 'metadataId', 'id','videoId', 'savingTime', 'title',
                      'producer', 'categories', 'related', 'views', 'relative',
                     'type', 'sections' ];
-    const recent = _.map(metadata, function(e) {
+
+    const recent = _.map(unique, function(e) {
         e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
         return _.pick(e, fields);
     })

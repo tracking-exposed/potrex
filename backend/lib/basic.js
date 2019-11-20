@@ -100,17 +100,8 @@ async function radar(req) {
         axes: axes2,
     }];
 
-        /* results contains 'list', 'pseudos', 'tops' */
+    /* results contains 'list', 'pseudos', 'tops' */
     return { json: results };
-
-        /*
-    .catch(function(error) {
-        return { json: {
-            success: false,
-            message: error.message
-        }};
-    });
-    */
 };
 
 
