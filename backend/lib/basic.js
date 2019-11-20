@@ -3,8 +3,10 @@ const debug = require('debug')('lib:basic');
 const nconf = require('nconf');
 const Promise = require('bluebird');
 
+/* still to be migrated */
 const mongo = require('./mongo');
 
+const automo = require('./automo');
 
 /* This api simply return the basic last 69 videos */
 function all(req) {
@@ -33,7 +35,7 @@ function selected(req) {
         });
 };
 
-function radar(req) {
+async function radar(req) {
     let a, b;
     try {
         const expectedtwo = req.params.pseudos;
@@ -49,68 +51,66 @@ function radar(req) {
         }};
     }
 
-    return Promise.all([
-        mongo.readLimit(nconf.get('schema').videos, {type: "video", p: a}, { savingTime: -1}, 69, 0),
-        mongo.readLimit(nconf.get('schema').videos, {type: "video", p: b}, { savingTime: -1}, 69, 0)
-    ])
-    .then(function(mix) {
+    const first = await automo.getMetadataByPublicKey(a, { amount: 69 , skip: 0 });
+    const second = await automo.getMetadataByPublicKey(b, { amount: 69 , skip: 0 });
 
-        if( _.size(_.first(mix)) < 2 || _.size(_.last(mix)) < 2)
-            throw new Error("Not enough videos associated to one of the two pseudonyms");
+    debug(_.size(first.metadata), _.size(second.metadata));
 
-        const results = {};
+    if( _.size(first.metadata) < 2 || _.size(second.metadata) < 2)
+        throw new Error("Not enough videos associated to one of the two pseudonyms");
 
-        const name1 = _.get(_.first(_.first(mix)), 'p');
-        const name2 = _.get(_.first(_.last(mix)), 'p');
-        if(_.isUndefined(name1) || _.isUndefined(name2))
-            throw new Error("Missing pseudonym");
+    const results = {};
+    const name1 = first.supporter.p;
+    const name2 = second.supporter.p;
 
-        results.pseudos = [ name1, name2 ];
+    results.pseudos = [ name1, name2 ];
 
-        let catfirst = _.flatten(_.map(mix[0], 'categories'));
-        let catsecond = _.flatten(_.map(mix[1], 'categories'));
-        let categories = _.concat(catfirst, catsecond);
+    let catfirst = _.flatten(_.map(first.metadata, 'categories'));
+    let catsecond = _.flatten(_.map(second.metadata, 'categories'));
+    let categories = _.concat(catfirst, catsecond);
 
-        results.list = _.reverse(_.sortBy(_.map(_.countBy(categories), function(c, n) { return { c, n, } }), 'c'));
+    results.list = _.reverse(_.sortBy(_.map(_.countBy(categories), function(c, n) { return { c, n, } }), 'c'));
 
-        let considered = _.map(_.take(results.list, 20), 'n');
+    let considered = _.map(_.take(results.list, 20), 'n');
 
-        const axes1 = _.map(considered, function(cat) {
-            let ref = _.countBy(catfirst);
-            let amount = _.get(ref, cat, 0);
-            let value = _.round(amount / _.size(mix[0]), 2);
-            return {
-                axis: cat,
-                value
-            };
-        });
-        const axes2 = _.map(considered, function(cat) {
-            let ref = _.countBy(catsecond);
-            let amount = _.get(ref, cat, 0);
-            let value = _.round(amount / _.size(mix[1]), 2);
-            return {
-                axis: cat,
-                value
-            };
-        });
+    const axes1 = _.map(considered, function(cat) {
+        let ref = _.countBy(catfirst);
+        let amount = _.get(ref, cat, 0);
+        let value = _.round(amount / _.size(first.metadata), 2);
+        return {
+            axis: cat,
+            value
+        };
+    });
+    const axes2 = _.map(considered, function(cat) {
+        let ref = _.countBy(catsecond);
+        let amount = _.get(ref, cat, 0);
+        let value = _.round(amount / _.size(second.metadata), 2);
+        return {
+            axis: cat,
+            value
+        };
+    });
 
-        results.tops = [{
-            name: name1,
-            axes: axes1,
-        }, {
-            name: name2,
-            axes: axes2,
-        }];
+    results.tops = [{
+        name: name1,
+        axes: axes1,
+    }, {
+        name: name2,
+        axes: axes2,
+    }];
 
         /* results contains 'list', 'pseudos', 'tops' */
-        return { json: results };
-    })
+    return { json: results };
+
+        /*
     .catch(function(error) {
         return { json: {
             success: false,
             message: error.message
         }};
     });
+    */
 };
 
 

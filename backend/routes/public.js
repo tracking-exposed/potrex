@@ -38,7 +38,7 @@ async function getLast(req) {
 
     const fields = ['watcher', 'title', 'viewInfo', 'savingTime',
                     'videoId', 'authorName', 'authorSource', 'likeInfo',
-                    'publicationString', 'relatedN' ];
+                    'publicationString' ];
 
     const amount = 7;
     const skip = _.random(10, 30);
@@ -47,8 +47,8 @@ async function getLast(req) {
         // if not initialized ^^^^ or if the cache time is expired: do the query
         const last = await automo.getMetadataByFilter({
             title: { $exists: true },
-            relatedN: { $gt: 10 },
-            videoId: { $exists: true }
+            videoId: { $exists: true },
+            type: "video"
         }, { amount, skip });
 
         let freshContent = _.map(last, function(meta) {
@@ -57,6 +57,7 @@ async function getLast(req) {
                 let rv = _.merge(e, e.mined);
                 _.unset(rv, 'mined');
                 _.unset(rv, 'longlabel');
+                _.unset(rv, 'thumbnail');
                 return rv;
             });
             const d = moment.duration( moment(retval.savingTime) - moment() );
@@ -74,7 +75,7 @@ async function getLast(req) {
         return formatReturn(cacheFormat);
     }
     else {
-        debug("Returning %d cached random videos", amount)
+        debug("Returning %d cached random videos", amount);
         return formatReturn();
     }
 };

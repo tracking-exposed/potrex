@@ -53,7 +53,7 @@ async function getMetadataByPublicKey(publicKey, options) {
         throw new Error("publicKey do not match any user");
 
     const metadata = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { watcher: supporter.p }, { savingTime: -1 },
+        nconf.get('schema').metadata, { publicKey: supporter.publicKey }, { savingTime: -1 },
         options.amount, options.skip);
 
     await mongoc.close();
