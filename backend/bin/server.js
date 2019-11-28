@@ -27,7 +27,7 @@ if(!nconf.get('interface') || !nconf.get('port') )
     throw new Error("check your config/settings.json, config of 'interface' and 'post' missing");
 
 var returnHTTPError = function(req, res, funcName, where) {
-    debug("%s HTTP error 500 %s [%s]", req.randomUnicode, funcName, where);
+    debug("%s HTTP error 500 %s [%s]", req.url, funcName, where);
     res.status(500);
     res.send();
     return false;
@@ -39,17 +39,13 @@ var returnHTTPError = function(req, res, funcName, where) {
  * I/O with DB, inside this Bluebird */
 function dispatchPromise(name, req, res) {
 
-    var apiV = _.parseInt(_.get(req.params, 'version'));
-
-    /* force version to the only supported version */
-    debug("%s name %s (%s)", moment().format("HH:mm:ss"), name, req.url);
-
     var func = _.get(APIs.implementations, name, null);
 
     if(_.isNull(func)) {
-        debug("Invalid function request");
-        return returnHTTPError(req, res, name, "function not found?");
+        debug("API name %s (%s): ERROR: missing function", name, req.url);
+        return returnHTTPError(req, res, name, "Server Error");
     }
+    debug("executing API %s (%s)", name, req.url);
 
     /* in theory here we can keep track of time */
     return new Promise.resolve(func(req))
@@ -75,15 +71,15 @@ function dispatchPromise(name, req, res) {
                   name, httpresult.file);
               res.sendFile(__dirname + "/html/" + httpresult.file);
           } else {
-              debug("Undetermined failure in API call, result →  %j", httpresult);
-              console.trace();
+              debug("Undetermined failure in API %s %s, result → %j",
+                httpresult, name, req.url);
               return returnHTTPError(req, res, name, "Undetermined failure");
           }
           return true;
       })
       .catch(function(error) {
-          debug("%s Trigger an Exception %s: %s",
-              req.randomUnicode, name, error);
+          debug("API %s %s - Trigger an Exception: %s",
+              name, req.url, error);
           return returnHTTPError(req, res, name, "Exception");
       });
 };
@@ -116,7 +112,7 @@ app.get('/api/v1/radar/:pseudos', function(req, res) {
     return dispatchPromise('getRadarData', req, res);
 });
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
-    return dispatchPromise('statistics')
+    return dispatchPromise('getStatistics', req, res);
 })
 
 /* SOON TO BECOME STANDARD */

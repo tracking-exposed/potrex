@@ -6,25 +6,12 @@ const nconf = require('nconf');
 
 const mongo = require('../lib/mongo');
 
-/* -- this cache is shared with yttrex, might be generalized or figured out
- * if something native from mongo exists ? */
-
-/*
- -- suspended
-function formatCached(what, updated)
-function cacheAvailable(what)
-function countStoredDocuments()
-
-function counter(req)
-function parsers(req)
- */
-
 function statistics(req) {
     // the content in 'stats' is saved by count-o-clock and the selector here required is
     // specifiy in config/stats.json
     const expectedFormat = "/api/v2/statistics/:name/:unit/:amount";
 
-    const allowedNames = ['supporters', 'related', 'processing'];
+    const allowedNames = ['supporters', 'contributions', 'metadata', 'processed'];
     const name = req.params.name;
     if(allowedNames.indexOf(name) == -1)
         return { json: { error: true, expectedFormat, allowedNames, note: `the statistic name you look for was ${name}` }}
@@ -38,7 +25,7 @@ function statistics(req) {
     if(_.isNaN(amount))
         return { json: { error: true, expectedFormat, invalidNumber: req.params.amount }};
 
-    debug("Requested statistics %s (since %d %s)", name, amount, unit);
+    debug("Requested statistics %s (starting from %d %s ago)", name, amount, unit);
 
     const filter = { name };
     const refDate = new Date( moment().subtract(amount, _.nth(unit, 0)));
@@ -54,8 +41,10 @@ function statistics(req) {
             return _.omit(e, ['_id'])
         })
         .then(function(content) {
-            return { json: content,
-                     headers: { amount, unit, name }
+            debug("Produced %d stats entry", _.size(content));
+            return {
+                json: content,
+                headers: { amount, unit, name }
             };
         });
 }

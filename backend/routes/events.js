@@ -1,20 +1,11 @@
-var _ = require('lodash');
-var moment = require('moment');
-var Promise = require('bluebird');
-var debug = require('debug')('routes:events');
-var os = require('os');
-
-var fs = Promise.promisifyAll(require('fs'));
-var path = require('path');
-var nconf = require('nconf');
-
-var signer = require('nacl-signature');
-var bs58 = require('bs58');
+const _ = require('lodash');
+const debug = require('debug')('routes:events');
+const nconf = require('nconf');
 
 const automo = require('../lib/automo');
-var mongo = require('../lib/mongo');
-var utils = require('../lib/utils');
-var security = require('../lib/security');
+const mongo = require('../lib/mongo');
+const utils = require('../lib/utils');
+const security = require('../lib/security');
 
 function processHeaders(received, required) {
     var ret = {};
