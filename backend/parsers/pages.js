@@ -15,6 +15,7 @@ function page(envelop) {
     debug("[K %d] Processing HTML %s scraped from %s", 
         _.size(_.keys(retval)), retval.id, retval.href);
 
+    /* the first check look at the URL and figure out if we're home or video */
     try {
         const urlInfo = parsedet.attributeURL(retval.href);
         retval = _.extend(retval, urlInfo);
@@ -30,18 +31,21 @@ function page(envelop) {
         try {
             const featured = parsedet.getFeatured(envelop.impression.html);
             retval = _.extend(retval, featured);
-            debug("Added %d keys from getFeatured in homepage, total %d",
-                _.size(_.keys(featured)), _.size(_.keys(retval)));
+            debug("Added %d 'sections' from getFeatured in homepage", _.size(featured.sections));
             retval.processed = true;
+            stats.success++;
         } catch(error) {
             stats.error++;
             debug("-------------- fail in getFeatured of [%s]: %s", retval.href, error);
             return _.extend(retval, { processed: false, error: 'getFeatured' });
         }
         return retval;
-    }
+    } 
 
-    /* else, we are in type = video ... */
+    if(retval.type != 'video')
+        throw new Error("Unrecognized content type " + retval.type);
+
+    /* else, video has a sequence of function for scraping */
     try {
         const meta = parsedet.getMetadata(envelop.impression.html);
         retval = _.extend(retval, meta);
@@ -75,10 +79,7 @@ function page(envelop) {
         return _.extend(retval, { processed: false, error: 'getCategories' });
     }
 
-    retval = _.extend(retval, {
-        processed: true,
-        videoParser: true
-    });
+    retval.processed = true;
 
     stats.success++;
     return retval;

@@ -42,8 +42,13 @@ function getFeatured(html) {
 
         let videos = 
           _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), function(v) {
+            let tre = v.parentNode.parentNode.parentNode.querySelector('.usernameWrap');
+            let linked = tre ? tre.querySelector('a') : null;
+
             return {
               title: v.getAttribute('data-title'),
+              authorName: tre ? tre.textContent.trim() : null,
+              authorLink: linked ? linked.getAttribute('href') : null,
               duration: v.parentNode.querySelector('.duration').textContent,
               href: v.getAttribute('href')
             }

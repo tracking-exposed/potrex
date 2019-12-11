@@ -24,21 +24,45 @@ async function getPersonal(req) {
 };
 
 async function getPersonalCSV(req) {
+    // only HOMEPAGES 
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
-    if(_.size(k) < 26)
-        return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const data = await automo.getMetadataByPublicKey(k, { amount: CSV_MAX_SIZE, skip: 0 });
-    const csv = CSV.produceCSVv1(data.metadata);
+    debug("%j", { publicKey: k, type: 'home'});
+    const data = await automo.getMetadataByFilter({ publicKey: k, type: 'home'}, { amount: CSV_MAX_SIZE, skip: 0 });
 
-    debug("getPersonalCSV produced %d bytes from %d entries (max %d)",
+    const unrolledData = _.reduce(data, function(memo, metadata) {
+        const nested = _.map(metadata.sections, function(section) {
+            return _.map(section.videos, function(video, o) {
+                return {
+                    sectionOrder: section.order + 1,
+                    sectionName: section.display,
+                    sectionHref: section.href,
+                    videoOrder: o + 1,
+                    videoTitle: video.title,
+                    authorName: video.authorName,
+                    authorHref: video.authorLink,
+                    duration: video.duration,
+                    videoHref: video.href,
+                    savingTime: metadata.savingTime,
+                    metadataId: metadata.metadataId,
+                    id: metadata.id
+                }
+            })
+        });
+
+        return _.concat(memo, _.flatten(nested));
+    }, [])
+    console.log(JSON.stringify(unrolledData, undefined, 2));
+    const csv = CSV.produceCSVv1(unrolledData);
+
+    debug("getPersonalCSV produced %d bytes from %d homepages (max %d)",
         _.size(csv), _.size(data), CSV_MAX_SIZE);
 
     if(!_.size(csv))
-        return { text: "Error, Zorry: 🤷" };
+        return { text: "Data not found: are you sure you've any pornhub homepage acquired?" };
 
-    const filename = 'personal-yttrex-copy-' + moment().format("YY-MM-DD") + ".csv"
+    const filename = 'potrex-homepages-' + moment().format("YY-MM-DD") + ".csv"
     return {
         headers: {
             "Content-Type": "csv/text",

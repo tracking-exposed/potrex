@@ -332,21 +332,9 @@ async function updateMetadataEntry(mongoc, html, newsection) {
             return memo;
 
         let current = _.get(memo, key);
-        if(typeof current == typeof 'thastrng' && html.selector != 'ytd-app') {
-            if(value != current) {
-                _.set(memo, key, [ value, current ]);
-                debugLite("[s] extended string: %s -> %j", key, memo);
-            }
-        }
-        else if(typeof current == typeof [] && _.size() && html.selector != 'ytd-app') {
-            if(current.indexOf(value) == -1) {
-                _.set(memo, key, _.concat(current, value) );
-                debugLite("[o] extended object %s", key);
-            }
-        } else {
-            _.set(memo, key, value);
-            updates++;
-        }
+        /* TODO should be compared if there is any update or any difference */
+        _.set(memo, key, value);
+        updates++;
 
         return memo;
     }, exists);    
