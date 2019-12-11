@@ -49,7 +49,7 @@ function getFeatured(html) {
               title: v.getAttribute('data-title'),
               authorName: tre ? tre.textContent.trim() : null,
               authorLink: linked ? linked.getAttribute('href') : null,
-              duration: v.parentNode.querySelector('.duration').textContent,
+              duration: v.parentNode.querySelector('.duration').textContent.trim(),
               href: v.getAttribute('href')
             }
           });
@@ -74,21 +74,21 @@ function getMetadata(html) {
   const dom = new JSDOM(html);
   const D = dom.window.document;
   
-  const vTitle = D.querySelectorAll("h1")[0].querySelector("span").textContent;
+  const vTitle = D.querySelectorAll("h1")[0].querySelector("span").textContent.trim();
   const views = D.querySelector('div.views');
 
   let counting = -1;
   try {
-    counting = views.querySelector(".count").textContent;
+    counting = views.querySelector(".count").textContent.trim();
   } catch(err) {
-    debug("Views extractor failure (%s): %s", viewx.textContent, err);
+    debug("Views extractor failure (%s): %s", views.textContent, err);
   }
 
   /* the producer metadata */
   let producer = {};
   try {
     producer = {
-        name: D.querySelectorAll('[data-type="user"] > a.bolded')[0].textContent,
+        name: D.querySelectorAll('[data-type="user"] > a.bolded')[0].textContent.trim(),
         href: D.querySelectorAll('[data-type="user"] > a.bolded')[0].getAttribute('href'),
     };
   } catch(error) {
@@ -96,7 +96,7 @@ function getMetadata(html) {
     // const v = !!D.querySelectorAll('.video-detailed-info')[0].querySelector('span.verified-icon');
 
     producer = {
-        name: ref.textContent,
+        name: ref.textContent.trim(),
         href: ref.getAttribute('href'),
         // verified: v,
     };
@@ -142,9 +142,9 @@ function getRelated(html) {
         thumbnail,
         title: t,
         href: h,
-        rating: rating.textContent,
-        views: view.textContent,
-        duration: duration.textContent,
+        rating: rating.textContent.trim(),
+        views: view.textContent.trim(),
+        duration: duration.textContent.trim(),
         videoId: h.replace(/.*viewkey=/, '')
     });
   });
@@ -164,7 +164,7 @@ function getCategories(html) {
   let categories = [];
   _.each(cats[0].querySelectorAll('a'), function(e) {
     if(!_.startsWith(e.textContent, '+'))
-        categories.push(e.textContent);
+        categories.push(e.textContent.trim());
   });
   return { categories: categories };
 };
