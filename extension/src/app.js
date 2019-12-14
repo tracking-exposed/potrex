@@ -53,7 +53,7 @@ let randomUUID = "INIT" + Math.random().toString(36).substring(2, 13) +
 // Everything starts from here.
 function boot () {
 
-    if(_.endsWith(window.location.origin, 'youtube.tracking.exposed')) {
+    if(_.endsWith(window.location.origin, 'pornhub.tracking.exposed')) {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
         } else {
