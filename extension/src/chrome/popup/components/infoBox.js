@@ -16,11 +16,11 @@ const InfoBox = React.createClass({
         const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
 
         return (
-            <Card style={cardStyle}>
+
                 <a target='_blank' href={personalLink}>
                     <img style={imgstyle} src='/potrex400.png' />
                 </a>
-            </Card>
+        
         );
     }
 });
