@@ -345,6 +345,16 @@ async function updateMetadataEntry(mongoc, html, newsection) {
     return r;
 }
 
+async function getRandomRecent(minTime, maxAmount) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+
+    const supporters = await mongo3.readLimit(mongoc, nconf.get('schema').supporters, {
+        lastActivity: { $gt: minTime }
+    }, { lastActivity: -1}, maxAmount, 0);
+
+    await mongoc.close();
+    return supporters;
+}
 
 module.exports = {
     /* used by routes/personal */
@@ -357,6 +367,7 @@ module.exports = {
     /* used by routes/public */
     getMetadataByFilter,
     getMetadataFromAuthor,
+    getRandomRecent,
 
     /* used by routes/rsync */
     getFirstVideos,

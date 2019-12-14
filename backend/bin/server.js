@@ -113,7 +113,11 @@ app.get('/api/v1/radar/:pseudos', function(req, res) {
 });
 app.get('/api/v2/statistics/:name/:unit/:amount', function(req, res) {
     return dispatchPromise('getStatistics', req, res);
-})
+});
+
+app.get('/api/v2/random', function(req, res) {
+    return dispatchPromise('getRandomRecent', req, res);
+});
 
 /* SOON TO BECOME STANDARD */
 app.get('/api/v1/last', function(req, res) {

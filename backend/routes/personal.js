@@ -53,7 +53,7 @@ async function getPersonalCSV(req) {
 
         return _.concat(memo, _.flatten(nested));
     }, [])
-    console.log(JSON.stringify(unrolledData, undefined, 2));
+
     const csv = CSV.produceCSVv1(unrolledData);
 
     debug("getPersonalCSV produced %d bytes from %d homepages (max %d)",

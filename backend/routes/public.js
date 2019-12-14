@@ -253,6 +253,23 @@ async function getByAuthor(req) {
     }};
 };
 
+async function getRandomRecent(req) {
+
+    const minutesago = 10 * 60 * 24 * 2;
+    const maxAmount = 12;
+    const lt = moment().subtract('m', minutesago);
+
+    const content = await automo.getRandomRecent(new Date(lt.toISOString), maxAmount);
+    debug("getRandomRecent: max %d active more then %d minutes, %s",
+        maxAmount, minutesago, lt.toISOString());
+
+    const keylist = _.map(content, function(s) {
+        s.relative = moment.duration( moment(s.lastActivity) - moment() ).humanize();
+        return _.pick(s, ['p', 'publicKey', 'relative']);
+    });
+    return { json: keylist };
+};
+
 
 module.exports = {
     getLast,
@@ -260,4 +277,5 @@ module.exports = {
     getRelated,
     getVideoCSV,
     getByAuthor,
+    getRandomRecent,
 };

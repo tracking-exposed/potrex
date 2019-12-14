@@ -19,6 +19,8 @@ var apiList = {
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,
 
+    getRandomRecent:  require('../routes/public').getRandomRecent,
+
     getByAuthor:      require('../routes/public').getByAuthor,
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,
 
