@@ -5,7 +5,6 @@ const Promise = require('bluebird');
 
 /* still to be migrated */
 const mongo = require('./mongo');
-
 const automo = require('./automo');
 
 /* This api simply return the basic last 69 videos */
@@ -57,7 +56,10 @@ async function radar(req) {
     debug(_.size(first.metadata), _.size(second.metadata));
 
     if( _.size(first.metadata) < 2 || _.size(second.metadata) < 2)
-        throw new Error("Not enough videos associated to one of the two pseudonyms");
+        return { json: {
+            error: true,
+            reason: "Not enough videos associated to one of the two pseudonyms"
+        }}
 
     const results = {};
     const name1 = first.supporter.p;

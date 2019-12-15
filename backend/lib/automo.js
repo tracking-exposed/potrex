@@ -352,8 +352,18 @@ async function getRandomRecent(minTime, maxAmount) {
         lastActivity: { $gt: minTime }
     }, { lastActivity: -1}, maxAmount, 0);
 
+    const validExamples = [];
+    for (supporter of supporters) {
+        let i = await mongo3.count(mongoc, nconf.get('schema').metadata, {
+            publicKey: supporter.publicKey,
+            type: 'video'
+        });
+        if(i > 2)
+            validExamples.push(supporter);
+    }
+
     await mongoc.close();
-    return supporters;
+    return validExamples;
 }
 
 module.exports = {

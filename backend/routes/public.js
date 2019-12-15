@@ -255,7 +255,7 @@ async function getByAuthor(req) {
 
 async function getRandomRecent(req) {
 
-    const minutesago = 10 * 60 * 24 * 2;
+    const minutesago = 60 * 24 * 2;
     const maxAmount = 12;
     const lt = moment().subtract('m', minutesago);
 
