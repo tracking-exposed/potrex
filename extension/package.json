@@ -1,11 +1,11 @@
 {
   "name": "potrex",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "potrex is the extension + backend for pornhub algorithm analysis. This is part of the https://tracking.exposed plan",
   "homepage": "https://github.com/tracking-exposed/potrex/",
   "bugs": "https://github.com/tracking-exposed/potrex/issues",
   "license": "GPL-3.0",
-  "author": "Claudio Agosti, Giulia Corona, https://github.com/tracking-exposed/potrex/graphs/contributors ",
+  "author": "Claudio Agosti, Giulia Corona, inherit from Alberto Granzotto: https://github.com/tracking-exposed/potrex/graphs/contributors ",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracking-exposed/potrex.git"

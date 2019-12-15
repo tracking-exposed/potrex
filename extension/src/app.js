@@ -32,7 +32,6 @@ import hub from './hub';
 import { registerHandlers } from './handlers/index';
 
 
-
 const PH_GENERIC_SELECTOR = 'h1';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
