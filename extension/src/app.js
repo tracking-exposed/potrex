@@ -22,22 +22,15 @@
 
 // # Code
 
-// Import the react toolkit.
-// Seems like importing 'react-dom' is not enough, we need to import 'react' as well.
-import React from 'react';
-import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
-
 // Import other utils to handle the DOM and scrape data.
-import uuid from 'uuid';
 import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
 
 import config from './config';
 import hub from './hub';
-import { getTimeISO8601, getLogoDataURI } from './utils';
 import { registerHandlers } from './handlers/index';
+
 
 
 const PH_GENERIC_SELECTOR = 'h1';
