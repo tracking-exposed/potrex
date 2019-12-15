@@ -3,27 +3,32 @@ import InfoBox from './infoBox';
 import Settings from './settings';
 import config from '../../../config';
 
-const divstyles = {
-    width: "300px",
-    'textAlign': "center",
-    overflow: "hidden",
-    'background-color': "#f7fbfa",
-    'font-family': "Trex-Regular",
-};
 
 const headerstyle = {
     height:"80px",
-    'background-color': "#1b1b1b",
-    'border-style': "solid",
-    'border-width': "0px 0px 8px 0px",
-    'border-color': "#F98E05",
+    'backgroundColor': "#1b1b1b",
+    'borderStyle': "solid",
+    'borderWidth': "0px 0px 8px 0px",
+    'borderColor': "#F98E05",
+};
+
+const containerstyle = {
+    width:"300px"
+}
+
+const divstyles = {
+    'textAlign': "left",
+    'paddingLeft': "15px",
+    'paddingBottom': "0px",
+    overflow: "hidden",
+    'backgroundColor': "#f7fbfa",
+    'fontFamily': "Trex-Regular",
 };
 
 const imgtrimmed = {
     width: "200px",
-    align: "left",
-    'padding-top': "15px",
-    'padding-left': "15px"
+    'paddingLeft' : "15px",
+    'paddingTop': "15px",
 }
 
 const devColors = "linear-gradient(to left, #f1b9b9, #a2cff7, #c8e485, #f7c4f3)";
@@ -35,28 +40,35 @@ const Popup = React.createClass({
             styles['background-image'] = devColors;*/
 
         return (
+
+            <div style={containerstyle}>
+
+
+            <div style={headerstyle}> 
+              <a href="https://pornhub.tracking.exposed"> 
+                <img style={imgtrimmed} src="/header-logo-pornhub.svg" alt="logo" /> 
+              </a> 
+            </div> 
+
+
             <div style={divstyles}>
-
-                <div style={headerstyle}> 
-                    <a href="http://pornhub.tracking.exposed"> 
-                        <img style={imgtrimmed} src="/header-logo-pornhub.svg" alt="logo"/> 
-
-                    </a> 
-                </div> 
-                blablabla
+             
                 <p>
-                    This is <a target="_blank" href='https://tracking.exposed'>Tracking Exposed</a>                    <span> </span>
-                    — 
-                    <span> </span>
-                    control your data:
+                    This is <a target="_blank" href='https://tracking.exposed'>Tracking Exposed</a>, thank you for supporting our dirtiest side project ;)
+                </p>
+
+                <p> Check your data here
                 </p>
                 <InfoBox {...this.props} />
-                <smaller>Running on 
+
+                <p>Running on 
                     <span> </span>
-                    <a target="_blank" href="https://github.com/tracking-exposed/potrex/">                        free software
-                    </a>, we welcome contributions.
-                </smaller>
+                    <a target="_blank" href="https://github.com/tracking-exposed/potrex/"> free software</a>, we welcome contributions.                </p>
             </div>
+
+            </div>
+
+        
         );
     }
 });

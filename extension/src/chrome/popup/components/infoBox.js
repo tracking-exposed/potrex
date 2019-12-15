@@ -4,7 +4,7 @@ import { Card } from 'material-ui/Card';
 import $ from 'jquery';
 
 const imgstyle = {
-    width: "100%"
+    width: "20%"
 };
 const cardStyle = {
     'textAlign': "center",
