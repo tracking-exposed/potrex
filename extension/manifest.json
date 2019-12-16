@@ -1,12 +1,11 @@
 {
   "manifest_version": 2,
 
-  "name": "pornhub.tracking.exposed",
-
-  "short_name": "data porn: the 2020 olimpic game!",
-  "description": "Join a collective observation of the pornhub algorithm!",
+  "name": "tracking.exposed: adult portals algorithm analysis",
+  "short_name": "an enabler, and a scientifical tool, for a safe for work analysis on the adult industry content providers",
+  "description": "a safe for work tool developed to let researcher and curious analysist. Watch into algorithm of popular video portal",
   "version": "0.3.0",
-  "author": "few proud humans (and robots!) who challenge the algorithm monopolists, we're https://tracking.exposed",
+  "author": "few proud humans (and robots!) challenging the algorithm monopolists: we're https://tracking.exposed",
 
   "icons": {
       "16": "potrex16.png",

@@ -40,38 +40,28 @@ const Popup = React.createClass({
             styles['background-image'] = devColors;*/
 
         return (
-
             <div style={containerstyle}>
-
-
-            <div style={headerstyle}> 
-              <a href="https://pornhub.tracking.exposed"> 
-                <img style={imgtrimmed} src="/header-logo-pornhub.svg" alt="logo" /> 
-              </a> 
-            </div> 
-
-
-            <div style={divstyles}>
-             
+              <div style={headerstyle}>
+                <a href="https://pornhub.tracking.exposed">
+                  <img style={imgtrimmed} src="/header-logo-pornhub.svg" alt="logo" />
+                </a>
+              </div>
+              <div style={divstyles}>
                 <p>
-                    This is <a target="_blank" href='https://tracking.exposed'>Tracking Exposed</a>, thank you for supporting our dirtiest side project ;)
+                  This is <a target="_blank" href='https://tracking.exposed'>Tracking Exposed</a>, thank you for supporting our dirtiest side project ;)
                 </p>
-
-                <p> Check your data here
-                </p>
+                <p>Access your data here:</p>
                 <InfoBox {...this.props} />
-
-                <p>Running on 
-                    <span> </span>
-                    <a target="_blank" href="https://github.com/tracking-exposed/potrex/"> free software</a>, we welcome contributions.                </p>
+                <p>Running on
+                  <span> </span>
+                  <a target="_blank" href="https://github.com/tracking-exposed/potrex/">free software</a>, part of a
+                  <span> </span>
+                  <a target="_blank" href="https://tracking.exposed/connect">bigger picture</a>.
+                </p>
+              </div>
             </div>
-
-            </div>
-
-        
         );
     }
 });
 
 export default Popup;
-
