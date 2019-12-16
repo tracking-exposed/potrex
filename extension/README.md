@@ -1,14 +1,17 @@
-# potrex
+This is for reviewers
 
-to build production web-extension
+### to build production web-extension
+
 ```
 npm install && npm install --only=dev
 npm run build:dist
 ```
 
+you'll find extension.zip 
+
 To run the server:
 ```
-cd backend
+cd ../backend
 npm install && npm install --only=dev
 npm run watch
 ```
@@ -17,5 +20,4 @@ npm run watch
 
 - we are researcher
 - this is free software
-- this can be extended and license of backend is AGPL
-
+- All the software is licensed as AGPL
