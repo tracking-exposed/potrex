@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "tracking.exposed: adult portals algorithm analysis",
-  "short_name": "an enabler, and a scientifical tool, for a safe for work analysis on the adult industry content providers",
-  "description": "a safe for work tool developed to let researcher and curious analysist. Watch into algorithm of popular video portal",
+  "name": "tracking.exposed: adult industry algorithms",
+  "short_name": "potrex",
+  "description": "An enabler, and a scientifical tool, for a safe for work analysis on the adult industry video content providers. It allows the owner to collect evidence of algorithmic personalization, and later on, perform analysis on the policies behind the most popular video portal. Read more on https://pornhub.tracking.exposed or https://tracking.exposed/connect/",
   "version": "0.3.0",
   "author": "few proud humans (and robots!) challenging the algorithm monopolists: we're https://tracking.exposed",
 
