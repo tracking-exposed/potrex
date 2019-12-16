@@ -1,6 +1,6 @@
 {
-  "name": "poTREX-backend",
-  "version": "0.0.1",
+  "name": "potrex-backend",
+  "version": "0.3.0",
   "description": "pornhub.tracking.exposed → backend data collector, to investigate personalization algorithms",
   "main": "bin/server.js",
   "scripts": {
