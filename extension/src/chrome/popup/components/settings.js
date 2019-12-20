@@ -2,12 +2,14 @@ import React from 'react';
 import _ from 'lodash';
 import update from 'immutability-helper';
 
-import {Card, CardActions, CardHeader, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import Checkbox from 'material-ui/Checkbox';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
 import db from '../../db';
+
+/* this is not used in potrex */
 
 export default class Settings extends React.Component {
 
