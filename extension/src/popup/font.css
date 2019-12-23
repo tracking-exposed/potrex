@@ -5,10 +5,15 @@
 
 .headerstyle {
     height: 80px;
+}
+.colors-bg {
     background-color: #1b1b1b;
     border-style: solid;
     border-width: 0px 0px 8px 0px;
     border-color: #F98E05;
+}
+.white-bg {
+    background-color: white !important;
 }
 
 .containerstyle {
@@ -29,9 +34,4 @@
 	width: 200px;
 	padding-left: 15px;
 	padding-top: 15px;
-}
-
-.imgstyle {
-	width: 69%;
-	padding-left: 5px;
 }
