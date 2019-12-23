@@ -366,6 +366,63 @@ async function getRandomRecent(minTime, maxAmount) {
     return validExamples;
 }
 
+async function getMixedDataSince(schema, since, maxAmount) {                               
+
+    const mongoc = await mongo3.clientConnect({concurrency: 1});                           
+    const retContent = [];
+
+    for (let cinfo of schema) {                                                            
+        let columnName = _.first(cinfo);                                                   
+        let fields = _.nth(cinfo, 1);                                                      
+        let timevar = _.last(cinfo);                                                       
+        let filter = _.set({}, timevar, { $gt: since});                                    
+                                                                                           
+        /* it prefer the last samples, that's wgy the sort -1 */                           
+        const r = await mongo3.readLimit(mongoc,                                           
+            nconf.get('schema')[columnName], filter, _.set({}, timevar, -1),               
+            maxAmount, 0);                                                                 
+                                                                                           
+        /* if an overflow is spotted, with message is appended */                          
+        if(_.size(r) == maxAmount)                                                         
+            retContent.push({                                                              
+                template: 'info',                                                          
+                message: 'Whoa, too many! capped limit at ' + maxAmount,                   
+                subject: columnName,                                                       
+                id: "info-" + _.random(0, 0xffff),                                         
+                timevar: new Date(                                                         
+                    moment(_.last(r)[timevar]).subtract(1, 'ms').toISOString()             
+                ),                                                                         
+                /* one second is added to be sure the alarm message appears after the      
+                 * last, and not in between the HTMLs/metadatas */                         
+            });                                                                            
+                                                                                           
+        /* every object has a variable named 'timevar', and the $timevar we                
+         * used to pick the most recent 200 is renamed as 'timevar'. This allow            
+         * us to sort properly the sequence of events happen server side */                
+        _.each(r, function(o) {                                                            
+            let good = _.pick(o, fields)                                                   
+            good.template = columnName;                                                    
+            good.relative = _.round(                                                       
+                moment.duration( moment() - moment(o[timevar]) ).asSeconds()               
+            , 1);                                                                          
+                                                                                           
+            good['timevar'] = new Date(o[timevar]);                                        
+            good.printable = moment(good['timevar']).format('HH:mm:ss');                   
+            _.unset(good, timevar);                                                        
+                                                                                           
+            /* supporters, or who know in the future, might have not an 'id'.              
+               it is mandatory for client side logic, so it is attributed random */        
+            if(_.isUndefined(good.id))                                                     
+                _.set(good, 'id', "RANDOM-" + _.random(0, 0xffff));                        
+                                                                                           
+            retContent.push(good);                                                         
+        });                                                                                
+    }                                                                                      
+                                                                                           
+    mongoc.close();                                                                        
+    return retContent;     
+} 
+
 module.exports = {
     /* used by routes/personal */
     getSummaryByPublicKey,
@@ -392,4 +449,7 @@ module.exports = {
     /* used in parserv2 */
     getLastHTMLs,
     updateMetadata,
+
+    /* used by monitor */
+    getMixedDataSince,
 };

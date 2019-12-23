@@ -176,17 +176,24 @@ app.get('/api/v1/mirror/:key', function(req, res) {
     return dispatchPromise('getMirror', req, res);
 });
 
+/* monitor for admin */
+app.get('/api/v2/monitor/:minutes?', function(req, res) {
+    return dispatchPromise('getMonitor', req, res);
+});
 
 
 /* the remaining code */
 security.checkKeyIsSet();
 
 Promise.resolve().then(function() {
-    if(dbutils.checkMongoWorks()) {
-        debug("mongodb connection works");
-    } else {
-        console.log("mongodb is not running - check", cfgFile,"- quitting");
-        process.exit(1);
-    }
+    return dbutils
+        .checkMongoWorks()
+        .then(function(result) {
+            if(!result) {
+                console.log("mongodb is not running - check", cfgFile,"- quitting");
+                process.exit(1);
+            } 
+            debug("mongodb connection works!");
+        })
 });
 

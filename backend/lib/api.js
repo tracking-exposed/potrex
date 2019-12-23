@@ -42,6 +42,9 @@ var apiList = {
 
     /* creation of a new tagGroup */
     createTag:         require('../routes/profile').createTag,
+
+    /* work in progress, admin, tag */
+    getMonitor:        require('../routes/monitor').getMonitor,
 };
 
 module.exports = {
