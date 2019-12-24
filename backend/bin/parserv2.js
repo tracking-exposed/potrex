@@ -119,9 +119,12 @@ async function newLoop() {
             await downloader.update(entry);
     }
 
+    const updates = [];
     for (const entry of _.compact(analysis)) {
-        await automo.updateMetadata(entry[0], entry[1]);
+        let r = await automo.updateMetadata(entry[0], entry[1]);
+        updates.push(r);
     }
+    debug(_.countBy(updates, 'what'));
 
     /* reset no-data-counter if data has been sucessfully processed */
     if(_.size(_.compact(analysis)))

@@ -135,6 +135,8 @@ async function removeEvidence(req) {
 
     const id = req.params.id;
     const result = await automo.deleteEntry(k, id);
+    debug("Requeste delete of metadataId %s deleted %d video and %d metadata",
+        id, _.size(result.videoId), _.size(result.metadata));
     return { json: { success: true, result }};
 };
 

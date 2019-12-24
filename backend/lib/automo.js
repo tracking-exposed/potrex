@@ -164,10 +164,16 @@ async function deleteEntry(publicKey, id) {
     if(!supporter)
         throw new Error("publicKey do not match any user");
 
-    const video = await mongo3.deleteMany(mongoc, nconf.get('schema').videos, { id: id, p: supporter.p });
-    const metadata = await mongo3.deleteMany(mongoc, nconf.get('schema').metadata, { id: id });
+    const htmls = await mongo3.deleteMany(mongoc, nconf.get('schema').htmls, {
+        metadataId: id,
+        publicKey: supporter.publicKey
+    });
+    const metadata = await mongo3.deleteMany(mongoc, nconf.get('schema').metadata, {
+        id: id,
+        publicKey: supporter.publicKey
+    });
     await mongoc.close();
-    return { video, metadata };
+    return { htmls, metadata };
 };
 
 async function getRelatedByVideoId(videoId, options) {
@@ -283,66 +289,79 @@ async function updateMetadata(html, newsection) {
     // metadata collection, and update new information
     // if missing 
     const mongoc = await mongo3.clientConnect({concurrency: 1});
-    let exists = null;
 
     if(!html.metadataId) {
         debug("metadataId is not an ID!");
-        return await markHTMLandClose(mongoc, html, null);
+        return await markHTMLandClose(mongoc, html, { what: 'not an ID'});
     }
 
-    try {
-        exists = await createMetadataEntry(mongoc, html, newsection);
+    const exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
+
+    if(!exists) {
+        await createMetadataEntry(mongoc, html, newsection);
         debug("Created metadata %s from %s with %s", html.metadataId, html.href, html.selector);
-    } catch(e) {
-        /* the read+write in a single thread seems is not enough to guarantee */
-        if(e.code == 11000) {
-            exists = await updateMetadataEntry(mongoc, html, newsection);
-        } else {
-            debug("Unexpected error: %s (%d)", e.message, e.code);
-        }
+        return await markHTMLandClose(mongoc, html, { what: 'created'});
     }
-    return await markHTMLandClose(mongoc, html, exists);
-}
 
-async function createMetadataEntry(mongoc, html, newsection) {
-    /* this is not exported, it is used only by updateMetadata */
-    exists = {};
-    exists.id = html.metadataId;
-    exists.publicKey = html.publicKey;
-    exists.savingTime = html.savingTime;
-    exists.clientTime = html.clientTime;
-    exists.version = 2;
-    exists = _.extend(exists, newsection);    
-    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
-    return exists;
-}
-
-async function updateMetadataEntry(mongoc, html, newsection) {
-    /* this is not exported, it is used only by updateMetadata */
     let updates = 0;
-    let exists = await mongo3.readOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId });
-    if(!exists)
-        exists = {};
-
+    let forceu = false;
+    /* we don't care of these updates */
+    const careless = [ 'clientTime', 'savingTime', 'size' ];
     /* this is meant to add only fields with values, and to notify duplicated
      * conflictual metadata mined, or extend labels as list */
     const up = _.reduce(newsection, function(memo, value, key) {
 
-        if(!value)
+        if(!value || !_.size(value))
             return memo;
 
         let current = _.get(memo, key);
-        /* TODO should be compared if there is any update or any difference */
-        _.set(memo, key, value);
-        updates++;
+        if(!current) {
+            _.set(memo, key, value);
+            updates++; 
+        } else if(_.indexOf(careless, key) == -1) {
+            /* we don't care of these updates */
+        } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
+            const record = {
+                clientTime: html.clientTime,
+                // selector: html.selector,
+                value,
+                key,
+            };
 
+            debug("record update in %s c[%s --- %s]v", key, current, value)
+
+            if(_.isUndefined(memo.variation))
+                memo.variation = [ record ];
+            else
+                memo.variation.push(record);
+
+            forceu = true;
+        } else {
+            /* no update */
+        }
         return memo;
     }, exists);    
 
-    debug("Updating metadata %s with %s (total of %d updates)",
-        html.metadataId, html.selector, updates);
-    let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
-    return r;
+    debug("Evalutatig if update metadata %s (%s) %d updates, force %s",
+        html.metadataId, html.selector, updates, forceu);
+
+    if(forceu || updates ) {
+        debug("Update from incremental %d to %d", )
+        let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
+        return await markHTMLandClose(mongoc, html, { what: 'updated'});
+    }
+    return await markHTMLandClose(mongoc, html, { what: 'duplicated'});
+}
+
+async function createMetadataEntry(mongoc, html, newsection) {
+    exists = {};
+    exists.publicKey = html.publicKey;
+    exists.savingTime = html.savingTime;
+    exists.version = 3;
+    exists = _.extend(exists, newsection);    
+    exists.id = html.metadataId;
+    await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
+    return exists;
 }
 
 async function getRandomRecent(minTime, maxAmount) {

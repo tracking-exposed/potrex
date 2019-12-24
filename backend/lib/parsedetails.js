@@ -121,9 +121,7 @@ function getRelated(html) {
   const dom = new JSDOM(html);
   const D = dom.window.document;
   const relatedUrls = D.querySelectorAll('ul#relatedVideosCenter > li');
-  console.log(D.querySelectorAll('ul#relatedVideosCenter > li').length);
-
-  let related = [];
+  const related = [];
 
   _.each(relatedUrls, function(e) {
     const t = e.querySelector('img').getAttribute('alt')
@@ -149,7 +147,6 @@ function getRelated(html) {
     });
   });
 
-  debug("From %d related",  _.size(related));
   return { related };
 };
 

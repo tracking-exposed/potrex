@@ -49,7 +49,7 @@ function page(envelop) {
     try {
         const meta = parsedet.getMetadata(envelop.impression.html);
         retval = _.extend(retval, meta);
-        debug("Added %d keys from getMetadata , total %d",
+        debug("Added %d keys from getMetadata, total %d",
             _.size(_.keys(meta)), _.size(_.keys(retval)));
     } catch(error) {
         stats.error++;
