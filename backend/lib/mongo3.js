@@ -36,11 +36,11 @@ async function clientConnect(config) {
 
     const poolSize = config.concurrency ? config.concurrency : 10;
     mongoUri(config.uri);
-    /* 
+    /*
      * this is make with (some) cargo cult programming
-     * I don't fully understand if is the most optimal way. 
-     * Please, if you have input about this, my goal is 
-     * don't open a mongo connection every time the caller 
+     * I don't fully understand if is the most optimal way.
+     * Please, if you have input about this, my goal is
+     * don't open a mongo connection every time the caller
      * execute a query
      */
     return new Promise((resolve, reject) => (
@@ -86,6 +86,13 @@ async function updateOne(mongoc, cName, selector, updated) {
         .db()
         .collection(cName)
         .updateOne(selector, { $set: updated });
+};
+
+async function updateMany(mongoc, cName, selector, updated) {
+    return mongoc
+        .db()
+        .collection(cName)
+        .updateMany(selector, { $set: updated });
 };
 
 async function upsertOne(mongoc, cName, selector, updated) {
@@ -169,6 +176,7 @@ module.exports = {
     writeOne,
     insertMany,
     updateOne,
+    updateMany,
     upsertOne,
     readOne,
     read,

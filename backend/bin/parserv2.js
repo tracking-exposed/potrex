@@ -69,23 +69,23 @@ async function newLoop() {
     }
     else {
         lastExecution = moment(_.last(htmls.content).savingTime);
-        debug("OVERFLOW: first %s last %s - lastExecution %s", 
+        debug("OVERFLOW: first %s last %s - lastExecution %s",
             _.first(htmls.content).savingTime, _.last(htmls.content).savingTime,
             lastExecution);
     }
 
-    const analysis = _.map(htmls.content, function(e) { 
+    const analysis = _.map(htmls.content, function(e) {
         const envelop = {
             impression: e,
             jsdom: new JSDOM(e.html.replace(/\n\ +/g, '')).window.document,
         }
-      
+
         let metadata = null;
         try {
-            debug("%s [%s] %s %d.%d %s %s",
-                e.id.substr(0, 4),
+            debug("id %s [%s] %s %d.%d %s %s",
+                e.id.substr(0, 6),
                 moment(e.savingTime).format("DD/MMM HH:mm:ss"),
-                e.metadataId.substr(0, 6),
+                e.metadataId,
                 e.packet, e.incremental,
                 e.size, e.selector);
 
@@ -106,7 +106,9 @@ async function newLoop() {
                 return null;
 
         } catch(error) {
-            debug("Error in video processing: %s (%s)", error, e.selector);
+            debug("Error in video processing: %s (%s)",
+                _.pullAt(error.stack.replace(/\ \ /, '').split('\n'), [0, 1, 2])
+                 .join('\n'), e.selector);
             return null;
         }
 
@@ -130,18 +132,16 @@ async function newLoop() {
     if(_.size(_.compact(analysis)))
         nodatacounter = 0;
 
-    /* also the HTML cutted off the pipeline, the many skipped 
+    /* also the HTML cutted off the pipeline, the many skipped
      * by _.compact all the null in the lists, should be marked as processed */
     const remaining = _.reduce(_.compact(analysis), function(memo, blob) {
         return _.reject(memo, { id: blob[0].id });
     }, htmls.content);
 
-    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs", 
+    debug("Usable HTMLs %d/%d - marking as processed the useless %d HTMLs",
         _.size(_.compact(analysis)), _.size(htmls.content), _.size(remaining));
 
-    for (const html in remaining) {
-        await automo.updateMetadata(html, null);
-    }
+    await automo.markHTMLsUnprocessable(remaining);
 }
 
 function sleep(ms) {

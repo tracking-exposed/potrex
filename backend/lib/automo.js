@@ -30,7 +30,7 @@ async function getSummaryByPublicKey(publicKey, options) {
         // this        * 4 is because of the duplication stripping below
 
     const uniquified = _.reduce(metadata, function(memo, m) {
-        if(m.videoId && memo.lastVideoId == m.videoId) 
+        if(m.videoId && memo.lastVideoId == m.videoId)
             return memo;
 
         memo.lastVideoId = m.videoId;
@@ -94,14 +94,14 @@ async function getMetadataFromAuthor(filter, options) {
         throw new Error("Video not found, invalid videoId");
 
     const videos = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource}, 
+        nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource},
         { savingTime: -1 }, options.amount, options.skip);
 
     const total = await mongo3.count(mongoc,
         nconf.get('schema').metadata, { authorSource: sourceVideo.authorSource});
 
     await mongoc.close();
-    return { 
+    return {
         content: videos,
         total,
         pagination: options,
@@ -262,11 +262,11 @@ async function getLastHTMLs(filter, skip) {
 
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
-        { savingTime: 1}, 
-        HARDCODED_LIMIT, 
+        { savingTime: 1},
+        HARDCODED_LIMIT,
         skip ? skip : 0);
 
-    if(_.size(htmls)) 
+    if(_.size(htmls))
         debug("getLastHTMLs: %j -> %d (overflow %s)%s", filter, _.size(htmls),
             (_.size(htmls) == HARDCODED_LIMIT), skip ? "skip " + skip : "");
 
@@ -277,6 +277,20 @@ async function getLastHTMLs(filter, skip) {
     }
 }
 
+async function markHTMLsUnprocessable(htmls) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const ids = _.map(htmls, 'id');
+    const r = await mongo3.updateMany(mongoc, nconf.get('schema').htmls,
+        { id: { $in: ids }}, { processed: false });
+
+    if( r.result.n != _.size(ids) ||
+        r.result.nModified != _.size(ids) ||
+        r.result.ok != 1) {
+        debug("Odd condition in multiple update! %j", r.result);
+    }
+    await mongoc.close();
+}
+
 async function updateMetadata(html, newsection) {
 
     async function markHTMLandClose(mongoc, html, retval) {
@@ -285,9 +299,9 @@ async function updateMetadata(html, newsection) {
         return retval;
     }
 
-    // we should look at the same metadataId in the 
+    // we should look at the same metadataId in the
     // metadata collection, and update new information
-    // if missing 
+    // if missing
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     if(!html.metadataId) {
@@ -317,7 +331,7 @@ async function updateMetadata(html, newsection) {
         let current = _.get(memo, key);
         if(!current) {
             _.set(memo, key, value);
-            updates++; 
+            updates++;
         } else if(_.indexOf(careless, key) == -1) {
             /* we don't care of these updates */
         } else if(!_.isEqual(JSON.stringify(current), JSON.stringify(value))) {
@@ -340,13 +354,14 @@ async function updateMetadata(html, newsection) {
             /* no update */
         }
         return memo;
-    }, exists);    
+    }, exists);
 
     debug("Evalutatig if update metadata %s (%s) %d updates, force %s",
         html.metadataId, html.selector, updates, forceu);
 
     if(forceu || updates ) {
-        debug("Update from incremental %d to %d", )
+        debug("Update from incremental %d to %d", exists.incremental, up.incremental);
+        debug("test %j --- %j", _.keys(exists), _.keys(up));
         let r = await mongo3.updateOne(mongoc, nconf.get('schema').metadata, { id: html.metadataId }, up );
         return await markHTMLandClose(mongoc, html, { what: 'updated'});
     }
@@ -358,7 +373,7 @@ async function createMetadataEntry(mongoc, html, newsection) {
     exists.publicKey = html.publicKey;
     exists.savingTime = html.savingTime;
     exists.version = 3;
-    exists = _.extend(exists, newsection);    
+    exists = _.extend(exists, newsection);
     exists.id = html.metadataId;
     await mongo3.writeOne(mongoc, nconf.get('schema').metadata, exists);
     return exists;
@@ -385,62 +400,62 @@ async function getRandomRecent(minTime, maxAmount) {
     return validExamples;
 }
 
-async function getMixedDataSince(schema, since, maxAmount) {                               
+async function getMixedDataSince(schema, since, maxAmount) {
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});                           
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
     const retContent = [];
 
-    for (let cinfo of schema) {                                                            
-        let columnName = _.first(cinfo);                                                   
-        let fields = _.nth(cinfo, 1);                                                      
-        let timevar = _.last(cinfo);                                                       
-        let filter = _.set({}, timevar, { $gt: since});                                    
-                                                                                           
-        /* it prefer the last samples, that's wgy the sort -1 */                           
-        const r = await mongo3.readLimit(mongoc,                                           
-            nconf.get('schema')[columnName], filter, _.set({}, timevar, -1),               
-            maxAmount, 0);                                                                 
-                                                                                           
-        /* if an overflow is spotted, with message is appended */                          
-        if(_.size(r) == maxAmount)                                                         
-            retContent.push({                                                              
-                template: 'info',                                                          
-                message: 'Whoa, too many! capped limit at ' + maxAmount,                   
-                subject: columnName,                                                       
-                id: "info-" + _.random(0, 0xffff),                                         
-                timevar: new Date(                                                         
-                    moment(_.last(r)[timevar]).subtract(1, 'ms').toISOString()             
-                ),                                                                         
-                /* one second is added to be sure the alarm message appears after the      
-                 * last, and not in between the HTMLs/metadatas */                         
-            });                                                                            
-                                                                                           
-        /* every object has a variable named 'timevar', and the $timevar we                
-         * used to pick the most recent 200 is renamed as 'timevar'. This allow            
-         * us to sort properly the sequence of events happen server side */                
-        _.each(r, function(o) {                                                            
-            let good = _.pick(o, fields)                                                   
-            good.template = columnName;                                                    
-            good.relative = _.round(                                                       
-                moment.duration( moment() - moment(o[timevar]) ).asSeconds()               
-            , 1);                                                                          
-                                                                                           
-            good['timevar'] = new Date(o[timevar]);                                        
-            good.printable = moment(good['timevar']).format('HH:mm:ss');                   
-            _.unset(good, timevar);                                                        
-                                                                                           
-            /* supporters, or who know in the future, might have not an 'id'.              
-               it is mandatory for client side logic, so it is attributed random */        
-            if(_.isUndefined(good.id))                                                     
-                _.set(good, 'id', "RANDOM-" + _.random(0, 0xffff));                        
-                                                                                           
-            retContent.push(good);                                                         
-        });                                                                                
-    }                                                                                      
-                                                                                           
-    mongoc.close();                                                                        
-    return retContent;     
-} 
+    for (let cinfo of schema) {
+        let columnName = _.first(cinfo);
+        let fields = _.nth(cinfo, 1);
+        let timevar = _.last(cinfo);
+        let filter = _.set({}, timevar, { $gt: since});
+
+        /* it prefer the last samples, that's wgy the sort -1 */
+        const r = await mongo3.readLimit(mongoc,
+            nconf.get('schema')[columnName], filter, _.set({}, timevar, -1),
+            maxAmount, 0);
+
+        /* if an overflow is spotted, with message is appended */
+        if(_.size(r) == maxAmount)
+            retContent.push({
+                template: 'info',
+                message: 'Whoa, too many! capped limit at ' + maxAmount,
+                subject: columnName,
+                id: "info-" + _.random(0, 0xffff),
+                timevar: new Date(
+                    moment(_.last(r)[timevar]).subtract(1, 'ms').toISOString()
+                ),
+                /* one second is added to be sure the alarm message appears after the
+                 * last, and not in between the HTMLs/metadatas */
+            });
+
+        /* every object has a variable named 'timevar', and the $timevar we
+         * used to pick the most recent 200 is renamed as 'timevar'. This allow
+         * us to sort properly the sequence of events happen server side */
+        _.each(r, function(o) {
+            let good = _.pick(o, fields)
+            good.template = columnName;
+            good.relative = _.round(
+                moment.duration( moment() - moment(o[timevar]) ).asSeconds()
+            , 1);
+
+            good['timevar'] = new Date(o[timevar]);
+            good.printable = moment(good['timevar']).format('HH:mm:ss');
+            _.unset(good, timevar);
+
+            /* supporters, or who know in the future, might have not an 'id'.
+               it is mandatory for client side logic, so it is attributed random */
+            if(_.isUndefined(good.id))
+                _.set(good, 'id', "RANDOM-" + _.random(0, 0xffff));
+
+            retContent.push(good);
+        });
+    }
+
+    mongoc.close();
+    return retContent;
+}
 
 module.exports = {
     /* used by routes/personal */
@@ -468,6 +483,7 @@ module.exports = {
     /* used in parserv2 */
     getLastHTMLs,
     updateMetadata,
+    markHTMLsUnprocessable,
 
     /* used by monitor */
     getMixedDataSince,
