@@ -104,7 +104,7 @@ function splashScreen() {
             '<div class="col-12 horzcon text-center first">' + 
                 '<h1>Friendly reminder: you’re anonymously participating in a collective experiment to underatand the Pornhub algorithm!</h1>' + 
                 '<div id="myProgress">' + 
-                    "touch the progress bar will make appear again, otherwise, don't and will pause for 2 hours" +
+                    "Block this disappearance bar, and this screen will appear again. Don't, and should pause for 2 hours." +
                 '<div id="myBar">' +
                 '</div></div>' +
             '</div>' +

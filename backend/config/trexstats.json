@@ -3,8 +3,7 @@
     "mongoPort": "27017",
     "mongoDb": "potrex",
 
-    "stats": [
-    {
+    "stats": [ {
         "name": "supporters",
         "column": "supporters",
         "timevar": "creationTime",
@@ -14,9 +13,19 @@
                 "selector": {}
             }
         ]
+    },{
+        "name": "active",
+        "column": "supporters",
+        "timevar": "lastActivity",
+        "variables": [
+            {
+                "name": "active",
+                "selector": {}
+            }
+        ]
     }, {
         "name": "contributions",
-        "column": "videos",
+        "column": "metadata",
         "timevar": "savingTime",
         "variables": [
             {
@@ -26,10 +35,40 @@
             {
                 "name": "videos",
                 "selector": { "type": "video" }
+            },
+            {
+                "name": "home",
+                "selector": { "type": "home" }
             }
         ]
     }, {
-        "name": "processed",
+        "name": "sizes",
+        "column": "htmls",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "total",
+                "selector": { }
+            },
+            {
+                "name": "less-500k",
+                "selector": { "size": { "$lt": 500000 } }
+            },
+            {
+                "name": "500k-1m",
+                "selector": { "size": { "$gte": 500000, "$lte": 1000000 } }
+            },
+            {
+                "name": "1m-1500k",
+                "selector": { "size": { "$gt": 1000000, "$lt": 1500000 } }
+            },
+            {
+                "name": "more-1500k",
+                "selector": { "size": { "$gt": 1500000 } }
+            }
+        ]
+    }, {
+        "name": "processing",
         "column": "htmls",
         "timevar": "savingTime",
         "variables": [
@@ -46,12 +85,16 @@
                 "selector": { "processed": { "$exists": false } }
             },
             {
+                "name": "hasMetadata",
+                "selector": { "metadataId": { "$exists": true } }
+            },
+            {
                 "name": "total",
                 "selector": { }
             }
         ]
     }, {
-        "name": "metadata",
+        "name": "video-metadata",
         "column": "metadata",
         "timevar": "savingTime",
         "variables": [
@@ -61,15 +104,49 @@
             },
             {
                 "name": "hasAuthor",
-                "selector": { "author": { "$exists": true }}
+                "selector": { "producer.name": { "$exists": true }}
             },
             {
                 "name": "hasRelated",
-                "selector": { "related.[0]": { "$exists": true }}
+                "selector": { "related.7": { "$exists": true }}
+            },
+            {
+                "name": "hasCategories",
+                "selector": { "categories.0": { "$exists": true }}
             },
             {
                 "name": "total",
-                "selector": { }
+                "selector": { "type": "video" }
+            }
+        ]
+    }, {
+        "name": "home-metadata",
+        "column": "metadata",
+        "timevar": "savingTime",
+        "variables": [
+            {
+                "name": "section-1",
+                "selector": { "sections.0": { "$exists": true }}
+            },
+            {
+                "name": "section-2",
+                "selector": { "sections.1": { "$exists": true }}
+            },
+            {
+                "name": "section-3",
+                "selector": { "sections.2": { "$exists": true }}
+            },
+            {
+                "name": "section-4",
+                "selector": { "sections.3": { "$exists": true }}
+            },
+            {
+                "name": "section-5",
+                "selector": { "sections.4": { "$exists": true }}
+            },
+            {
+                "name": "total",
+                "selector": { "type": "home" }
             }
         ]
     }]
