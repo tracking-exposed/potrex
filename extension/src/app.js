@@ -102,7 +102,7 @@ function splashScreen() {
 
     const spalshcontent = '<div class="container">' +
             '<div class="col-12 horzcon text-center first">' + 
-                '<h1>Friendly reminder: you’re anonymously participating in a collective experiment to underatand the Pornhub algorithm!</h1>' + 
+                '<h1>Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!</h1>' + 
                 '<div id="myProgress">' + 
                     "touch the progress bar will make appear again, otherwise, don't and will pause for 2 hours" +
                 '<div id="myBar">' +
@@ -113,23 +113,23 @@ function splashScreen() {
                     "<br/>" +
                     "You have full control of the data collected from your browser. <b>What we study is not you, but how PornHub treats you</b>. Click on the extension icon to access your page." +
                     "<br/>" +
-                    "The collection might happen also in incognito mode. Can be disabled. Also, we find out <a href='/incognito' target=_blank>PornHub might re-link your navigation too</a>!" +
+                    "The collection might also happen in incognito mode (it can be disabled). Also, we find out <a href='/incognito' target=_blank>PornHub might re-link your navigation too</a>!" +
                 '</span>' + 
                 '<span class="col-3 blocks" style="text-align: right">' +
-                    "Next world wide test will be in " +
+                    "Next worldwide test will be in " +
                     "<i id='counter'>Counter</i>" +
-                    " During the" + 
-                    "<i id='day'>Day</i>open pornhub.com & follow the <a href='/potest/1' target=_blank>instructions</a>." +
+                    ". On " + 
+                    "<i id='day'>Day</i>open pornhub.com &amp; follow the <a href='/potest/1' target=_blank>instructions</a>." +
                 '</span>' + 
             '</div>' +
             '<div class="col-12 horzcon">' +
                 '<span class="col-3 blocks">' +
-                    'A <a href="/contribute" target=_blank>Our roadmap and medium term plans</a>.' +
+                    '<a href="/contribute" target=_blank>Our roadmap and medium term plans</a>.' +
                     '<br/>' +
-                    'We do not profit on data. <a href="https://tracking.exposed/manifesto" target=_blank>Know more about us</a>.' +
+                    'We do not profit on data. <a href="https://tracking.exposed/manifesto" target=_blank>Learn more about us</a>.' +
                 '</span>' + 
                 '<span class="col-3 blocks" style="text-align: right">' +
-                    ' The <a href="/potest/1#timeline" target=_blank>experiment planned timeline</a>.' +
+                    ' The <a href="/potest/1#timeline" target=_blank>planned experiment timeline</a>.' +
                 '</span>' + 
             '</div>' +
         '</div>';
