@@ -48,26 +48,6 @@ let amountGrossDimension = -1;
 // Everything starts from here.
 function boot () {
 
-    // the splashscreen is meant to remember anyone they are running the extension 
-    // it stores in localstorage a variable 'last', with the execution time
-    // this might be better if handled in the background window, because
-    // this might be read by the company. 
-    // it display the screen, and if you move it, it reset the data and this
-    // make display again at the enxt refresh.
-    // if you don't move it, the splashscreen disappear and navigation continue
-    // as always. it is a reminded beside the small flashing notice in the bottom right
-
-    const last = localStorage.getItem('last');
-    let test = new Date(last) - new Date();
-    let testTo = 1000 * 60 * 60 * 12;
-
-    console.log(last, test, testTo, (test > testTo));
-
-    if( !last || _.isNaN(test) || (test > testTo) ) {
-        localStorage.setItem('last', new Date().toISOString());
-        splashScreen();
-    }
-
     if(_.endsWith(window.location.origin, 'pornhub.tracking.exposed')) {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
@@ -76,7 +56,22 @@ function boot () {
             return null;
         }
     } else if(_.endsWith(window.location.origin, 'pornhub.com')) {
-        // this get executed only on pornhub.com
+        // the splashscreen is meant to remember anyone they are running the extension 
+        // it stores in localstorage a variable 'last', with the execution time.
+        // (this might be better if handled in the background window, because
+        // this might be read by the company. )
+        const last = localStorage.getItem('last');
+        let test = new Date(last) - new Date();
+        let testTo = 1000 * 60 * 60 * 12;
+
+        console.log(last, test, testTo, (test > testTo));
+
+        if( !last || _.isNaN(test) || (test > testTo) ) {
+            localStorage.setItem('last', new Date().toISOString());
+            splashScreen();
+        }
+
+        // this get executed on pornhub.com and it is the start of potrex extension
         console.log(`potrex version ${config.VERSION} build ${JSON.stringify(config.BUILD)} loading; Config object:`);
         console.log(config);
 

@@ -105,6 +105,7 @@ async function processEvents2(req) {
             randomUUID: body.randomUUID,
             selector: body.selector,
             incremental: body.incremental,
+            amountGrossDimension: body.amountGrossDimension,
             packet: i,
         }
         return html;
