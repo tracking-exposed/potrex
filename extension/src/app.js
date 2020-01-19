@@ -126,16 +126,16 @@ function splashScreen() {
                 "<h2>" +
                     "<ol>" +
                         "<li>" +
-                        "You have full control of the data collected from your browser. Click on the icon you'll access to a page with your contributions." +
+                        "You have full control of the data collected from your browser. Click on the icon to access the page with your contributions." +
                         "</li>" +
                         "<li>" +
-                        "The collection might also work in incognito mode (if you explicitly enable it), and you can do the test and remove the extension later: we don't want your porn habit." +
+                        "The extension can work in Incognito/Private mode too (if you explicitly enable it), and you can remove it after the test: we aren't after your porn habits." +
                         "</li>" +
                         "<li>" +
-                        "If you read this message <u>the 19th of January 2020</u>, please follow <a href='https://pornhub.tracking.exposed/potest/1' target=_blank>our script</a>." +
+                        "If you read this message <u>on January 19th, 2020</u>, please follow <a href='https://pornhub.tracking.exposed/potest/1' target=_blank>our script</a>." +
                         "</li>" +
                         "<li>" +
-                        "This is our <a target=_blank href='https://pornhub.tracking.exposed/ethics'>ethic statement</a>." +
+                        "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>." +
                         "</li>" +
                     "</ol>" +
                 "</h2>" +
