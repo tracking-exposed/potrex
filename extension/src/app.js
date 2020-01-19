@@ -33,6 +33,7 @@ import { registerHandlers } from './handlers/index';
 
 
 const PH_GENERIC_SELECTOR = 'h1';
+const PH_RECOMMENDED = '.recommendedVideosContainer';
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -40,6 +41,8 @@ const bo = chrome || browser;
 // variable used to spot differences due to refresh and url change
 let randomUUID = "INIT" + Math.random().toString(36).substring(2, 13) +
                 Math.random().toString(36).substring(2, 13);
+
+let amountGrossDimension = -1;
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -53,10 +56,14 @@ function boot () {
     // make display again at the enxt refresh.
     // if you don't move it, the splashscreen disappear and navigation continue
     // as always. it is a reminded beside the small flashing notice in the bottom right
+
     const last = localStorage.getItem('last');
     let test = new Date(last) - new Date();
-    console.log(last, test, (test < 1000 * 60 * 60 * 2 * -1));
-    if( _.isNaN(test) || (test < (1000 * 60 * 60 * 2 * -1))) {
+    let testTo = 1000 * 60 * 60 * 12;
+
+    console.log(last, test, testTo, (test > testTo));
+
+    if( !last || _.isNaN(test) || (test > testTo) ) {
         localStorage.setItem('last', new Date().toISOString());
         splashScreen();
     }
@@ -83,7 +90,16 @@ function boot () {
         registerHandlers(hub);
 
         const x = localStorage.getItem('watchedVideoIds');
-        console.log("x", x);
+        if(!_.size(x))
+            amountGrossDimension = 0;
+        else if(_.size(x) < 10)
+            amountGrossDimension = 1;
+        else if(_.size(x) < 50)
+            amountGrossDimension = 2;
+        else
+            amountGrossDimension = 3;
+
+        console.log("watchedVideoIds", x, _.size(x), "anonymized info we'll send:", amountGrossDimension);
 
         return localLookup(response => {
             // `response` contains the user's public key and its status,
@@ -100,37 +116,29 @@ function boot () {
 
 function splashScreen() {
 
-    const spalshcontent = '<div class="container">' +
+    const spalshcontent = 
+        '<div class="container">' +
             '<div class="col-12 horzcon text-center first">' + 
                 '<h1>Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!</h1>' + 
-                '<div id="myProgress">' + 
-                    "Block this disappearance bar, and this screen will appear again. Don't, and should pause for 2 hours." +
-                '<div id="myBar">' +
-                '</div></div>' +
+                '<button class="btn btn-lg" id="close">✖ CLOSE ✖</button>' +
             '</div>' +
             '<div class="col-12 horzcon">' +
-                '<span class="col-3 blocks">' +
-                    "<br/>" +
-                    "You have full control of the data collected from your browser. <b>What we study is not you, but how PornHub treats you</b>. Click on the extension icon to access your page." +
-                    "<br/>" +
-                    "The collection might also happen in incognito mode (it can be disabled). Also, we find out <a href='/incognito' target=_blank>PornHub might re-link your navigation too</a>!" +
-                '</span>' + 
-                '<span class="col-3 blocks" style="text-align: right">' +
-                    "Next worldwide test will be in " +
-                    "<i id='counter'>Counter</i>" +
-                    ". On " + 
-                    "<i id='day'>Day</i>open pornhub.com &amp; follow the <a href='/potest/1' target=_blank>instructions</a>." +
-                '</span>' + 
-            '</div>' +
-            '<div class="col-12 horzcon">' +
-                '<span class="col-3 blocks">' +
-                    '<a href="/contribute" target=_blank>Our roadmap and medium term plans</a>.' +
-                    '<br/>' +
-                    'We do not profit on data. <a href="https://tracking.exposed/manifesto" target=_blank>Learn more about us</a>.' +
-                '</span>' + 
-                '<span class="col-3 blocks" style="text-align: right">' +
-                    ' The <a href="/potest/1#timeline" target=_blank>planned experiment timeline</a>.' +
-                '</span>' + 
+                "<h2>" +
+                    "<ol>" +
+                        "<li>" +
+                        "You have full control of the data collected from your browser. Click on the icon you'll access to a page with your contributions." +
+                        "</li>" +
+                        "<li>" +
+                        "The collection might also work in incognito mode (if you explicitly enable it), and you can do the test and remove the extension later: we don't want your porn habit." +
+                        "</li>" +
+                        "<li>" +
+                        "If you read this message <u>the 19th of January 2020</u>, please follow <a href='https://pornhub.tracking.exposed/potest/1' target=_blank>our script</a>." +
+                        "</li>" +
+                        "<li>" +
+                        "This is our <a target=_blank href='https://pornhub.tracking.exposed/ethics'>ethic statement</a>." +
+                        "</li>" +
+                    "</ol>" +
+                "</h2>" +
             '</div>' +
         '</div>';
 
@@ -150,79 +158,22 @@ function splashScreen() {
     splashe.css({ 'position': 'fixed' });
     splashe.css({ 'background-color': '#1b1b1b' });
 
-    $(".blocks").css({ 'max-width': '50%' });
-    $(".blocks").css({ 'display': 'inline-block' });
-    const thirdblock = _.round((window.innerHeight / 3) - 10);
-    $(".blocks").css({ 'height': thirdblock + 'px' });
-    $(".blocks").css({ 'vertical-align': 'middle' });
-
     /* all the horizontal containers has it */
-    $(".horzcon").css({ 'margin-bottom': '10px' });
+    $(".horzcon").css({ 'margin-bottom': '30px' });
     $(".first").css({ 'border': '1px' });
     $(".first").css({ 'border-radius': '6px' });
     $(".first").css({ 'border-style': 'solid' });
     $(".first").css({ 'border-color': '#f98e05' });
 
-    $("#myProgress").css({ 'background-color': 'grey' });
-    $("#myProgress").css({ 'width': '100%' });
+    $("#close").css({ width: '100%' });
+    $("#close").css({ height: '30px' });
+    $("#close").css({ "background-color": "#f98e05" });
+    $("#close").css({cursor: "pointer"});
 
-    $("#myBar").css({ width: '1%' });
-    $("#myBar").css({ height: '20px' });
-    $("#myBar").css({ "background-color": "#f98e05" });
+    $("#close").click(function() {
+        $("#splasher").hide();
+    });
 
-    const nextTest = "2020-01-15";
-    const diff = new Date(nextTest) - new Date();
-    if(diff < 0) {
-        $("#counter").text('you miss it!')
-    } else {
-        const days = _.round( (diff / 1000 ) / 60 / 60 / 24 );
-        $("#counter").text(days + " days");
-    }
-    $("#counter").css({ 'padding': '5px' });
-    $("#counter").css({ 'background-color': 'darkgrey' });
-
-    $("#day").text(nextTest);
-    $("#day").css({ 'padding': '5px' });
-    $("#day").css({ 'background-color': 'darkgrey' });
-
-    var i = 0;
-    var width = 1;
-    var id = null;
-    function move() {
-        if (i == 0) {
-            i = 1;
-            var elem = document.getElementById("myBar");
-            id = setInterval(frame, 50);
-
-            function frame() {
-                if (width >= 100) {
-                    clearInterval(id);
-                    i = 0;
-                    splashe.fadeOut();
-                } else {
-                    width++;
-                    elem.style.width = width + "%";
-                }
-            }
-
-        }
-    } 
-    move();
-
-    $("#myProgress").on('mouseenter', function() {
-        /* this reset the timeout, it will show-up at the next reload. */
-        localStorage.setItem('last', null);
-        if(id) {
-            width = 0;
-            clearInterval(id);
-            i = 0;
-        }
-    })
-
-    $("#myProgress").on('mouseout', function() {
-        console.log("restarting progress bar, splash screen will repeat at the next reload: don't block it and will pause for 2 hours.");
-        if(!i) move();
-    })
 };
 
 function createLoadiv() {
@@ -359,26 +310,33 @@ function hrefUpdateMonitor() {
             refreshUUID();
         }
 
-
         lastVideoURL = window.location.href;
         document
             .querySelectorAll(PH_GENERIC_SELECTOR)
-            .forEach(function() {
-
-                if(!diff) {
-                    lastVideoCNT++;
-                    if(lastVideoCNT > 5) {
-                        console.log(`Ignoring this URL (${lastVideoURL}), been sent already five times`);
-                        return;
-                    }
-                }
-
-                console.log("Selector match in ", window.location.href,
-                    ", sending", _.size($('body').html()),
-                    " <- size:", $(PH_GENERIC_SELECTOR).length);
-                if( testElement($('body').html(), 'body') )
-                    phase('video.send');
+            .forEach(function () {
+                return processData(PH_GENERIC_SELECTOR, $('body'));
             });
+        document
+            .querySelectorAll(PH_RECOMMENDED)
+            .forEach(function() {
+                return processData(PH_RECOMMENDED, $(PH_RECOMMENDED));
+            });
+            
+        function processData(selector, e) {
+            // console.log("check", selector, e, e.length, e.html());
+            if(!diff) {
+                lastVideoCNT++;
+                if(lastVideoCNT > 5) {
+                    console.log(`Ignoring this URL (${lastVideoURL}), been sent already five times`);
+                    return;
+                }
+            }
+            console.log("Selector match in ", window.location.href,
+                ", sending", _.size(e.html()),
+                " <- size:", e.length);
+            if( testElement($('body').html(), 'body') )
+                phase('video.send');
+        };
 
     }, videoPeriodicTimeout);
 }
@@ -415,6 +373,7 @@ function testElement(nodeHTML, selector) {
         selector,
         size: s,
         randomUUID,
+        amountGrossDimension,
     });
     console.log("->",
         _.size(cache),
@@ -448,18 +407,6 @@ function refreshUUID() {
 }
 
 
-
-
-
-
-
-
-
-function acquireVideo () {
-    console.log(`acquireVideo: ${window.location.href}`);
-    /* we simply take the -fucking- everything */
-    hub.event('newVideo', { element: $('body').html(), href: window.location.href });
-}
 
 // The function `localLookup` communicates with the **action pages**
 // to get information about the current user from the browser storage
