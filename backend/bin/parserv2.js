@@ -39,6 +39,11 @@ async function newLoop() {
     };
     htmlFilter.processed = { $exists: repeat };
 
+    if(!!nconf.get('fix')) {
+        debug("parser fixing request!");
+        htmlFilter.processed = false;
+    }
+
     if(id) {
         debug("Targeting a specific metadataId imply --single");
         htmlFilter = {

@@ -40,10 +40,21 @@ function page(envelop) {
             return _.extend(retval, { processed: false, error: 'getFeatured' });
         }
         return retval;
-    } 
-
-    if(retval.type != 'video')
-        throw new Error("Unrecognized content type " + retval.type);
+    } else if(retval.type == 'recommended') {
+        try {
+            const sequence = parsedet.getSequence(envelop.impression.html);
+            retval = _.extend(retval, { sequence });
+            debug("Added %d 'sequence' from getSequence in recommended", _.size(sequence));
+            retval.processed = true;
+            stats.success++;
+        } catch(error) {
+            stats.error++;
+            debug("-------------- fail in getSequence of [%s]: %s", retval.href, error);
+            return _.extend(retval, { processed: false, error: 'getSequence' });
+        }
+        return retval;
+    } else if(retval.type != 'video')
+        throw new Error("Unrecognized content type from URL " + retval.href);
 
     /* else, video has a sequence of function for scraping */
     try {

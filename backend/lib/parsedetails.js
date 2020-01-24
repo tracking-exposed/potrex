@@ -11,6 +11,11 @@ function attributeURL(href) {
             type: 'video',
             videoId: href.replace(/.*viewkey=/, '')
         };
+    } else if(href.match(/\/recommended/)) {
+        return {
+            href,
+            type: 'recommended',
+        };
     }
 
     const chunks = href.split('/');
@@ -70,6 +75,32 @@ function getFeatured(html) {
     return { sections };
 }
 
+function getSequence(html) {
+  const dom = new JSDOM(html);
+  const D = dom.window.document;
+
+  const blocks = _.map(D.querySelectorAll("li[_vkey]"), function(n, order) {
+      const ret = { order };
+      _.set(ret, 'duration', n.querySelector('.duration').textContent.trim());
+      _.set(ret, 'publicationRelative', n.querySelector('.added').textContent.trim());
+      _.set(ret, 'views', n.querySelector('.views').querySelector('var').textContent);
+      _.set(ret, 'viewString', n.querySelector('.views').textContent.trim());
+      _.set(ret, 'title', n.querySelector('.linkVideoThumb').getAttribute('data-title') );
+      _.set(ret, 'href', n.querySelector('a').getAttribute('href') );
+      _.set(ret, 'videoId', n.getAttribute('_vkey') );
+      _.set(ret, 'thumbnail', n.querySelector('img').getAttribute('data-thumb_url'));
+
+      try {
+          const usernameWrap = n.querySelector('.usernameWrap');
+          _.set(ret, 'authorLink', usernameWrap.querySelector('a').getAttribute('href'));
+          _.set(ret, 'authorName', usernameWrap.textContent.trim());
+      } catch(error) { }
+
+      return ret;
+  });
+  return blocks;
+}
+
 function getMetadata(html) {
   const dom = new JSDOM(html);
   const D = dom.window.document;
@@ -103,13 +134,12 @@ function getMetadata(html) {
   } 
 
   if(producer && producer.href) {
-      if ( _.startsWith(producer.href, '/channel') ) {
-          producer.type = 'Channel';
-      } else /* startsWith /pornstar */ {
-          producer.type = 'Pornstar';
-      }
+      const uril = producer.href.replace(/.*pornhub.com/, '').split('/');
+      producer.type = _.nth(uril, 1);
+      producer.name = _.nth(uril, 2);
   }
 
+  debug("%j %s", producer, vTitle)
   return {
     title: vTitle,
     views: counting,
@@ -168,9 +198,10 @@ function getCategories(html) {
 
 
 module.exports = {
-    attributeURL:attributeURL,
-    getFeatured, getFeatured,
-    getMetadata: getMetadata,
-    getRelated: getRelated,
-    getCategories: getCategories
+    attributeURL,
+    getFeatured,
+    getMetadata,
+    getRelated,
+    getCategories,
+    getSequence,
 };
