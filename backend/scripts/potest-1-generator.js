@@ -55,7 +55,31 @@ async function extractContributions(keys, urlSeq, filter) {
     }
 
     await mongoc.close();
-    return _.omit(_.flatten(_.flatten(treasure)));
+
+    const retval = _.map(_.flatten(_.flatten(treasure)),
+        function(n) {
+            if(!_.startsWith(n.thumbnail, 'http'))
+                _.unset(n, 'thumbnail');
+            return _.omit(n, ['id', 'isVideo', 'version', 'thumbnails' ]);
+        });
+
+    const jsonfeatures = _.uniq(_.flatten(_.map(retval, function(evid) {
+            return _.map(evid, function(v, k) {
+                return k;
+            })
+        })
+    ));
+
+    debug(jsonfeatures);
+    const first = _.reduce(jsonfeatures, function(memo, kname) {
+        _.set(memo, kname, _.get(_.first(retval), kname, ""));
+        return memo;
+    }, {});
+    /* this is because the CSV generate a number of keys in the first 
+     * row, as much as there are in the first object. so we extend the 
+     * retval[0] with all the keys, to be sure a default "" whould be there é*/
+    _.set(retval, 0, first);
+    return retval;
 }
 
 function mineSequence(s, urlSeq) {
@@ -79,8 +103,8 @@ function mineSequence(s, urlSeq) {
                     _.each(selectedNode.related, function(r, order) {
                         let unwind = _.extend(r, 
                             selectedNode.producer,
-                            _.omit(selectedNode, ['related', 'href', 'title', 'views', 'videoId', 'producer']));
-                        unwind.order = order;
+                            _.omit(selectedNode, ['related', 'href', 'title', 'categories', 'views', 'videoId', 'producer']));
+                        unwind.displayOrder = order;
                         unwind.watchedTitle = selectedNode.title;
                         unwind.watchedVideoId = selectedNode.videoId;
 
@@ -96,7 +120,7 @@ function mineSequence(s, urlSeq) {
                             unwind.sectionName = s.display;
                             unwind.sectionHref = s.href;
                             unwind.sectionOrder = s.order;
-                            unwind.videoOrder = videoOrder;
+                            unwind.displayOrder = videoOrder;
                             nodes.push(unwind);
                         })
                     })
@@ -106,6 +130,8 @@ function mineSequence(s, urlSeq) {
                     _.each(selectedNode.sequence, function(r) {
                         let unwind = _.extend(r, 
                             _.omit(selectedNode, ['sequence', 'href']));
+                        unwind.displayOrder = unwind.order;
+                        _.unset(unwind, 'order');
                         nodes.push(unwind);
                     });
                 }
@@ -124,24 +150,7 @@ function mineSequence(s, urlSeq) {
     if(!_.size(ready.final))
         return [];
 
-    const jsonfeatures = _.uniq(_.flatten(_.map(
-        _.flatten(_.flatten(ready.final)), function(evid) {
-            return _.map(evid, function(v, k) {
-                return k;
-            })
-        })
-    ));
-    debug("%j", _.sortBy(jsonfeatures));
-    const retval = _.flatten(_.flatten(ready.final));
-    const first = _.reduce(jsonfeatures, function(memo, kname) {
-        _.set(memo, kname, _.get(_.first(retval), kname, ""));
-        return memo;
-    }, {});
-    /* this is because the CSV generate a number of keys in the first 
-     * row, as much as there are in the first object. so we extend the 
-     * retval[0] with all the keys, to be sure a default "" whould be there é*/
-    _.set(retval, 0, first);
-    return retval;
+    return _.flatten(_.flatten(ready.final));
 }
 
 const potcfg = {
