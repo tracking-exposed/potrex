@@ -4,6 +4,7 @@ const moment = require('moment');
 const debug = require('debug')('scripts:potest-1-generator');
 const begin = require('debug')('new contributor input:');
 const nconf = require('nconf');
+const fs = require('fs');
 
 const csv = require('../lib/CSV');
 const utils = require('../lib/utils');
@@ -36,9 +37,7 @@ async function extractContributions(keys, urlSeq, filter) {
     for (key of keys) {
         filter.publicKey = key;
         let s = await mongo3.read(mongoc, nconf.get('schema').metadata, filter, { savingTime: -1});
-
         let grouped = _.groupBy(s, 'publicKey');
-
         let ready = _.compact(_.map(grouped, function(evidences, pubKey) {
             evidences = _.sortBy(evidences, function(e) { return new Date(e.savingTime); });
             if(_.size(evidences)) {
@@ -49,7 +48,6 @@ async function extractContributions(keys, urlSeq, filter) {
                         moment(_.last(evidences).savingTime)
                     ).humanize() 
                 );
-
                 return mineSequence(evidences, urlSeq);
             }
         }));
@@ -57,7 +55,7 @@ async function extractContributions(keys, urlSeq, filter) {
     }
 
     await mongoc.close();
-    return _.flatten(treasure);
+    return _.omit(_.flatten(_.flatten(treasure)));
 }
 
 function mineSequence(s, urlSeq) {
@@ -75,9 +73,7 @@ function mineSequence(s, urlSeq) {
                 selectedNode.session = memo.session;
                 selectedNode.pseudo = utils.string2Food(selectedNode.publicKey);
                 selectedNode = _.omit(selectedNode, ['publicKey', '_id' ]);
-                return selectedNode;
-                /* UNWIND equivalent */
-                /*
+
                 let nodes = []
                 if(selectedNode.type == 'video' ) {
                     _.each(selectedNode.related, function(r, order) {
@@ -93,7 +89,7 @@ function mineSequence(s, urlSeq) {
                 }
 
                 if(selectedNode.type == 'home') {
-                    _.each(selectedNode.sections, function(s) {
+                    _.each(_.filter(selectedNode.sections, null), function(s) {
                         _.each(s.videos, function(v, videoOrder) {
                             let unwind = _.extend(v, 
                                 _.omit(selectedNode, ['sections', 'href']));
@@ -107,16 +103,13 @@ function mineSequence(s, urlSeq) {
                 }
 
                 if(selectedNode.type == 'recommended') {
-                    _.each(selectedNode.related, function(r) {
+                    _.each(selectedNode.sequence, function(r) {
                         let unwind = _.extend(r, 
                             _.omit(selectedNode, ['sequence', 'href']));
                         nodes.push(unwind);
                     });
                 }
-                console.log(JSON.stringify(nodes, undefined, 2));
-                process.exit(1);
                 return nodes;
-                */
             }));
             memo.session++;
             memo.counter = 0;
@@ -128,7 +121,27 @@ function mineSequence(s, urlSeq) {
         _.size(ready.final), _.size(ready.partial), ready.counter, ready.session,
         _.size(s));
 
-    return _.flatten(ready.final);
+    if(!_.size(ready.final))
+        return [];
+
+    const jsonfeatures = _.uniq(_.flatten(_.map(
+        _.flatten(_.flatten(ready.final)), function(evid) {
+            return _.map(evid, function(v, k) {
+                return k;
+            })
+        })
+    ));
+    debug("%j", _.sortBy(jsonfeatures));
+    const retval = _.flatten(_.flatten(ready.final));
+    const first = _.reduce(jsonfeatures, function(memo, kname) {
+        _.set(memo, kname, _.get(_.first(retval), kname, ""));
+        return memo;
+    }, {});
+    /* this is because the CSV generate a number of keys in the first 
+     * row, as much as there are in the first object. so we extend the 
+     * retval[0] with all the keys, to be sure a default "" whould be there é*/
+    _.set(retval, 0, first);
+    return retval;
 }
 
 const potcfg = {
@@ -146,7 +159,7 @@ const potcfg = {
             "$lte": new Date('2020-01-20 00:00:00')
         }
     },
-    outputf: 'potest1-v1'
+    outputf: 'potest1-v2'
 };
 const TEST_NUMBER = 1;
 
@@ -159,10 +172,7 @@ async function main() {
     debug("Found %d plausible contributors", _.size(keys));
     const result = await extractContributions(keys, potcfg.sequence, potcfg.timefilter);
     debug("Extracted %d complete sequences", _.size(result));
-
-    const fs = require('fs');
     fs.writeFileSync(potcfg.outputf + '.json', JSON.stringify(result, undefined, 2));
-
     const csvtext = csv.produceCSVv1(result);
     debug("Produced %d bytes", _.size(csvtext));
     fs.writeFileSync(potcfg.outputf + '.csv', csvtext);
