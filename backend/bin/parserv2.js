@@ -15,13 +15,13 @@ nconf.argv().env().file({ file: 'config/settings.json' });
 echoes.addEcho("elasticsearch");
 echoes.setDefaultEcho("elasticsearch"); */
 
+/* --- downloader.js consider nconf.get('redo'); */
 const FREQUENCY = _.parseInt(nconf.get('frequency')) ? _.parseInt(nconf.get('frequency')) : 10;
 const backInTime = _.parseInt(nconf.get('minutesago')) ? _.parseInt(nconf.get('minutesago')) : 10;
 const id = nconf.get('id');
 let singleUse = !!nconf.get('single');
 let nodatacounter = 0;
 let lastExecution = moment().subtract(backInTime, 'minutes').toISOString();
-let computedFrequency = FREQUENCY;
 
 if(backInTime != 10) {
     const humanized = moment.duration(
@@ -51,6 +51,18 @@ async function newLoop() {
         }
         singleUse = true;
     }
+/*
+    lily = await automo.getMetadataByFilter({videoId: 'e77c73d25861c37acea8'}, { amount: 500, ski: 0});
+    for (meta of lily) {
+        _.unset(htmlFilter, 'processed');
+        _.unset(htmlFilter, 'savingTime');
+        htmlFilter.metadataId = meta.id;
+        await findAndParse(htmlFilter);
+    } */
+    return await findAndParse(htmlFilter);
+}
+
+async function findAndParse(htmlFilter) {
 
     const htmls = await automo.getLastHTMLs(htmlFilter);
     if(!_.size(htmls.content)) {
@@ -63,7 +75,7 @@ async function newLoop() {
         computedFrequency = FREQUENCY;
         return;
     } else {
-        computedFrequency = 0.5;
+        computedFrequency = 0;
     }
 
     if(!htmls.overflow) {
@@ -120,10 +132,9 @@ async function newLoop() {
         return [ envelop.impression, metadata ];
     });
 
-
     for (const entry of _.compact(analysis)) {
-        if(entry.type == 'video')
-            await downloader.update(entry);
+        if(entry[1].type == 'video') // anche altri template hanno thumbnails 
+            await downloader.update(entry[1]);
     }
 
     const updates = [];

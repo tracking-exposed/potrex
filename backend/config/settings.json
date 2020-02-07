@@ -13,8 +13,8 @@
   "mongoPort": 27017,
   "mongoDb": "potrex",
 
-  "pictures": "savedthumb",
-  "htmls": "savedhtmls",
+  "storagethumb": "savedthumb",
+  "storagertrvd": "savedhtmls",
 
   "port": 10000,
   "interface": "0.0.0.0",

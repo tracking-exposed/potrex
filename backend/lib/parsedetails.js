@@ -50,6 +50,7 @@ function getFeatured(html) {
             let tre = v.parentNode.parentNode.parentNode.querySelector('.usernameWrap');
             let linked = tre ? tre.querySelector('a') : null;
 
+            debugger; // TODO thumbnails
             return {
               title: v.getAttribute('data-title'),
               authorName: tre ? tre.textContent.trim() : null,
@@ -154,8 +155,8 @@ function getRelated(html) {
   const related = [];
 
   _.each(relatedUrls, function(e) {
-    const t = e.querySelector('img').getAttribute('alt')
-    const thumbnail  = e.querySelector('img').getAttribute('src')
+    const t = e.querySelector('img').getAttribute('alt');
+    const thumbnail  = e.querySelector('img').getAttribute('data-thumb_url');
     const link = e.querySelector('a');
     let h = link.getAttribute('href');
     let k = h ? h.match(/viewkey=/) : null;

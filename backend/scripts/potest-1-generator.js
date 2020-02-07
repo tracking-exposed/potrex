@@ -36,22 +36,17 @@ async function extractContributions(keys, urlSeq, filter) {
     const treasure = [];
     for (key of keys) {
         filter.publicKey = key;
-        let s = await mongo3.read(mongoc, nconf.get('schema').metadata, filter, { savingTime: -1});
-        let grouped = _.groupBy(s, 'publicKey');
-        let ready = _.compact(_.map(grouped, function(evidences, pubKey) {
-            evidences = _.sortBy(evidences, function(e) { return new Date(e.savingTime); });
-            if(_.size(evidences)) {
-                begin("processing %d evidence [%s] ",
-                    _.size(evidences), 
-                    moment.duration(
-                        moment(_.first(evidences).savingTime) -
-                        moment(_.last(evidences).savingTime)
-                    ).humanize() 
-                );
-                return mineSequence(evidences, urlSeq);
-            }
-        }));
-        treasure.push(ready);
+        let evidences = await mongo3.read(mongoc, nconf.get('schema').metadata, filter, { savingTime: -1});
+        if(_.size(evidences)) {
+            begin("processing %d evidence [%s] ",
+                _.size(evidences), 
+                moment.duration(
+                    moment(_.first(evidences).savingTime) -
+                    moment(_.last(evidences).savingTime)
+                ).humanize() 
+            );
+        }
+        treasure.push(mineSequence(evidences, urlSeq));
     }
 
     await mongoc.close();
@@ -104,6 +99,7 @@ function mineSequence(s, urlSeq) {
                         let unwind = _.extend(r, 
                             selectedNode.producer,
                             _.omit(selectedNode, ['related', 'href', 'title', 'categories', 'views', 'videoId', 'producer']));
+                        debugger;
                         unwind.displayOrder = order;
                         unwind.watchedTitle = selectedNode.title;
                         unwind.watchedVideoId = selectedNode.videoId;
