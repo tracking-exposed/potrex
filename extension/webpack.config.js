@@ -3,7 +3,6 @@
 'use strict';
 
 const path = require('path');
-const exec = require('child_process').exec;
 
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
