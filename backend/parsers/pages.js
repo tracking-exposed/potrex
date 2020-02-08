@@ -1,7 +1,8 @@
 const _ = require('lodash');
 const nconf = require("nconf");
-const moment = require("moment");
 const debug = require('debug')('parser:video');
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 const parsedet = require('../lib/parsedetails');
 
@@ -11,6 +12,8 @@ nconf.argv().env().file({ file: "config/settings.json" });
 function page(envelop) {
 
     let retval = _.omit(envelop.impression, ['html', '_id']);
+    const dom = new JSDOM(envelop.impression.html);
+    const D = dom.window.document;
 
     debug("[K %d] Processing HTML %s scraped from %s", 
         _.size(_.keys(retval)), retval.id, retval.href);
@@ -29,7 +32,7 @@ function page(envelop) {
 
     if(retval.type == 'home') {
         try {
-            const featured = parsedet.getFeatured(envelop.impression.html);
+            const featured = parsedet.getFeatured(D);
             retval = _.extend(retval, featured);
             debug("Added %d 'sections' from getFeatured in homepage", _.size(featured.sections));
             retval.processed = true;
@@ -42,7 +45,7 @@ function page(envelop) {
         return retval;
     } else if(retval.type == 'recommended') {
         try {
-            const sequence = parsedet.getSequence(envelop.impression.html);
+            const sequence = parsedet.getSequence(D);
             retval = _.extend(retval, { sequence });
             debug("Added %d 'sequence' from getSequence in recommended", _.size(sequence));
             retval.processed = true;
@@ -58,7 +61,7 @@ function page(envelop) {
 
     /* else, video has a sequence of function for scraping */
     try {
-        const meta = parsedet.getMetadata(envelop.impression.html);
+        const meta = parsedet.getMetadata(D);
         retval = _.extend(retval, meta);
         debug("Added %d keys from getMetadata, total %d",
             _.size(_.keys(meta)), _.size(_.keys(retval)));
@@ -69,7 +72,7 @@ function page(envelop) {
     }
 
     try {
-        const related = parsedet.getRelated(envelop.impression.html);
+        const related = parsedet.getRelated(D);
         retval = _.extend(retval, related);
         debug("Added %d keys from getRelated, total %d, related = %d",
             _.size(_.keys(related)), _.size(_.keys(retval)), _.size(related.related) );
@@ -80,7 +83,7 @@ function page(envelop) {
     }
 
     try {
-        const categories = parsedet.getCategories(envelop.impression.html);
+        const categories = parsedet.getCategories(D);
         retval = _.extend(retval, categories);
         debug("Added %d keys from getCategories, total %d, categories = %d",
             _.size(_.keys(categories)), _.size(_.keys(retval)), _.size(categories.categories) );

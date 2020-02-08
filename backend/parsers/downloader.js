@@ -34,8 +34,6 @@ async function fetchContent(mongoc, listof, dbColumn, storage) {
         let response = await fetch(d.url);
         d.destpath = path.join(storage, d.id + '.raw');
         let c = await response.buffer();
-        console.log(c);
-        debugger;
         fs.writeFileSync(d.destpath, c);
         d.headers = response.headers.raw();
         debug("Written file %s -> %s", d.destpath, d.rtitle);

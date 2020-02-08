@@ -48,6 +48,9 @@ let amountGrossDimension = -1;
 // Everything starts from here.
 function boot () {
 
+
+    splashScreen();
+
     if(_.endsWith(window.location.origin, 'pornhub.tracking.exposed')) {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
@@ -85,14 +88,18 @@ function boot () {
         registerHandlers(hub);
 
         const x = localStorage.getItem('watchedVideoIds');
-        if(!_.size(x))
+        if(!x || _.size(x) == 0 )
             amountGrossDimension = 0;
-        else if(_.size(x) < 10)
+        if(_.size(x) > 0 && _.size(x) < 10)
             amountGrossDimension = 1;
-        else if(_.size(x) < 50)
+        else if(_.size(x) > 10 && _.size(x) < 50)
             amountGrossDimension = 2;
-        else
+        else if(_.size(x) >= 50)
             amountGrossDimension = 3;
+        else {
+            console.log("Is this even possible?");
+            amountGrossDimension = -1;
+        }
 
         console.log("watchedVideoIds", x, _.size(x), "anonymized info we'll send:", amountGrossDimension);
 

@@ -1,7 +1,5 @@
 const _ = require('lodash');
 const debug = require('debug')('lib:parsedetails');
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
 
 function attributeURL(href) {
 
@@ -31,9 +29,7 @@ function attributeURL(href) {
     return { href: href, type: null };
 };
 
-function getFeatured(html) {
-    const dom = new JSDOM(html);
-    const D = dom.window.document;
+function getFeatured(D) {
     
     let titles = D.querySelectorAll('.sectionTitle');
 
@@ -76,9 +72,7 @@ function getFeatured(html) {
     return { sections };
 }
 
-function getSequence(html) {
-  const dom = new JSDOM(html);
-  const D = dom.window.document;
+function getSequence(D) {
 
   const blocks = _.map(D.querySelectorAll("li[_vkey]"), function(n, order) {
       const ret = { order };
@@ -102,9 +96,7 @@ function getSequence(html) {
   return blocks;
 }
 
-function getMetadata(html) {
-  const dom = new JSDOM(html);
-  const D = dom.window.document;
+function getMetadata(D) {
   
   const vTitle = D.querySelectorAll("h1")[0].querySelector("span").textContent.trim();
   const views = D.querySelector('div.views');
@@ -148,9 +140,7 @@ function getMetadata(html) {
   };
 };
 
-function getRelated(html) {
-  const dom = new JSDOM(html);
-  const D = dom.window.document;
+function getRelated(D) {
   const relatedUrls = D.querySelectorAll('ul#relatedVideosCenter > li');
   const related = [];
 
@@ -181,9 +171,7 @@ function getRelated(html) {
   return { related };
 };
 
-function getCategories(html) {
-  const dom = new JSDOM(html);
-  const D = dom.window.document;
+function getCategories(D) {
   const cats = D.querySelectorAll('.categoriesWrapper');
 
   if(_.size(cats) !== 1)
