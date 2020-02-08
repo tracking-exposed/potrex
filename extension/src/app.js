@@ -117,9 +117,10 @@ function splashScreen() {
 
     const spalshcontent = 
         '<div class="container">' +
-            '<div class="col-12 horzcon text-center first">' + 
-                'Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!' + 
-                '<button class="btn btn-lg" id="close">✖ CLOSE ✖</button>' +
+            '<div class="col-12 horzcon text-center">' + 
+                'Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!' +
+                '<br>' +
+                '<button class="btn btn-lg first" id="close">✖ CLOSE ✖</button>' +
             '</div>' +
             '<div class="col-12 horzcon">' +
                     "<ol>" +
@@ -155,6 +156,10 @@ function splashScreen() {
 
     /* all the horizontal containers has it */
     $(".horzcon").css({ 'margin-bottom': '6px' });
+    $(".first").css({ 'border': '1px' });
+    $(".first").css({ 'border-radius': '6px' });
+    $(".first").css({ 'border-style': 'solid' });
+    $(".first").css({ 'border-color': '#f98e05' });
 
     $("#close").css({ width: '100%' });
     $("#close").css({ height: '24px' });
