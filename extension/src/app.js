@@ -48,9 +48,6 @@ let amountGrossDimension = -1;
 // Everything starts from here.
 function boot () {
 
-
-    splashScreen();
-
     if(_.endsWith(window.location.origin, 'pornhub.tracking.exposed')) {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
@@ -121,26 +118,21 @@ function splashScreen() {
     const spalshcontent = 
         '<div class="container">' +
             '<div class="col-12 horzcon text-center first">' + 
-                '<h1>Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!</h1>' + 
+                'Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!' + 
                 '<button class="btn btn-lg" id="close">✖ CLOSE ✖</button>' +
             '</div>' +
             '<div class="col-12 horzcon">' +
-                "<h2>" +
                     "<ol>" +
                         "<li>" +
                         "You have full control of the data collected from your browser. Click on the icon to access the page with your contributions." +
                         "</li>" +
                         "<li>" +
-                        "The extension can work in Incognito/Private mode too (if you explicitly enable it), and you can remove it after the test: we aren't after your porn habits." +
+                        "The extension might work in Incognito/Private mode too (if you explicitly enable it), and you can remove it after the test: we aren't after your porn habits." +
                         "</li>" +
                         "<li>" +
-                        "If you read this message <u>on January 19th, 2020</u>, please follow <a href='https://pornhub.tracking.exposed/potest/1' target=_blank>our script</a>." +
-                        "</li>" +
-                        "<li>" +
-                        "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>." +
+                        "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>, and our <a href='https://pornhub.tracking.exposed/potest/1-final'>first final report</a>" +
                         "</li>" +
                     "</ol>" +
-                "</h2>" +
             '</div>' +
         '</div>';
 
@@ -150,25 +142,24 @@ function splashScreen() {
     splashe.attr('id', 'splasher');
     $('body').append(splashe);
 
-    splashe.css({ 'font-size': '1.6em' });
-    splashe.css({ 'width': '100%' });
+    splashe.css({ 'font-size': '0.9em' });
+    splashe.css({ 'width': '42%' });
     splashe.css({ 'right' : '0px' });
     splashe.css({ 'bottom': '0px' });
     splashe.css({ 'color': 'white' });
-    splashe.css({ 'height': '100%' });
+    splashe.css({ 'height': '42%' });
     splashe.css({ 'z-index': '9000' });
     splashe.css({ 'position': 'fixed' });
+    splashe.css({ 'border-radius': '1em 0em 0em 0em' });
     splashe.css({ 'background-color': '#1b1b1b' });
 
     /* all the horizontal containers has it */
-    $(".horzcon").css({ 'margin-bottom': '30px' });
-    $(".first").css({ 'border': '1px' });
-    $(".first").css({ 'border-radius': '6px' });
-    $(".first").css({ 'border-style': 'solid' });
-    $(".first").css({ 'border-color': '#f98e05' });
+    $(".horzcon").css({ 'margin-bottom': '6px' });
 
     $("#close").css({ width: '100%' });
-    $("#close").css({ height: '30px' });
+    $("#close").css({ height: '24px' });
+    $("#close").css({ padding: '1em' });
+    $("#close").css({ 'vertical-align': 'middle' });
     $("#close").css({ "background-color": "#f98e05" });
     $("#close").css({cursor: "pointer"});
 
