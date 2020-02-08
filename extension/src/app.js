@@ -84,21 +84,25 @@ function boot () {
         // You can learn more in the [`./handlers`](./handlers/index.html) directory.
         registerHandlers(hub);
 
-        const x = localStorage.getItem('watchedVideoIds');
-        if(!x || _.size(x) == 0 )
+        let x = localStorage.getItem('watchedVideoIds');
+        try {
+            let y = JSON.parse(x);
+            if(!y || _.size(y) == 0 )
+                amountGrossDimension = 0;
+            else if(_.size(y) > 0 && _.size(y) < 10)
+                amountGrossDimension = 1;
+            else if(_.size(y) > 10 && _.size(y) < 50)
+                amountGrossDimension = 2;
+            else if(_.size(y) >= 50)
+                amountGrossDimension = 3;
+            else {
+                console.log("Is this even possible?");
+                amountGrossDimension = -1;
+            }
+            console.log("watchedVideoIds", x, _.size(x), "anonymized info we'll send:", amountGrossDimension);
+        } catch(e) {
             amountGrossDimension = 0;
-        if(_.size(x) > 0 && _.size(x) < 10)
-            amountGrossDimension = 1;
-        else if(_.size(x) > 10 && _.size(x) < 50)
-            amountGrossDimension = 2;
-        else if(_.size(x) >= 50)
-            amountGrossDimension = 3;
-        else {
-            console.log("Is this even possible?");
-            amountGrossDimension = -1;
         }
-
-        console.log("watchedVideoIds", x, _.size(x), "anonymized info we'll send:", amountGrossDimension);
 
         return localLookup(response => {
             // `response` contains the user's public key and its status,
@@ -117,7 +121,7 @@ function splashScreen() {
 
     const spalshcontent = 
         '<div class="container">' +
-            '<div class="col-12 horzcon text-center">' + 
+            '<div class="col-12 horzcon">' + 
                 'Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!' +
                 '<br>' +
                 '<button class="btn btn-lg first" id="close">✖ CLOSE ✖</button>' +
@@ -324,8 +328,8 @@ function hrefUpdateMonitor() {
             // console.log("check", selector, e, e.length, e.html());
             if(!diff) {
                 lastVideoCNT++;
-                if(lastVideoCNT > 5) {
-                    console.log(`Ignoring this URL (${lastVideoURL}), been sent already five times`);
+                if(lastVideoCNT > 2) {
+                    console.log(`Ignoring this URL (${lastVideoURL}), been sent already two times`);
                     return;
                 }
             }

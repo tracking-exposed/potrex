@@ -76,11 +76,20 @@ function getSequence(D) {
 
   const blocks = _.map(D.querySelectorAll("li[_vkey]"), function(n, order) {
       const ret = { order };
+      if( n.querySelector('a').getAttribute('href')  == '/view_video.php?viewkey=ph5e10412154ca3')
+        debugger;
+
+      let title = n.querySelector('.linkVideoThumb').getAttribute('data-title');
+      if(!title)
+        title = n.querySelector('a').getAttribute('title');
+      if(!title)
+        title = n.querySelector('.title').textContent.trim();
+
       _.set(ret, 'duration', n.querySelector('.duration').textContent.trim());
       _.set(ret, 'publicationRelative', n.querySelector('.added').textContent.trim());
       _.set(ret, 'views', n.querySelector('.views').querySelector('var').textContent);
       _.set(ret, 'viewString', n.querySelector('.views').textContent.trim());
-      _.set(ret, 'title', n.querySelector('.linkVideoThumb').getAttribute('data-title') );
+      _.set(ret, 'title', title);
       _.set(ret, 'href', n.querySelector('a').getAttribute('href') );
       _.set(ret, 'videoId', n.getAttribute('_vkey') );
       _.set(ret, 'thumbnail', n.querySelector('img').getAttribute('data-thumb_url'));
@@ -89,8 +98,10 @@ function getSequence(D) {
           const usernameWrap = n.querySelector('.usernameWrap');
           _.set(ret, 'authorLink', usernameWrap.querySelector('a').getAttribute('href'));
           _.set(ret, 'authorName', usernameWrap.textContent.trim());
-      } catch(error) { }
-
+      } catch(error) { 
+          ret.authorLink = null;
+          ret.authorName = null;
+      }
       return ret;
   });
   return blocks;
