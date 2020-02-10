@@ -64,11 +64,12 @@ function boot () {
         let test = new Date(last) - new Date();
         let testTo = 1000 * 60 * 60 * 12;
 
-        console.log(last, test, testTo, (test > testTo));
-
         if( !last || _.isNaN(test) || (test > testTo) ) {
+            console.log("Opening infobox", last, test, testTo, (test > testTo));
             localStorage.setItem('last', new Date().toISOString());
             splashScreen();
+        } else {
+            console.log("Nobody likes spam! no infobox", last, test, testTo, (test > testTo));
         }
 
         // this get executed on pornhub.com and it is the start of potrex extension
@@ -225,7 +226,7 @@ function videoSeen(path) {
     buildSpan({
         path,
         position: 2,
-        text: 'page seen',
+        text: 'evidence collected',
         duration: 11500,
     });
     $("#video-seen").css('background-color', 'green');
@@ -278,7 +279,7 @@ function buildSpan(c) {
         infospan.style.size = '0.6em';
         infospan.style.padding = '4px';
         infospan.style['border-radius'] = '10px';
-        infospan.style.background = '#707ddad1';
+        infospan.style.background = '#798e05';
         infospan.textContent = fullt;
         document.body.appendChild(infospan);
         /* change infospan in jquery so no proble in apply .fadeOut */
