@@ -61,12 +61,11 @@ function boot () {
         // (this might be better if handled in the background window, because
         // this might be read by the company. )
         const last = localStorage.getItem('last');
-        let test = new Date(last) - new Date();
+        let test = new Date() - new Date(last);
         let testTo = 1000 * 60 * 60 * 12;
 
         if( !last || _.isNaN(test) || (test > testTo) ) {
             console.log("Opening infobox", last, test, testTo, (test > testTo));
-            localStorage.setItem('last', new Date().toISOString());
             splashScreen();
         } else {
             console.log("Nobody likes spam! no infobox", last, test, testTo, (test > testTo));
@@ -100,7 +99,7 @@ function boot () {
                 console.log("Is this even possible?");
                 amountGrossDimension = -1;
             }
-            console.log("watchedVideoIds", x, _.size(x), "anonymized info we'll send:", amountGrossDimension);
+            console.log("watchedVideoIds", y, _.size(y), "anonymized info we'll send:", amountGrossDimension);
         } catch(e) {
             amountGrossDimension = 0;
         }
@@ -122,23 +121,25 @@ function splashScreen() {
 
     const spalshcontent = 
         '<div class="container">' +
-            '<div class="col-12 horzcon">' + 
-                'Friendly reminder: you’re anonymously participating in a collective experiment to understand the Pornhub algorithm!' +
+            '<div class="horzcon">' + 
+                'Friendly reminder: you’re anonymously participating <br>' + 
+                'in a collective experiment to understand <br>' +
+                'the Pornhub algorithm!' +
                 '<br>' +
                 '<button class="btn btn-lg first" id="close">✖ CLOSE ✖</button>' +
             '</div>' +
-            '<div class="col-12 horzcon">' +
-                    "<ol>" +
-                        "<li>" +
+            '<div class="horzcon">' +
+                "<ol>" +
+                    "<li>" +
                         "You have full control of the data collected from your browser. Click on the icon to access the page with your contributions." +
-                        "</li>" +
-                        "<li>" +
+                    "</li>" +
+                    "<li>" +
                         "The extension might work in Incognito/Private mode too (if you explicitly enable it), and you can remove it after the test: we aren't after your porn habits." +
-                        "</li>" +
-                        "<li>" +
+                    "</li>" +
+                    "<li>" +
                         "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>, and our <a href='https://pornhub.tracking.exposed/potest/1-final'>first final report</a>" +
-                        "</li>" +
-                    "</ol>" +
+                    "</li>" +
+                "</ol>" +
             '</div>' +
         '</div>';
 
@@ -148,25 +149,32 @@ function splashScreen() {
     splashe.attr('id', 'splasher');
     $('body').append(splashe);
 
-    splashe.css({ 'font-size': '0.9em' });
-    splashe.css({ 'width': '42%' });
-    splashe.css({ 'right' : '0px' });
-    splashe.css({ 'bottom': '0px' });
+    splashe.css({ 'font-size': '1.1em' });
+    splashe.css({ 'width': '500px' });
+    splashe.css({ 'max-width': '100%' });
+    splashe.css({ 'right' : '5px' });
+    splashe.css({ 'bottom': '5px' });
     splashe.css({ 'color': 'white' });
-    splashe.css({ 'height': '42%' });
+    splashe.css({ 'height': '260px' });
     splashe.css({ 'z-index': '9000' });
     splashe.css({ 'position': 'fixed' });
     splashe.css({ 'border-radius': '1em 0em 0em 0em' });
+    splashe.css({ 'border-color': '#F98E05' });
+    splashe.css({ 'border-size': '4px' });
+    splashe.css({ 'border-style': 'solid' });
     splashe.css({ 'background-color': '#1b1b1b' });
 
-    /* all the horizontal containers has it */
     $(".horzcon").css({ 'margin-bottom': '6px' });
+    $(".horzcon").css({ 'max-width': '40%' });
+    $(".horzcon").css({ 'overflow': 'none' });
+    $(".horzcon").css({ 'padding': '4px' });
+
     $(".first").css({ 'border': '1px' });
     $(".first").css({ 'border-radius': '6px' });
     $(".first").css({ 'border-style': 'solid' });
     $(".first").css({ 'border-color': '#f98e05' });
 
-    $("#close").css({ width: '100%' });
+    $("#close").css({ width: '140px' });
     $("#close").css({ height: '24px' });
     $("#close").css({ padding: '1em' });
     $("#close").css({ 'vertical-align': 'middle' });
@@ -174,6 +182,8 @@ function splashScreen() {
     $("#close").css({cursor: "pointer"});
 
     $("#close").click(function() {
+        localStorage.setItem('last', new Date().toISOString());
+        console.log("Saved this time in localStorage so the splashscreen can re-appear in 12 hours after a click")
         $("#splasher").hide();
     });
 
@@ -189,6 +199,7 @@ function createLoadiv() {
     div.style.height = '48px';
     div.style.right = '10px';
     div.style.bottom= '10px';
+    div.style['z-index'] = '9000';
 
     div.setAttribute('id', 'loadiv');
     document.body.appendChild(div);
@@ -218,7 +229,7 @@ function videoWait(path) {
     buildSpan({
         path,
         position: 1,
-        text: 'page wait',
+        text: 'waiting...',
         duration: 400,
     });
 }
@@ -229,7 +240,7 @@ function videoSeen(path) {
         text: 'evidence collected',
         duration: 11500,
     });
-    $("#video-seen").css('background-color', 'green');
+    $("#video-seen").css('background-color', '#798e05');
     $("#video-seen").css('cursor', 'cell');
     $("#video-seen").click(function() {
         if( testElement($('body').html(), 'body') ) {
@@ -241,10 +252,10 @@ function videoSend(path) {
     buildSpan({
         path,
         position: 3,
-        text: 'page send',
+        text: 'evidence sent',
         duration: 400,
     });
-    $("#video-seen").css('background-color', 'red');
+    $("#video-seen").css('background-color', '#798e05');
     $("#video-seen").css('color', 'white');
 }
 function advSeen(path) {
@@ -271,13 +282,15 @@ function buildSpan(c) {
         infospan = document.createElement('span');
         infospan.setAttribute('id', id);
         infospan.style.position = 'fixed';
-        infospan.style.width = '80px';
+        infospan.style.width = '120px';
+        infospan.style.textAlign = 'right';
         infospan.style.height = '20px';
         infospan.style.right = '5px';
         infospan.style.color = 'lightgoldenrodyellow';
         infospan.style.bottom = (c.position * 16) + 'px';
         infospan.style.size = '0.6em';
         infospan.style.padding = '4px';
+        infospan.style['z-index'] = '9000';
         infospan.style['border-radius'] = '10px';
         infospan.style.background = '#798e05';
         infospan.textContent = fullt;
