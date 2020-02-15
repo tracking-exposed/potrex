@@ -158,13 +158,20 @@ const potcfg = {
         'https://www.pornhub.com/view_video.php?viewkey=ph5e22e4f60abd6',
         'https://www.pornhub.com/',
     ],
+    /* BUG: in the potest#1 announcement, we ask to check a 'recommended' video before the 
+     *      last homepage, but we did a mistake and that URL wasn't included in our checklist. 
+     *      means it is in the database, and we didn't extract it.
+     * 
+     *      if a new extraction of potest#1 should happen, this line should be added after the fifth:
+        'https://www.pornhub.com/recommended',
+     */
     timefilter: {
         'clientTime': {
             "$gte": new Date('2020-01-19 00:00:00'),
             "$lte": new Date('2020-01-20 00:00:00')
         }
     },
-    outputf: 'potest1-v2'
+    outputf: 'potest1-v4'
 };
 const TEST_NUMBER = 1;
 
