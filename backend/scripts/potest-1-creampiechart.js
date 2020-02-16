@@ -9,18 +9,28 @@ const mongo3 = require('../lib/mongo3');
 nconf.argv().env().file({ file: 'config/settings.json' });
 
 async function getSectionNamesCount(mongoc, sectionOrder) {
+  /*
+    let partial = "sections." + _.parseInt(sectionOrder);
+    let innerM = {};
+    innerM[partial] = { "$exists": true };
+    innerM['type'] = { "$exists": true };
+    let matchQuery = { "$match" : innerM };
+    debug("* %j", matchQuery);
+    */
+        // this could been simpler as { $match: { 'section.order': sectionOrder }}
+        // section order was broken due to:
+        // https://github.com/tracking-exposed/pornhub.tracking.exposed/issues/23
     return await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
         { $match: { type: 'home' } },
         { $match: { clientTime: {
             "$gte": new Date("2020-01-19"),
             "$lte": new Date("2020-01-20") } }
         },
-        { $unwind: "$sections" },
-        { $match: { "sections.order": sectionOrder }},
-        { $project: { "sections.display": 1, "sections.href": 1, "_id": 0 }},
+        { $project: { "sections.display": 1, 'selected': { $arrayElemAt: [ "$sections", sectionOrder ]}, "sections.href": 1, "_id": 0 }},
+        { $unwind: "$selected" },
         { $group: {
-            _id: "$sections.href",
-            names: { "$push": "$sections.display" },
+            _id: "$selected.href",
+            names: { "$push": "$selected.display" },
             // names should be enabled when you've to translate
             // href such as "_id": "/video?c=28", into a meaningful name
             amount : { "$sum": 1 } }
@@ -32,9 +42,9 @@ async function main() {
     debug("Looping over section number 0..5");
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     let results = [];
-    for (sectionOrder of [0, 1, 2, 3, 4, 5, 6, 7]) {
+    for (sectionOrder of [0, 1, 2, 3, 4 ]) {
         const sv = await getSectionNamesCount(mongoc, sectionOrder);
-        debug("Extracted section view %d", sectionOrder);
+        debug("Extracted section view %d (%d)", sectionOrder, _.size(sv));
         results = _.concat(results, _.map(sv, function(o) {
             o.section = sectionOrder + 1;
             o.column = [ o._id, o.amount ];
@@ -50,12 +60,17 @@ async function main() {
 
     const maxAmount = _.max(_.map(results, 'amount'));
     const fontSizeParam = 26 / maxAmount;
-    const hugo = _.join(_.map([1, 2, 3, 4, 5 ,6 ,7 ], function(sectionOrder) {
+    const hugo = _.join(_.map([1, 2, 3, 4, 5 ], function(sectionOrder) {
         const elements = _.filter(results, { section: sectionOrder});
 
         const numberOfSamples = _.sum(_.map(elements, 'amount'));
 
         const namesInSpan = _.join(_.map(elements, function(e) {
+            if(!e._id)
+              return null;
+            if(!e._id.match)
+              debug(e._id);
+
             const fontSize = _.round( 0.4 + ((fontSizeParam * e.amount) / 10) , 1);
             let name = null;
             let color = null;
