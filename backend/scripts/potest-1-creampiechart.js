@@ -56,7 +56,7 @@ async function main() {
         const numberOfSamples = _.sum(_.map(elements, 'amount'));
 
         const namesInSpan = _.join(_.map(elements, function(e) {
-            const fontSize = _.round( 0.8 + ((fontSizeParam * e.amount) / 10) , 1);
+            const fontSize = _.round( 0.4 + ((fontSizeParam * e.amount) / 10) , 1);
             let name = null;
             let color = null;
             if(e._id.match(/o=ht/)) {
@@ -90,7 +90,7 @@ async function main() {
                 name =  "Popular With Woman";
                 color = "#d48";
             } else {
-                name = "%%% " + _.first(e.names)
+                name = "<%% " + _.first(e.names) + " %%>"
                 color = "#333";
             }
 
@@ -115,7 +115,6 @@ async function main() {
         return html;
     }), "\n");
     fs.writeFileSync( 'hugosnippet.text', hugo);
-
 }
 
 try {
