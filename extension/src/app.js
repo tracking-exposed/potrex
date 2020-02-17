@@ -126,6 +126,7 @@ function splashScreen() {
                 'in a collective experiment to understand <br>' +
                 'the Pornhub algorithm!' +
                 '<br>' +
+                '<div class="col-sm">' + 
                 '<button class="btn btn-lg first" id="close">✖ CLOSE ✖</button>' +
             '</div>' +
             '<div class="horzcon">' +
@@ -137,9 +138,10 @@ function splashScreen() {
                         "The extension might work in Incognito/Private mode too (if you explicitly enable it), and you can remove it after the test: we aren't after your porn habits." +
                     "</li>" +
                     "<li>" +
-                        "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>, and our <a href='https://pornhub.tracking.exposed/potest/1-final'>first final report</a>" +
+                        "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>, and our <a href='https://pornhub.tracking.exposed/potest/1-final'>first final report.</a>" +
                     "</li>" +
                 "</ol>" +
+                '<p>potrex</p>' +
             '</div>' +
         '</div>';
 
@@ -149,34 +151,37 @@ function splashScreen() {
     splashe.attr('id', 'splasher');
     $('body').append(splashe);
 
-    splashe.css({ 'font-size': '1.1em' });
-    splashe.css({ 'width': '500px' });
-    splashe.css({ 'max-width': '100%' });
-    splashe.css({ 'right' : '5px' });
-    splashe.css({ 'bottom': '5px' });
+    splashe.css({ 'font-size': '1.3em' });
     splashe.css({ 'color': 'white' });
-    splashe.css({ 'height': '260px' });
+    splashe.css({ 'width': '450px' });
+    splashe.css({ 'height': '300px' });
+    splashe.css({ 'max-width': '100%' });
+    splashe.css({ 'margin-left' : '20px' });
+    splashe.css({ 'margin-top' : '20px' });
+    splashe.css({ 'margin-top' : '20px' });
+    splashe.css({ 'margin-bottom': '5px' });
     splashe.css({ 'z-index': '9000' });
     splashe.css({ 'position': 'fixed' });
-    splashe.css({ 'border-radius': '1em 0em 0em 0em' });
+    splashe.css({ 'border-radius': '1.5em 0em 0em 0em' });
     splashe.css({ 'border-color': '#F98E05' });
-    splashe.css({ 'border-size': '4px' });
+    splashe.css({ 'border-size': '10px' });
     splashe.css({ 'border-style': 'solid' });
     splashe.css({ 'background-color': '#1b1b1b' });
 
     $(".horzcon").css({ 'margin-bottom': '6px' });
+    $(".horzcon").css({ 'margin-top': '6px' });
+    $(".horzcon").css({ 'margin-left': '6px' });
     $(".horzcon").css({ 'max-width': '40%' });
     $(".horzcon").css({ 'overflow': 'none' });
     $(".horzcon").css({ 'padding': '4px' });
 
     $(".first").css({ 'border': '1px' });
-    $(".first").css({ 'border-radius': '6px' });
     $(".first").css({ 'border-style': 'solid' });
     $(".first").css({ 'border-color': '#f98e05' });
 
-    $("#close").css({ width: '140px' });
+    $("#close").css({ width: '100px' });
     $("#close").css({ height: '24px' });
-    $("#close").css({ padding: '1em' });
+    $("#close").css({ 'padding-top': '1em' });
     $("#close").css({ 'vertical-align': 'middle' });
     $("#close").css({ "background-color": "#f98e05" });
     $("#close").css({cursor: "pointer"});
@@ -237,10 +242,11 @@ function videoSeen(path) {
     buildSpan({
         path,
         position: 2,
-        text: 'evidence collected',
+        text: 'Evidence collected',
         duration: 11500,
     });
-    $("#video-seen").css('background-color', '#798e05');
+    $("#video-seen").css('background-color', '#F98E05');
+    $("#video-seen").css('background-position', 'center');
     $("#video-seen").css('cursor', 'cell');
     $("#video-seen").click(function() {
         if( testElement($('body').html(), 'body') ) {
@@ -251,11 +257,11 @@ function videoSeen(path) {
 function videoSend(path) {
     buildSpan({
         path,
-        position: 3,
-        text: 'evidence sent',
+        position: 2,
+        text: 'Evidence sent',
         duration: 400,
     });
-    $("#video-seen").css('background-color', '#798e05');
+    $("#video-seen").css('background-color', '#F98E05');
     $("#video-seen").css('color', 'white');
 }
 function advSeen(path) {
