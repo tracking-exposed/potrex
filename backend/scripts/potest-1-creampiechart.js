@@ -60,10 +60,11 @@ async function main() {
 
     const maxAmount = _.max(_.map(results, 'amount'));
     const fontSizeParam = 26 / maxAmount;
-    const hugo = _.join(_.map([1, 2, 3, 4, 5 ], function(sectionOrder) {
+    const cardColors = [ "#f98e05", "#fc992e", "#fea348", "#ffb874", "#ffc28a"  ];
+    const hugo = _.join(_.map([1, 2, 3, 4, 5 ], function(sectionOrder, order) {
         const elements = _.filter(results, { section: sectionOrder});
-
         const numberOfSamples = _.sum(_.map(elements, 'amount'));
+        const cardColor = _.nth(cardColors, order);
 
         const namesInSpan = _.join(_.map(elements, function(e) {
             if(!e._id)
@@ -77,45 +78,38 @@ async function main() {
             if(e._id.match(/o=ht/)) {
                 const countryCode = e._id.replace(/.*&cc=/, '');
                 if(_.size(countryCode) == 2)
-                    name = "Hot Video in " + _.upperCase(countryCode);
+                    name = "Hot Video in <b>" + _.upperCase(countryCode) + "</b>";
                 else
                     name = "Hot Video Internationally";
-                color = "#f900aa";
             } else if(e._id.match(/o=mv/)) {
                 const countryCode = e._id.replace(/.*&cc=/, '');
                 if(_.size(countryCode) == 2)
-                    name = "Most View in " + _.upperCase(countryCode);
+                    name = "Most View in <b>" + _.upperCase(countryCode) + "</b>";
                 else
                     name = "Most View";
-                color = "#ffaa00";
             } else if(e._id == '/recommended') {
                 name = "Recommended For You";
                 color = "#55aadd";
             } else if(_.startsWith(e._id, '/video?')) {
                 const catnum = e._id.replace(/.*?c=/, '');
                 name = _.first(e.names);
-                color = "#ffaa00";
             } else if(e._id == '/video') {
                 name = "Recently Featured XXX";
-                color = "#dfda44";
             } else if(_.startsWith(e._id, '/categories/')) {
                 name =  "Recommended " + e._id.replace(/.categories./, '');
-                color = "#40f";
             } else if(e._id == '/popularwithwomen') {
                 name =  "Popular With Woman";
-                color = "#d48";
             } else {
                 name = "<%% " + _.first(e.names) + " %%>"
-                color = "#333";
             }
 
-            return `<button style="font-size:${fontSize}em;color:${color}">${name}</button>`;
+            return `<button style="font-size:${fontSize}em;">${name}</button>`;
         }), "");
 
         const html = `
   <div class="col-sm-6">
     <div class="card">
-      <div class="card-body">
+      <div class="card-body" style="background-color:${cardColor}">
         <h5 class="card-title">Section ${sectionOrder}</h5>
         <p class="card-text">
           ${namesInSpan}
@@ -128,7 +122,7 @@ async function main() {
   </div>
 `;
         return html;
-    }), "\n");
+    }), "");
     fs.writeFileSync( 'hugosnippet.text', hugo);
 }
 
