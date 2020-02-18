@@ -72,7 +72,7 @@ function boot () {
         }
 
         // this get executed on pornhub.com and it is the start of potrex extension
-        console.log(`potrex version ${config.VERSION} build ${JSON.stringify(config.BUILD)} loading; Config object:`);
+        console.log(`potrex version ${config.VERSION} loading; Config object:`);
         console.log(config);
 
         // is an hidden div, created on pornhub.com domain,
