@@ -53,7 +53,7 @@ class Popup extends React.Component{
             <Card>
                 <Alert severity="error">
                     <AlertTitle>Error</AlertTitle>
-                    Extension isn't initialized yet — <strong>Access <a href="https://www.youtube.com" target="_blank">yutube.com</a>.</strong>
+                    Extension isn't initialized yet — <strong>Access <a href="https://www.pornhub.com" target="_blank">pornhub.com</a>.</strong>
                 </Alert>
                 <InfoBox />
             </Card>
@@ -64,7 +64,7 @@ class Popup extends React.Component{
       return (
         <div style={styles}>
           <Card>
-              <FormHelperText>ytTREX main switch</FormHelperText>
+              <FormHelperText>poTREX main switch</FormHelperText>
               <Settings active={this.state.data.active} />
               <FormHelperText>Access to your data</FormHelperText>
               <GetCSV publicKey={this.state.data.publicKey } />
