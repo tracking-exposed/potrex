@@ -48,6 +48,8 @@ let amountGrossDimension = -1;
 // Everything starts from here.
 function boot () {
 
+    splashScreen();
+
     if(_.endsWith(window.location.origin, 'pornhub.tracking.exposed')) {
         if(_.isUndefined($("#extension--parsable").html())) {
             return null;
@@ -101,6 +103,7 @@ function boot () {
             }
             console.log("watchedVideoIds", y, _.size(y), "anonymized info we'll send:", amountGrossDimension);
         } catch(e) {
+            console.log("Error while looking at watchedVideoIds", e);
             amountGrossDimension = 0;
         }
 
@@ -145,9 +148,8 @@ function splashScreen() {
             '</div>' +
         '</div>';
 
-    const splashe = $("<div></div>");
+    const splashe = $("<div>>");
     splashe.html(spalshcontent);
-
     splashe.attr('id', 'splasher');
     $('body').append(splashe);
 
@@ -160,7 +162,7 @@ function splashScreen() {
     splashe.css({ 'margin-top' : '20px' });
     splashe.css({ 'margin-top' : '20px' });
     splashe.css({ 'margin-bottom': '5px' });
-    splashe.css({ 'z-index': '9000' });
+    splashe.css({ 'z-index': '999999' });
     splashe.css({ 'position': 'fixed' });
     splashe.css({ 'border-radius': '1.5em 0em 0em 0em' });
     splashe.css({ 'border-color': '#F98E05' });
@@ -181,14 +183,14 @@ function splashScreen() {
 
     $("#close").css({ width: '100px' });
     $("#close").css({ height: '24px' });
-    $("#close").css({ 'padding-top': '1em' });
+    $("#close").css({ 'padding-top': '14px' });
     $("#close").css({ 'vertical-align': 'middle' });
-    $("#close").css({ "background-color": "#f98e05" });
-    $("#close").css({cursor: "pointer"});
+    $("#close").css({ 'background-color': "#f98e05" });
+    $("#close").css({ cursor: "pointer"});
 
     $("#close").click(function() {
         localStorage.setItem('last', new Date().toISOString());
-        console.log("Saved this time in localStorage so the splashscreen can re-appear in 12 hours after a click")
+        console.log("Saved 'acceptance' in localStorage so the splashscreen will re-appear in 12 hours after the last click.")
         $("#splasher").hide();
     });
 
