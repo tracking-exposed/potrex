@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "eslint ./",
-    "build": "rimraf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/dist/* ./build/",
+    "build": "rimraf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/build/* ./build/",
     "start": "npm run build:watch:files",
     "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/build/* src/popup/* ./build/ && cross-env webpack -w",
     "build:dist": "sh pack-extension.sh",
@@ -21,7 +21,7 @@
     "test:watch": "mocha -w --compilers js:babel-register --reporter spec",
     "docs": "rm -rf ./docs && ./build-docs.sh"
   },
-  "devDependencies": {
+  "dependencies": {
     "autoprefixer": "^6.7.7",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
@@ -60,9 +60,12 @@
     "webpack-combine-loaders": "^2.0.4",
     "webpack-dev-server": "^3.1.8",
     "webpack-notifier": "^1.6.0",
-    "write-file-webpack-plugin": "^3.3.0"
-  },
-  "dependencies": {
+    "write-file-webpack-plugin": "^3.3.0",
+    "@material-ui/core": "^4.10.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.55",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2",
     "bs58": "^3.0.0",
     "cheerio": "^0.22.0",
     "classnames": "^2.2.6",
@@ -71,9 +74,6 @@
     "jquery": "^3.5.0",
     "lodash": "^4.17.19",
     "marked": "^0.7.0",
-    "material-ui": "^0.16.7",
-    "react": "^15.6.2",
-    "react-dom": "^15.6.2",
     "tweetnacl": "^0.14.3",
     "tweetnacl-util": "^0.13.3",
     "uuid": "^2.0.3"
