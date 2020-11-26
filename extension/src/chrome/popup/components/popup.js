@@ -29,7 +29,7 @@ class Popup extends React.Component{
           if(userSettings && userSettings.publicKey)
             this.setState({ status: 'done', data: userSettings });
           else
-            this.setState({ status: 'error', data: userSettings });
+            this.setState({ status: 'done', data: {} });
         });
       } catch(e) {
         console.log("catch error", e.message, runtime.lastError);
@@ -53,10 +53,11 @@ class Popup extends React.Component{
             <Card>
                 <Alert severity="error">
                     <AlertTitle>Error</AlertTitle>
-                    Extension isn't initialized yet — <strong>Access <a href="https://www.pornhub.com" target="_blank">pornhub.com</a>.</strong>
+                    Extension isn't ready yet — <strong>access to <a href="https://www.pornhub.com" target="_blank">pornhub.com</a>, and this would initialize the extension. You might always switch on and off the collection from this popup.</strong>
                 </Alert>
                 <InfoBox />
             </Card>
+            <small>version {version}, released {timeago}</small>
           </div>
         );
       }

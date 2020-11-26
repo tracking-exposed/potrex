@@ -45,7 +45,7 @@ class Settings extends React.Component{
               <ListItemIcon>
                 <TimelineIcon />
               </ListItemIcon>
-              <ListItemText primary={ (!!this.state && !!this.state.active) ? "turn OFF evidence collection" : "turn ON evidence collection"} />
+              <ListItemText primary={ (!!this.state && !!this.state.active) ? "potrex is ACTIVE (tap to turn it off)" : "potrex is now DEACTIVATED" } />
               <ListItemSecondaryAction>
                 <Switch
                   edge="end"
