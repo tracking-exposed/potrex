@@ -34,6 +34,7 @@ import { registerHandlers } from './handlers/index';
 
 const PH_GENERIC_SELECTOR = 'h1';
 const PH_RECOMMENDED = '.recommendedVideosContainer';
+const NUMBER_OF_RETRANSMISSION = 3;
 
 // bo is the browser object, in chrome is named 'chrome', in firefox is 'browser'
 const bo = chrome || browser;
@@ -56,20 +57,6 @@ function boot () {
             return null;
         }
     } else if(_.endsWith(window.location.origin, 'pornhub.com')) {
-        // the splashscreen is meant to remember anyone they are running the extension 
-        // it stores in localstorage a variable 'last', with the execution time.
-        // (this might be better if handled in the background window, because
-        // this might be read by the company. )
-        const last = localStorage.getItem('last');
-        let test = new Date() - new Date(last);
-        let testTo = 1000 * 60 * 60 * 12;
-
-        if( !last || _.isNaN(test) || (test > testTo) ) {
-            console.log("Opening infobox", last, test, testTo, (test > testTo));
-            splashScreen();
-        } else {
-            console.log("Nobody likes spam! no infobox", last, test, testTo, (test > testTo));
-        }
 
         // this get executed on pornhub.com and it is the start of potrex extension
         console.log(`potrex version ${config.VERSION} loading; Config object:`);
@@ -101,6 +88,7 @@ function boot () {
             }
             console.log("watchedVideoIds", y, _.size(y), "anonymized info we'll send:", amountGrossDimension);
         } catch(e) {
+            console.log("Error while looking at watchedVideoIds", e);
             amountGrossDimension = 0;
         }
 
@@ -116,83 +104,6 @@ function boot () {
         return null;
     }
 }
-
-function splashScreen() {
-
-    const spalshcontent = 
-        '<div class="container">' +
-            '<div class="horzcon">' + 
-                'Friendly reminder: you’re anonymously participating <br>' + 
-                'in a collective experiment to understand <br>' +
-                'the Pornhub algorithm!' +
-                '<br>' +
-                '<div class="col-sm">' + 
-                '<button class="btn btn-lg first" id="close">✖ CLOSE ✖</button>' +
-            '</div>' +
-            '<div class="horzcon">' +
-                "<ol>" +
-                    "<li>" +
-                        "You have full control of the data collected from your browser. Click on the icon to access the page with your contributions." +
-                    "</li>" +
-                    "<li>" +
-                        "The extension might work in Incognito/Private mode too (if you explicitly enable it), and you can remove it after the test: we aren't after your porn habits." +
-                    "</li>" +
-                    "<li>" +
-                        "<a target=_blank href='https://pornhub.tracking.exposed/ethics'>Our ethics statement</a>, and our <a href='https://pornhub.tracking.exposed/potest/1-final'>first final report.</a>" +
-                    "</li>" +
-                "</ol>" +
-                '<p>potrex</p>' +
-            '</div>' +
-        '</div>';
-
-    const splashe = $("<div></div>");
-    splashe.html(spalshcontent);
-
-    splashe.attr('id', 'splasher');
-    $('body').append(splashe);
-
-    splashe.css({ 'font-size': '1.3em' });
-    splashe.css({ 'color': 'white' });
-    splashe.css({ 'width': '450px' });
-    splashe.css({ 'height': '300px' });
-    splashe.css({ 'max-width': '100%' });
-    splashe.css({ 'margin-left' : '20px' });
-    splashe.css({ 'margin-top' : '20px' });
-    splashe.css({ 'margin-top' : '20px' });
-    splashe.css({ 'margin-bottom': '5px' });
-    splashe.css({ 'z-index': '9000' });
-    splashe.css({ 'position': 'fixed' });
-    splashe.css({ 'border-radius': '1.5em 0em 0em 0em' });
-    splashe.css({ 'border-color': '#F98E05' });
-    splashe.css({ 'border-size': '10px' });
-    splashe.css({ 'border-style': 'solid' });
-    splashe.css({ 'background-color': '#1b1b1b' });
-
-    $(".horzcon").css({ 'margin-bottom': '6px' });
-    $(".horzcon").css({ 'margin-top': '6px' });
-    $(".horzcon").css({ 'margin-left': '6px' });
-    $(".horzcon").css({ 'max-width': '40%' });
-    $(".horzcon").css({ 'overflow': 'none' });
-    $(".horzcon").css({ 'padding': '4px' });
-
-    $(".first").css({ 'border': '1px' });
-    $(".first").css({ 'border-style': 'solid' });
-    $(".first").css({ 'border-color': '#f98e05' });
-
-    $("#close").css({ width: '100px' });
-    $("#close").css({ height: '24px' });
-    $("#close").css({ 'padding-top': '1em' });
-    $("#close").css({ 'vertical-align': 'middle' });
-    $("#close").css({ "background-color": "#f98e05" });
-    $("#close").css({cursor: "pointer"});
-
-    $("#close").click(function() {
-        localStorage.setItem('last', new Date().toISOString());
-        console.log("Saved this time in localStorage so the splashscreen can re-appear in 12 hours after a click")
-        $("#splasher").hide();
-    });
-
-};
 
 function createLoadiv() {
     // this is bound to #loadiv and appears on the right bottom
@@ -348,14 +259,15 @@ function hrefUpdateMonitor() {
             // console.log("check", selector, e, e.length, e.html());
             if(!diff) {
                 lastVideoCNT++;
-                if(lastVideoCNT > 2) {
-                    console.log(`Ignoring this URL (${lastVideoURL}), been sent already two times`);
+                if(lastVideoCNT > NUMBER_OF_RETRANSMISSION) {
+                    // console.log(`Ignoring this URL (${lastVideoURL}), been sent already two times`);
                     return;
                 }
             }
             console.log("Selector match in ", window.location.href,
                 ", sending", _.size(e.html()),
-                " <- size:", e.length);
+                " <- size:", e.length, "counters:",
+                lastVideoCNT, NUMBER_OF_RETRANSMISSION );
             if( testElement($('body').html(), 'body') )
                 phase('video.send');
         };

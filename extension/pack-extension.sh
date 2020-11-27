@@ -12,6 +12,6 @@ grep -v localhost manifest.json | grep -v 127\.0 > ./dist/manifest.json
 #sed -es'/BUILD_VERSION/'$V'/' src/popup/popup.html  > dist/popup.html
 
 cp src/popup/popup.html ./dist/
-cp icons/* ./dist
+cp icons/dist/* ./dist
 cd ./dist
 zip extension.zip *
