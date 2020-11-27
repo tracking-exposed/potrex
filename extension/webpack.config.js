@@ -3,13 +3,12 @@
 'use strict';
 
 const path = require('path');
-
+const moment = require('moment');
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
 const combineLoaders = require('webpack-combine-loaders');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
-
 
 require('dotenv').load({ silent: true });
 
@@ -19,7 +18,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
-// const BUILD = require('child_process').execSync('git rev-parse HEAD').toString().trim();
+const BUILDISODATE = new Date().toISOString();
 
 const PATHS = {
     APPS: {
@@ -44,7 +43,8 @@ const DEFINITIONS = {
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION + '/'),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: JSON.stringify({}), // BUILD),
+        BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),
+        BUILDISODATE: JSON.stringify(BUILDISODATE),
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
@@ -80,7 +80,7 @@ const DEV_PLUGINS = [
         // Dunno if this is the case for every Ubuntu machine.
         urgency: 'critical',
         title: 'potrex',
-        contentImage: path.join(__dirname, 'icons', 'potrex128.png'),
+        contentImage: path.join(__dirname, 'icons', 'dist', 'potrex128.png'),
         timeout: 2,
         alwaysNotify: true
     })
