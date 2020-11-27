@@ -63,7 +63,7 @@
     "lodash": "^4.17.20",
     "marked": "^0.7.0",
     "mocha": "^5.2.0",
-    "node-sass": "^4.9.2",
+    "node-sass": "^4.13.1",
     "postcss-loader": "^0.10.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
