@@ -14,7 +14,7 @@
     "lint": "eslint ./",
     "build": "rimraf ./build && mkdir build && cross-env webpack && cp -r src/popup/* manifest.json icons/build/* ./build/",
     "start": "npm run build:watch:files",
-    "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/build/* src/popup/* ./build/ && cross-env webpack -w",
+    "build:watch": "rimraf ./build && mkdir build && cp -r manifest.json icons/build/* src/popup/* ./build/ && cross-env webpack -w --progress",
     "build:dist": "sh pack-extension.sh",
     "clean": "rm -rf ./build ./dist",
     "test": "echo 'not really maintained' && mocha --compilers js:babel-register --reporter spec",
@@ -22,7 +22,7 @@
     "docs": "rm -rf ./docs && ./build-docs.sh"
   },
   "dependencies": {
-    "@material-ui/core": "^4.10.0",
+    "@material-ui/core": "^4.11.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.55",
     "autoprefixer": "^6.7.7",
@@ -65,8 +65,8 @@
     "mocha": "^5.2.0",
     "node-sass": "^4.9.2",
     "postcss-loader": "^0.10.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-transform-hmr": "^1.0.4",
     "sass-loader": "^4.1.1",
     "style-loader": "^0.13.2",

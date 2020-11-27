@@ -28,8 +28,10 @@ class Popup extends React.Component{
           console.log("here got", userSettings);
           if(userSettings && userSettings.publicKey)
             this.setState({ status: 'done', data: userSettings });
-          else
+          else {
+            console.log("This seems uninitialized");
             this.setState({ status: 'done', data: {} });
+          }
         });
       } catch(e) {
         console.log("catch error", e.message, runtime.lastError);
@@ -42,7 +44,7 @@ class Popup extends React.Component{
       const timeago = moment.duration(moment() - moment(config.BUILDISODATE)).humanize() + ' ago';
 
       if(!this.state)
-        return (<div>Loading...</div>)
+        return (<div style={styles}>Loading...</div>);
 
       console.log('popup props status', this.props, this.state);
 
