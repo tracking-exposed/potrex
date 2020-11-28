@@ -29,6 +29,9 @@ const theme = createMuiTheme({
             },
         },
     },
+    palette: {
+        type: 'dark',
+    },
 });
 
 function main () {

@@ -16,6 +16,7 @@ const bo = chrome || browser;
 
 const styles = {
     width: '400px',
+    'background-color': 'black',
 };
 
 class Popup extends React.Component{
