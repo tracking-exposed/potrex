@@ -7,9 +7,12 @@ import StayCurrentLandscapeIcon from '@material-ui/icons/StayCurrentLandscape';
 import OndemandVideoIcon from '@material-ui/icons/OndemandVideo';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import List from '@material-ui/core/List';
+import Link from '@material-ui/core/Link';
 
 function ListItemLink(props) {
-    return <ListItem component="a" {...props} />;
+    return (
+        <ListItem button component="a" {...props} />
+    );
 }
 
 class InfoBox extends React.Component{
@@ -20,23 +23,23 @@ class InfoBox extends React.Component{
         const personalLink = config.WEB_ROOT + '/personal/#' + this.props.publicKey;
 
         return (
-          <List component="nav" aria-label="controls links files">
+          <List component="nav">
 
-            <ListItem button>
+            <ListItem>
               <ListItemIcon>
                 <AccountBoxIcon />
               </ListItemIcon>
               <ListItemLink href={personalLink} target="_blank">Personal page</ListItemLink>
             </ListItem>
 
-            <ListItem button>
+            <ListItem>
               <ListItemIcon>
                 <StayCurrentLandscapeIcon />
               </ListItemIcon>
               <ListItemLink href={homecsv} target="_blank">Download Homepage Video CSV</ListItemLink>
             </ListItem>
 
-            <ListItem button>
+            <ListItem>
               <ListItemIcon>
                 <OndemandVideoIcon />
               </ListItemIcon>

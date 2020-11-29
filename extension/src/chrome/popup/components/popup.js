@@ -4,6 +4,9 @@ import React from 'react';
 import { Card } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
 
 import InfoBox from './infoBox';
 import Settings from './settings';
@@ -15,8 +18,8 @@ import config from '../../../config';
 const bo = chrome || browser;
 
 const styles = {
-    width: '400px',
-    'background-color': 'black',
+    width: '500px',
+    // 'background-color': 'black',
 };
 
 class Popup extends React.Component{
@@ -64,18 +67,39 @@ class Popup extends React.Component{
           </div>
         );
       }
+      const about = config.WEB_ROOT + '/about';
+      const privacy = config.WEB_ROOT + '/privacy';
+      const experiments = config.WEB_ROOT + '/potest/next';
 
       return (
         <div style={styles}>
           <Card>
-              <FormHelperText>poTREX main switch</FormHelperText>
+            <CardContent>
+              <InfoBox />
               <Settings active={this.state.data.active} />
               <FormHelperText>Access to your data</FormHelperText>
               <GetCSV publicKey={this.state.data.publicKey } />
-              <FormHelperText>About</FormHelperText>
-              <InfoBox />
+              <FormHelperText>Access to your data</FormHelperText>
+              <CardActions>
+                <Button color="secondary" href={about} target="_blank">
+                  Project
+                </Button>
+                <Button color="primary" href={privacy} target="_blank">
+                  Privacy
+                </Button>
+                <Button color="secondary" href="https://tracking.exposed/manifesto" target="_blank">
+                  Manifesto
+                </Button>
+                <Button color="primary"  href="https://github.com/tracking-exposed/potrex/" target="_blank">
+                  Software
+                </Button>
+                <Button color="secondary" href={experiments} target="_blank">
+                  Experiments
+                </Button>
+              </CardActions>
+              <small>version {version}, released {timeago}</small>
+            </CardContent>
           </Card>
-          <small>version {version}, released {timeago}</small>
         </div>
       );
     }
