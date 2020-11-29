@@ -5,11 +5,11 @@ import createReactClass from 'create-react-class';
 import { Card } from '@material-ui/core';
 
 const imgstyle = {
-    width: '80%'
+    width: '70%'
 };
 const lessStandardHref = {
    // color: 'black',
-    textDecoration: 'none'
+    textDecoration: 'none',
 };
 
 const InfoBox = createReactClass({
@@ -19,10 +19,12 @@ const InfoBox = createReactClass({
 
         return (
             <Card style={{'textAlign':'center'}}>
+              <br/>
               <a target='_blank' href={config.WEB_ROOT} style={lessStandardHref}>
-                <img style={imgstyle} src='header-logo-pornhub.svg' />
+              <img style={imgstyle} src='header-logo-pornhub.svg' />
               </a>
-
+              <br/>
+              <br/>
             </Card>
         );
     }

@@ -1,13 +1,14 @@
 import React from 'react';
 import config from '../../../config';
 
+import Link from '@material-ui/core/Link';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import StayCurrentLandscapeIcon from '@material-ui/icons/StayCurrentLandscape';
+import ListItemText from '@material-ui/core/ListItemText';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import OndemandVideoIcon from '@material-ui/icons/OndemandVideo';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import List from '@material-ui/core/List';
-import Link from '@material-ui/core/Link';
+import HomeIcon from '@material-ui/icons/Home'
 
 function ListItemLink(props) {
     return (
@@ -25,26 +26,26 @@ class InfoBox extends React.Component{
         return (
           <List component="nav">
 
-            <ListItem>
+            <ListItemLink href={personalLink} target="_blank">
               <ListItemIcon>
-                <AccountBoxIcon />
+                <HomeIcon color="primary" style={{ fontSize: 35 }}/>
               </ListItemIcon>
-              <ListItemLink href={personalLink} target="_blank">Personal page</ListItemLink>
-            </ListItem>
+             <ListItemText primary="Personalization Page" secondary="compare results" />
+            </ListItemLink>
 
-            <ListItem>
+            <ListItemLink href={homecsv} target="_blank">
               <ListItemIcon>
-                <StayCurrentLandscapeIcon />
+                <DashboardIcon color="primary" style={{ fontSize: 35 }} />
               </ListItemIcon>
-              <ListItemLink href={homecsv} target="_blank">Download Homepage Video CSV</ListItemLink>
-            </ListItem>
+              <ListItemText primary="Download Homepage Data" secondary="collected homepages .csv" />
+            </ListItemLink>
 
-            <ListItem>
+            <ListItemLink href={videocsv} target="_blank">
               <ListItemIcon>
-                <OndemandVideoIcon />
+                <OndemandVideoIcon color="primary" style={{ fontSize: 35 }} />
               </ListItemIcon>
-              <ListItemLink href={videocsv} target="_blank">Download Related Video CSV</ListItemLink>
-            </ListItem>
+              <ListItemText primary="Download Related Videos Data" secondary="collected video recommendations .csv" />
+            </ListItemLink>
 
           </List>
         );

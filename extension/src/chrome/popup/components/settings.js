@@ -4,7 +4,7 @@ import createReactClass from 'create-react-class';
 
 import Switch from '@material-ui/core/Switch';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import TimelineIcon from '@material-ui/icons/Timeline';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
@@ -20,7 +20,7 @@ class Settings extends React.Component{
         super(props);
         this.state = { active: props.active };
     }
-        
+
     render () {
 
         function toggleActivation (_t, event) {
@@ -38,16 +38,17 @@ class Settings extends React.Component{
             return (<p>Loading...</p>);
 
         console.log("settings props state", this.props, this.state);
-
+        var enabled = (!!this.state && !!this.state.active)
         return (
           <List component="nav" aria-label="main settings">
             <ListItem>
               <ListItemIcon>
-                <TimelineIcon />
+                <PowerSettingsNewIcon fontSize="Large" color={enabled ? "primary" : "disabled" } />
               </ListItemIcon>
-              <ListItemText primary={ (!!this.state && !!this.state.active) ? "potrex is ACTIVE (tap to turn it off)" : "potrex is now DEACTIVATED" } />
+              <ListItemText primary={enabled? "Enabled" : "Disabled" } />
               <ListItemSecondaryAction>
                 <Switch
+                  color="primary"
                   edge="end"
                   onChange={_.partial(toggleActivation, this)}
                   checked={this.state ? !!this.state.active : false }
