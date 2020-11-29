@@ -1,6 +1,6 @@
 @font-face {
-	font-family: Trex-Regular; 
-	src: url('/Trex-Regular.ttf');
+    font-family: "Trex-Regular";
+    src: url('/Trex-Regular.ttf');
 }
 
 .headerstyle {
@@ -28,7 +28,7 @@
 }
 
 .svglimit {
-	width: 200px;
-	padding-left: 15px;
-	padding-top: 15px;
+    width: 200px;
+    padding-left: 15px;
+    padding-top: 15px;
 }
