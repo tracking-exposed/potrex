@@ -74,7 +74,7 @@ const PROD_PLUGINS = [
     // Add additional production plugins
 ];
 
-const DEV_PLUGINS = [
+const DEV_PLUGINS = [ /*
     new WebpackNotifierPlugin({
         // My notification daemon displays "critical" messages only.
         // Dunno if this is the case for every Ubuntu machine.
@@ -83,7 +83,8 @@ const DEV_PLUGINS = [
         contentImage: path.join(__dirname, 'icons', 'dist', 'potrex128.png'),
         timeout: 2,
         alwaysNotify: true
-    })
+    }) */
+
 ];
 
 const EXTRACT_CSS_PLUGIN = new ExtractTextPlugin(
