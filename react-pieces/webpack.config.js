@@ -20,13 +20,12 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
 const BUILDISODATE = new Date().toISOString();
-console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
 
 const PATHS = {
     APPS: {
         personal: path.resolve(__dirname, 'src/personal/index.js'),
     },
-    BUILD: path.resolve(__dirname, '..', '..', 'pornhub.tracking.exposed', 'static', 'js', 'generated'),
+    TARGET: path.resolve(__dirname, '..', '..', 'pornhub.tracking.exposed', 'static', 'js', 'generated'),
     NODE_MODULES: path.resolve(__dirname, 'node_modules')
 };
 
@@ -47,6 +46,8 @@ const DEFINITIONS = {
         FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
     }
 };
+
+console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT, ' Target: ', PATHS.TARGET);
 
 /** PLUGINS **/
 const PLUGINS = [
@@ -142,7 +143,7 @@ const config = {
     entry: PATHS.APPS,
 
     output: {
-        path: PRODUCTION ? PATHS.DIST : PATHS.BUILD,
+        path: PATHS.TARGET,
         filename: '[name].js'
     },
 

@@ -11,7 +11,8 @@
     "url": "git+https://github.com/tracking-exposed/yttrex.git"
   },
   "scripts": {
-    "build": "cross-env webpack"
+    "build": "cross-env webpack",
+    "dist": "NODE_ENV=distribution cross-env webpack"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.7",

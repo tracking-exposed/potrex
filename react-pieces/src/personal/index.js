@@ -39,7 +39,7 @@ function main () {
             <Videos />
             <Homes />
             <Searches />
-        </ThemeProvider>, document.getElementById('main')
+        </ThemeProvider>, document.getElementById('react--provided')
     );
 }
 

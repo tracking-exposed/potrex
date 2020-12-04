@@ -30,7 +30,7 @@ function getSearchesResults(term, paging) {
   return `/api/v2/searches/${term}/`;
 }
 
-class Videos extends React.Component{
+class Searches extends React.Component{
 
   constructor (props) {
     super(props);
@@ -47,7 +47,7 @@ class Videos extends React.Component{
   render () {
 
     if(!this.state || this.state.status == 'fetching')
-      return (<div>Loading the most recently accessed vidoes...</div>)
+      return (<div>Loading the most recently performed searches...</div>)
 
     console.log('X: props status', this.props, this.state);
 
@@ -95,7 +95,7 @@ class Videos extends React.Component{
       <div style={styles}>
         <Card>
           <FormHelperText>
-            Recent Videos recorded
+            Recent Searches returned
           </FormHelperText>
           <List>
             {items}
@@ -106,4 +106,4 @@ class Videos extends React.Component{
   }
 }
 
-export default Videos;
+export default Searches;
