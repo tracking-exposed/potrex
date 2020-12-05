@@ -10,19 +10,4 @@
         } ]
     ],
     "sourceMaps": true
-
-    /*,
-    "env": {
-        "demo": {
-            "plugins": [
-                [ "react-transform", {
-                    "transforms": [{
-                        "imports": ["react"],
-                        "locals": ["module"]
-                    }]
-                } ]
-            ]
-        }
-    }
-    */
 }

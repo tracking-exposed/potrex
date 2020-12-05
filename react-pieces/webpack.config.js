@@ -5,6 +5,7 @@
 const path = require('path');
 const exec = require('child_process').exec;
 const moment = require('moment');
+const nconf = require('nconf');
 
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
@@ -13,12 +14,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
 
 require('dotenv').load({ silent: true });
+nconf.argv().env();
 
 const LAST_VERSION = 2;
 const packageJSON = require('./package.json');
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const PRODUCTION = NODE_ENV === 'production';
-const DEVELOPMENT = NODE_ENV === 'development';
+const PRODUCTION = nconf.get('NODE_ENV') === 'prod';
+const DEVELOPMENT = !PRODUCTION;
 const BUILDISODATE = new Date().toISOString();
 
 const PATHS = {
@@ -36,8 +37,7 @@ var ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://po
 
 const DEFINITIONS = {
     'process.env': {
-        DEVELOPMENT: JSON.stringify(DEVELOPMENT),
-        NODE_ENV: JSON.stringify(NODE_ENV),
+	building: JSON.stringify({ 'dev': DEVELOPMENT, 'prod': PRODUCTION}),
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
         WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
         VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
@@ -47,7 +47,12 @@ const DEFINITIONS = {
     }
 };
 
-console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT, ' Target: ', PATHS.TARGET);
+console.log('Building in ', PATHS.TARGET, 'is NODE_ENV "prod" | "dev" ?');
+if(PRODUCTION)
+    console.log("prod\tThis condition produce a reduced .js to be committed online, and embed potrex server as URL\n");
+else
+    console.log("dev\tThis condition produce a LARGE .js and SHOULD NOT be committed online. It embed localhost as server\n");
+
 
 /** PLUGINS **/
 const PLUGINS = [
@@ -83,7 +88,7 @@ const EXTRACT_CSS_PLUGIN = new ExtractTextPlugin(
 PLUGINS.push(EXTRACT_CSS_PLUGIN);
 
 if (PRODUCTION) {
-    /* PLUGINS.push(...PROD_PLUGINS); firefox is giving me too many problem */
+    PLUGINS.push(...PROD_PLUGINS);
 } else if (DEVELOPMENT) {
     console.log('Development, using as environment variables: ' + JSON.stringify(DEFINITIONS['process.env']));
 }
