@@ -169,6 +169,10 @@ app.post('/api/v2/profile/:publicKey', (req, res) => {
     return dispatchPromise("updateProfile", req, res);
 });
 
+/* new since react */
+app.get('/api/v2/raw/:publicKey/:paging?', function(req, res) {
+    return dispatchPromise('getSubmittedRAW', req, res);
+});
 
 
 /* ADMIN */

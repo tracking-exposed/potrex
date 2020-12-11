@@ -11,23 +11,15 @@ import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import Evidence from './Evidence';
 
 const styles = {
-  width: '400px',
+  /* width: '400px', */
 };
 
 const LOCALHOST_SERVER = 'http://localhost:10000';
 
-function getSearchPatterns(paging) {
-  if (paging) console.log("remember the paging is disabled");
+function getVideoURL(pkey) {
   if (window.location.origin.match(/localhost/))
-    return `${LOCALHOST_SERVER}/api/v2/search/keywords/`;
-  return `/api/v2/search/keywords/`;
-}
-
-function getSearchesResults(term, paging) {
-  if (paging) console.log("remember the paging is disabled");
-  if (window.location.origin.match(/localhost/))
-    return `${LOCALHOST_SERVER}/api/v2/searches/${term}/`;
-  return `/api/v2/searches/${term}/`;
+    return `${LOCALHOST_SERVER}/api/v1/personal/${pkey}/`;
+  return `/api/v1/personal/${pkey}/`;
 }
 
 class Videos extends React.Component{
@@ -38,18 +30,20 @@ class Videos extends React.Component{
   }
 
   componentDidMount () {
-    const url = getSearchPatterns();
-    fetch(url, { mode: 'cors' })
-      .then(resp => resp.json())
-      .then(data => this.setState({status: 'done', data }));
+    const url = getVideoURL(this.props.pkey);
+    try {
+      fetch(url, { mode: 'cors' })
+        .then(resp => resp.json())
+        .then(data => this.setState({status: 'done', data }))
+    } catch(e) {
+      this.setState({status: 'error', message: e.message });
+    }
   }
 
   render () {
 
     if(!this.state || this.state.status == 'fetching')
       return (<div>Loading the most recently accessed vidoes...</div>)
-
-    console.log('X: props status', this.props, this.state);
 
     if(this.state.status !== 'done') {
       console.log("Incomplete info before render");
@@ -65,40 +59,65 @@ class Videos extends React.Component{
       );
     }
 
-    const selist = _.get(this.state.data, 'selist');
+    console.log("data list", this.state.data);
+    const vlist = _.get(this.state.data, 'recent');
 
-    if(!(this.state.data && selist && selist.length > 1 )) {
+    if(!(this.state.data && vlist && vlist.length )) {
       return (
         <div style={styles}>
           <Card>
-            <h1>Altought connection with server worked, no search terms seems available, <a href="https://www.youtube.com/watch?v=bs2u4NLaxbI">wtf</a>.</h1>
+            <h3>Connection with server worked, no content found under this profileKey.</h3>
           </Card>
         </div>
       );
     }
     
-    const items = []
+    const videos = []
+    try {
+      for (const vid of _.filter(vlist, { type: 'video'}) ) {
+        // sevid.id it is a list temporarly ignored, maybe usable in advanced searches
+        videos.push(<Evidence
+          term={vid.title + " " + vid.views + " " + vid.relative + " " + JSON.stringify(vid.categories)}
+          amount={JSON.stringify(vid.producer)}
+          totalVideos={vid.related.length}
+          key={vid.metadataId} /> 
+        );
+        videos.push(<Divider variant="inset" component="li" />);
+      }
+      console.log("video added", videos.length)
+    } catch(e) {
+      videos.push("<p>No videos!</p>");
+    }
 
-    for (const sevid of selist ) {
-      // sevid.id it is a list temporarly ignored, maybe usable in advanced searches
-      console.log(sevid);
-      items.push(<Evidence
-        term={sevid.t}
-        amount={sevid.amount}
-        totalVideos={sevid.searches}
-        key={_.random(0, 0xffff) } /> 
-      );
-      items.push(<Divider variant="inset" component="li" />);
+    const homes = []
+    try {
+      for (const hom of _.filter(vlist, { type: 'home'}) ) {
+        // sevid.id it is a list temporarly ignored, maybe usable in advanced searches
+        homes.push(<Evidence
+          term={JSON.stringify(_.map(hom.sections, 'display'))}
+          totalVideos={JSON.stringify(_.map(hom.sections, function(s) { return _.size(s.videos)}))}
+          amount={_.sum(_.map(hom.sections, function(s) { return s.videos.length }))}
+          key={hom.metadataId} /> 
+        );
+        homes.push(<Divider variant="inset" component="li" />);
+      }
+      console.log("homes added", homes.length)
+    } catch(e) {
+      homes.push("<p>No homes!</p>");
     }
 
     return (
       <div style={styles}>
+        <FormHelperText>Videos</FormHelperText>
         <Card>
-          <FormHelperText>
-            Recent Videos recorded
-          </FormHelperText>
           <List>
-            {items}
+            {videos}
+          </List>
+        </Card>
+        <FormHelperText>Homepage</FormHelperText>
+        <Card>
+          <List>
+            {homes}
           </List>
         </Card>
       </div>

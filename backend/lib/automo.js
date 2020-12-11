@@ -255,15 +255,15 @@ async function tofu(publicKey, version) {
     return supporter;
 }
 
-async function getLastHTMLs(filter, skip) {
+async function getLastHTMLs(filter, skip, limit) {
 
-    const HARDCODED_LIMIT = 4;
+    const HARDCODED_LIMIT = 20;
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const htmls = await mongo3.readLimit(mongoc,
         nconf.get('schema').htmls, filter,
         { savingTime: 1},
-        HARDCODED_LIMIT,
+        limit ? limit : HARDCODED_LIMIT,
         skip ? skip : 0);
 
     if(_.size(htmls))

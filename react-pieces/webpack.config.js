@@ -3,24 +3,17 @@
 'use strict';
 
 const path = require('path');
-const exec = require('child_process').exec;
-const moment = require('moment');
-const nconf = require('nconf');
 
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
 const combineLoaders = require('webpack-combine-loaders');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const WebpackNotifierPlugin = require('webpack-notifier');
 
 require('dotenv').load({ silent: true });
-nconf.argv().env();
 
 const LAST_VERSION = 2;
-const packageJSON = require('./package.json');
-const PRODUCTION = nconf.get('NODE_ENV') === 'prod';
+const PRODUCTION = process.env['NODE_ENV'] === 'production';
 const DEVELOPMENT = !PRODUCTION;
-const BUILDISODATE = new Date().toISOString();
 
 const PATHS = {
     APPS: {
@@ -37,21 +30,18 @@ var ENV_DEP_WEB = DEVELOPMENT ? ('http://' + DEV_SERVER + ':1313') : 'https://po
 
 const DEFINITIONS = {
     'process.env': {
-	building: JSON.stringify({ 'dev': DEVELOPMENT, 'prod': PRODUCTION}),
+        NODE_ENV: DEVELOPMENT ? JSON.stringify("development") : JSON.stringify("production"),
         API_ROOT: JSON.stringify(ENV_DEP_SERVER + '/api/v' + LAST_VERSION),
-        WEB_ROOT: JSON.stringify(ENV_DEP_WEB),
-        VERSION: JSON.stringify(packageJSON.version + (DEVELOPMENT ? '-dev' : '')),
-        BUILD: JSON.stringify(`On the ${moment().format("DD of MMMM at HH:mm")}.`),
-        BUILDISODATE: JSON.stringify(BUILDISODATE),
-        FLUSH_INTERVAL: JSON.stringify(DEVELOPMENT ? 10000 : 20000)
+        WEB_ROOT: JSON.stringify(ENV_DEP_WEB)
     }
 };
 
-console.log('Building in ', PATHS.TARGET, 'is NODE_ENV "prod" | "dev" ?');
+console.log('Building in ', PATHS.TARGET, 'is NODE_ENV "production" | "anythingElse=dev" ?', DEFINITIONS['process.env']);
 if(PRODUCTION)
-    console.log("prod\tThis condition produce a reduced .js to be committed online, and embed potrex server as URL\n");
+    console.log("production\tThis condition produce a reduced .js to be committed online, and embed potrex server as URL\n");
 else
     console.log("dev\tThis condition produce a LARGE .js and SHOULD NOT be committed online. It embed localhost as server\n");
+
 
 
 /** PLUGINS **/
@@ -89,8 +79,6 @@ PLUGINS.push(EXTRACT_CSS_PLUGIN);
 
 if (PRODUCTION) {
     PLUGINS.push(...PROD_PLUGINS);
-} else if (DEVELOPMENT) {
-    console.log('Development, using as environment variables: ' + JSON.stringify(DEFINITIONS['process.env']));
 }
 
 /** LOADERS **/

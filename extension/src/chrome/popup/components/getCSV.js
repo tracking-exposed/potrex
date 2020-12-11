@@ -28,21 +28,21 @@ class InfoBox extends React.Component{
 
             <ListItemLink href={personalLink} target="_blank">
               <ListItemIcon>
-                <HomeIcon color="primary" fontSize="Large"/>
+                <HomeIcon color="primary" fontSize="large"/>
               </ListItemIcon>
              <ListItemText primary="Personalization Page" secondary="compare results" />
             </ListItemLink>
 
             <ListItemLink href={homecsv} target="_blank">
               <ListItemIcon>
-                <DashboardIcon color="primary" fontSize="Large" />
+                <DashboardIcon color="primary" fontSize="large" />
               </ListItemIcon>
               <ListItemText primary="Download Homepage Data" secondary="collected homepages .csv" />
             </ListItemLink>
 
             <ListItemLink href={videocsv} target="_blank">
               <ListItemIcon>
-                <OndemandVideoIcon color="primary" fontSize="Large" />
+                <OndemandVideoIcon color="primary" fontSize="large" />
               </ListItemIcon>
               <ListItemText primary="Download Related Videos Data" secondary="collected video recommendations .csv" />
             </ListItemLink>

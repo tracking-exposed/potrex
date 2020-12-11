@@ -25,6 +25,7 @@ var apiList = {
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,
 
     /* return user' last videos */
+    getSubmittedRAW:    require('../routes/personal').getSubmittedRAW,
     getPersonal:        require('../routes/personal').getPersonal,
     getPersonalRelated: require('../routes/personal').getPersonalRelated,
 

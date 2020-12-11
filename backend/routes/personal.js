@@ -72,6 +72,18 @@ async function getPersonalCSV(req) {
     };
 };
 
+async function getSubmittedRAW(req) {
+    const MAX = 30;
+    const k =  req.params.publicKey;
+
+    const htmlFilter = { publicKey: k };
+    const stored = await automo.getLastHTMLs(htmlFilter, 0, MAX);
+    const trimmed = _.map(stored.content, function(h) {
+        return _.pick(h, ['id', 'metadataId', 'size', 'processed', 'href', 'savingTime']);
+    })
+    return { json: { content: trimmed, amount: MAX, overflow: stored.overflow} };
+}
+
 async function getPersonalRelated(req) {
     const DEFMAX = 40;
     const k =  req.params.publicKey;
@@ -143,6 +155,7 @@ async function removeEvidence(req) {
 
 module.exports = {
     getPersonal,
+    getSubmittedRAW,
     getPersonalCSV,
     getPersonalRelated,
     getEvidences,

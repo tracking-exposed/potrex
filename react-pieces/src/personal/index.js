@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Videos from './Videos';
+import Raw from './Raw';
 import Homes from './Homes';
-import Searches from './Searches';
 
 const Zimplon = {
     fontFamily: 'Trex-Regular',
@@ -32,16 +32,29 @@ const theme = createMuiTheme({
     },
 });
 
-/* here the page gets composed */
 function main () {
-    ReactDOM.render(
-        <ThemeProvider theme={theme}>
-            <Videos />
-            <Homes />
-            <Searches />
-        </ThemeProvider>, document.getElementById('react--provided')
-    );
+    const key = window.location.hash ? window.location.hash.substr(1) : "";
+    if(key.length < 40) {
+        ReactDOM.render(
+            <ThemeProvider theme={theme}>
+                <h1>Error: in the URL we can't see an auth key: please use the extension to access personal page</h1>
+            </ThemeProvider>, document.getElementById('react--provided')
+        );
+    } else {
+        ReactDOM.render(
+            <ThemeProvider theme={theme}>
+                Metadata:
+                <Videos pkey={key}/>
+                Raw content:
+                <Raw pkey={key} />
+            </ThemeProvider>, document.getElementById('react--provided')
+        );
+    }
 }
+
+/* 
+import Searches from './Searches';
+<Searches pkey={key} /> */
 
 /* this is automatically called when 'js/generated/searches.js' */
 main();
