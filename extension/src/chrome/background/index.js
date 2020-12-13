@@ -1,10 +1,10 @@
-import config from '../../config';
+import config from '../../config'
 
-require('./sync');
-require('./account');
-require('./utils');
-require('./opener');
+require('./sync')
+require('./account')
+require('./utils')
+require('./opener')
 
 if (config.DEVELOPMENT) {
-    require('./reloadExtension');
+  require('./reloadExtension')
 }
