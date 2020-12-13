@@ -28,7 +28,6 @@ function produceCSVv1(entries) {
             else if(_.isInteger(swap))
                 memo.csv += swap;
             else if(k == 'related') {
-                debugger;
                 console.log(JSON.stringify(swap, undefined, 2))
                 console.log("related content!");
             }

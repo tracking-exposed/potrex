@@ -132,6 +132,9 @@ app.get('/api/v1/related/:query', function(req, res) {
 app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
     return dispatchPromise('getVideoCSV', req, res);
 });
+app.get('/api/v1/homeCSV/:amount?', function(req, res) {
+    return dispatchPromise('getHomeCSV', req, res);
+});
 app.get('/api/v1/author/:query/:amount?', function(req, res) {
     return dispatchPromise('getByAuthor', req, res);
 });

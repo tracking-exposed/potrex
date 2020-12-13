@@ -453,8 +453,19 @@ async function getMixedDataSince(schema, since, maxAmount) {
         });
     }
 
-    mongoc.close();
+    await mongoc.close();
     return retContent;
+}
+
+async function getArbitrary(filter, amount, skip) {
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const r = await mongo3.readLimit(mongoc,
+        nconf.get('schema').metadata,
+        filter, {
+            savingTime: -1
+        }, amount, skip);
+    await mongoc.close();
+    return r;
 }
 
 module.exports = {
@@ -469,6 +480,7 @@ module.exports = {
     getMetadataByFilter,
     getMetadataFromAuthor,
     getRandomRecent,
+    getArbitrary,
 
     /* used by routes/rsync */
     getFirstVideos,

@@ -18,6 +18,7 @@ var apiList = {
     getVideoId:       require('../routes/public').getVideoId,
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,
+    getHomeCSV:       require('../routes/public').getHomeCSV,
 
     getRandomRecent:  require('../routes/public').getRandomRecent,
 

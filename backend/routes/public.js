@@ -270,6 +270,44 @@ async function getRandomRecent(req) {
     return { json: keylist };
 };
 
+async function getHomeCSV(req) {
+    const MAXENTRY = 100;
+    const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
+    const homes = await automo.getArbitrary({
+        type: 'home'
+    }, amount, skip);
+
+    const nodes = [];
+    _.each(homes, function(entry) {
+        _.each(_.filter(entry.sections, null), function(s) {
+            _.each(s.videos, function(v, videoOrder) {
+                let unwind = _.extend(v, _.omit(entry, ['clientTime',
+                    'version', 'sections', 'href', 'randomUUID', 'type',
+                    'selector', '_id', 'processed', 'isVideo', 'incremental']));
+                unwind.sectionName = s.display;
+                unwind.sectionHref = s.href;
+                unwind.sectionOrder = s.order;
+                unwind.displayOrder = videoOrder;
+                unwind.pseudo = _.toUpper(s.publiKey.substr(0, 6));
+                nodes.push(unwind);
+            })
+        })
+    })
+
+    const csv = CSV.produceCSVv1(nodes);
+    const filename = 'home-' +  moment().format("YY-MM-DD") + ".csv"
+    debug("homeCSV: produced %d bytes, returning %s", _.size(csv), filename);
+    if(!_.size(csv))
+        return { text: "Error: no CSV generated 🤷" };
+
+    return {
+        headers: {
+            "Content-Type": "csv/text",
+            "Content-Disposition": "attachment; filename=" + filename
+        },
+        text: csv,
+    };
+}
 
 module.exports = {
     getLast,
@@ -278,4 +316,5 @@ module.exports = {
     getVideoCSV,
     getByAuthor,
     getRandomRecent,
+    getHomeCSV,
 };
