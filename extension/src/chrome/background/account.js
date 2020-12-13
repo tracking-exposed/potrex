@@ -7,6 +7,10 @@ import db from '../db';
 
 const bo = chrome || browser;
 
+// defaults of the settings stored in 'config' and controlled by popup
+const DEFAULT_SETTINGS = { active: false, ux: false };
+const FIXED_USER_NAME = 'local';
+
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === 'localLookup') {
         userLookup(request.payload, sendResponse);
@@ -16,44 +20,59 @@ bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
         serverLookup(request.payload, sendResponse);
         return true;
     }
+    if (request.type === 'configUpdate') {
+	configUpdate(request.payload, sendResponse);
+	return true;
+    }
 });
 
-function userLookup ({ userId }, sendResponse) {
-    userId = 'local';
+function initializeKey() {
+    var newKeypair = nacl.sign.keyPair();
+    console.log("Initializing new key pair:", bs58.encode(newKeypair.publicKey));
+    return {
+        publicKey: bs58.encode(newKeypair.publicKey),
+        secretKey: bs58.encode(newKeypair.secretKey)
+    };
+}
+function setDefaults(val) {
+    val.active = DEFAULT_SETTINGS.active;
+    val.ux = DEFAULT_SETTINGS.ux;
+    return val;
+}
+
+function userLookup (ignoredarg, sendResponse) {
+    console.log("ignored", ignoredarg);
+    const userId = FIXED_USER_NAME;
     db.get(userId).then(val => {
         if (isEmpty(val)) {
-            var newKeypair = nacl.sign.keyPair();
-            val = {
-                publicKey: bs58.encode(newKeypair.publicKey),
-                secretKey: bs58.encode(newKeypair.secretKey),
-            };
+            var val = initializeKey();
+            val = setDefaults(val);
             db.set(userId, val).then(val => {
-                sendResponse({ publicKey: val.publicKey, status: val.status });
+                console.log("First access attempted, created config", val);
+                sendResponse(val);
             });
         } else {
-            sendResponse({ publicKey: val.publicKey, status: val.status });
+            console.log("sending back from userLookup", val);
+            sendResponse(val);
         }
     });
 };
-
 
 function serverLookup (payload, sendResponse) {
 
     /* remoteLookup might be call as first function after the extension has been
      * installed, and the keys not be yet instanciated */
-    const userId = 'local';
+    const userId = FIXED_USER_NAME;
     db.get(userId).then(val => {
         if (isEmpty(val)) {
-            var newKeypair = nacl.sign.keyPair();
-            val = {
-                publicKey: bs58.encode(newKeypair.publicKey),
-                secretKey: bs58.encode(newKeypair.secretKey),
-            };
-            db.set(userId, val);
+            var val = initializeKey();
+            val = setDefaults(val);
+            console.log("serverLookup isn't used since a while and have been trimmed: double check!");
+            return db.set(userId, val).then(function() { return val; });
         }
         return val;
     })
-    .then(function(x) {
+    .then(function (x) {
         return api
             .handshake(payload, 'local')
             .then(response => sendResponse({type: 'handshakeResponse', response: response}))
@@ -61,3 +80,14 @@ function serverLookup (payload, sendResponse) {
     });
 };
 
+function configUpdate (payload, sendResponse) {
+
+    const userId = FIXED_USER_NAME;
+    db.get(userId).then(val => {
+        let update = _.merge(val, payload);
+        return db.set(userId, update);
+    }).then(val => {
+        console.log("ConfigUpdate completed and return", val)
+        sendResponse(val);
+    })
+}

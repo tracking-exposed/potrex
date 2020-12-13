@@ -38,21 +38,21 @@ class Settings extends React.Component{
             return (<p>Loading...</p>);
 
         console.log("settings props state", this.props, this.state);
-        var enabled = (!!this.state && !!this.state.active)
+
         return (
           <List component="nav" aria-label="main settings">
             <ListItem>
               <ListItemIcon>
-                <PowerSettingsNewIcon fontSize="Large" color={enabled ? "primary" : "disabled" } />
+                <PowerSettingsNewIcon fontSize="large" color={ (!!this.state && !!this.state.active) ? "primary" : "disabled" } />
               </ListItemIcon>
-              <ListItemText primary={enabled? "Enabled" : "Disabled" } />
+              <ListItemText primary={ (!!this.state && !!this.state.active) ? "Enabled" : "Disabled" } />
               <ListItemSecondaryAction>
                 <Switch
                   color="primary"
                   edge="end"
                   onChange={_.partial(toggleActivation, this)}
                   checked={this.state ? !!this.state.active : false }
-                  inputProps={{ 'aria-labelledby': 'yttrex-main-switch' }}
+                  inputProps={{ 'aria-labelledby': 'potrex-main-switch' }}
                 />
               </ListItemSecondaryAction>
             </ListItem>

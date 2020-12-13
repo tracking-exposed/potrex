@@ -100,7 +100,7 @@ if (PRODUCTION) {
     PLUGINS.push(...DEV_PLUGINS);
 }
 
-console.log(DEFINITIONS[process.env]);
+console.log(DEFINITIONS['process.env']);
 
 /** LOADERS **/
 const JS_LOADER = combineLoaders([

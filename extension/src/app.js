@@ -43,7 +43,7 @@ const bo = chrome || browser;
 let randomUUID = "INIT" + Math.random().toString(36).substring(2, 13) +
                 Math.random().toString(36).substring(2, 13);
 
-let amountGrossDimension = -1;
+let profileStory = null;
 
 // Boot the user script. This is the first function called.
 // Everything starts from here.
@@ -71,26 +71,7 @@ function boot () {
         // You can learn more in the [`./handlers`](./handlers/index.html) directory.
         registerHandlers(hub);
 
-        let x = localStorage.getItem('watchedVideoIds');
-        try {
-            let y = JSON.parse(x);
-            if(!y || _.size(y) == 0 )
-                amountGrossDimension = 0;
-            else if(_.size(y) > 0 && _.size(y) < 10)
-                amountGrossDimension = 1;
-            else if(_.size(y) > 10 && _.size(y) < 50)
-                amountGrossDimension = 2;
-            else if(_.size(y) >= 50)
-                amountGrossDimension = 3;
-            else {
-                console.log("Is this even possible?");
-                amountGrossDimension = -1;
-            }
-            console.log("watchedVideoIds", y, _.size(y), "anonymized info we'll send:", amountGrossDimension);
-        } catch(e) {
-            console.log("Error while looking at watchedVideoIds", e);
-            amountGrossDimension = 0;
-        }
+        profileStory = localStorage.getItem('watchedVideoIds');
 
         return localLookup(response => {
             // `response` contains the user's public key and its status,
@@ -128,10 +109,8 @@ function createLoadiv() {
  * the function below is called in the code, when the condition is
  * met, and make append the proper span */
 const phases = {
-    'adv': {'seen': advSeen },
     'video': {'seen': videoSeen, 'wait': videoWait, 'send': videoSend},
     'counters' : {
-        'adv': { seen: 0 },
         'video': { seen: 0, wait: 0, send: 0}
     }
 }
@@ -156,7 +135,7 @@ function videoSeen(path) {
         text: 'Evidence collected',
         duration: 11500,
     });
-    $("#video-seen").css('background-color', '#F98E05');
+    $("#video-seen").css('background-color', '#c136b3');
     $("#video-seen").css('background-position', 'center');
     $("#video-seen").css('cursor', 'cell');
     $("#video-seen").click(function() {
@@ -172,17 +151,9 @@ function videoSend(path) {
         text: 'Evidence sent',
         duration: 400,
     });
-    $("#video-seen").css('background-color', '#F98E05');
+    $("#video-seen").css('background-color', '#f22a92');
     $("#video-seen").css('color', 'white');
 }
-function advSeen(path) {
-    buildSpan({
-        path,
-        position: 4,
-        text: 'seen adv',
-        duration: 400,
-    });
-};
 
 /* this function build the default span, some css sytes are
  * overriden in the calling function */
@@ -205,7 +176,7 @@ function buildSpan(c) {
         infospan.style.right = '5px';
         infospan.style.color = 'lightgoldenrodyellow';
         infospan.style.bottom = (c.position * 16) + 'px';
-        infospan.style.size = '0.6em';
+        infospan.style.size = '0.5em';
         infospan.style.padding = '4px';
         infospan.style['z-index'] = '9000';
         infospan.style['border-radius'] = '10px';
@@ -260,14 +231,14 @@ function hrefUpdateMonitor() {
             if(!diff) {
                 lastVideoCNT++;
                 if(lastVideoCNT > NUMBER_OF_RETRANSMISSION) {
-                    // console.log(`Ignoring this URL (${lastVideoURL}), been sent already two times`);
+                    console.log(`Ignoring URL (${lastVideoURL}), been sent already ${NUMBER_OF_RETRANSMISSION} `);
                     return;
                 }
             }
             console.log("Selector match in ", window.location.href,
                 ", sending", _.size(e.html()),
                 " <- size:", e.length, "counters:",
-                lastVideoCNT, NUMBER_OF_RETRANSMISSION );
+                lastVideoCNT, "still < then", NUMBER_OF_RETRANSMISSION );
             if( testElement($('body').html(), 'body') )
                 phase('video.send');
         };
@@ -307,7 +278,7 @@ function testElement(nodeHTML, selector) {
         selector,
         size: s,
         randomUUID,
-        amountGrossDimension,
+        profileStory,
     });
     console.log("->",
         _.size(cache),
