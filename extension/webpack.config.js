@@ -17,7 +17,6 @@ const packageJSON = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PRODUCTION = NODE_ENV === 'production';
 const DEVELOPMENT = NODE_ENV === 'development';
-console.log('NODE_ENV [' + process.env.NODE_ENV + '] Prod:', PRODUCTION, 'Devel: ', DEVELOPMENT);
 const BUILDISODATE = new Date().toISOString();
 
 const PATHS = {
@@ -98,10 +97,10 @@ PLUGINS.push(EXTRACT_CSS_PLUGIN);
 if (PRODUCTION) {
     /* PLUGINS.push(...PROD_PLUGINS); firefox is giving me too many problem */
 } else if (DEVELOPMENT) {
-    console.log('Development, using as environment variables: ' +
-        JSON.stringify(DEFINITIONS['process.env']));
     PLUGINS.push(...DEV_PLUGINS);
 }
+
+console.log(DEFINITIONS[process.env]);
 
 /** LOADERS **/
 const JS_LOADER = combineLoaders([
