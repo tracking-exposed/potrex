@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "tracking.exposed: adult industry algorithms",
+  "name": "tracking.exposed, research tool for the adult industry platform biases",
   "short_name": "potrex",
   "description": "poTREX it is a tool for a safe-for-work analysis on the adult-industry content providers; https://pornhub.tracking.exposed for more.",
   "version": "0.4.0",
@@ -20,7 +20,6 @@
 
   "permissions": [
     "storage",
-    "alarms",
     "http://localhost:10000/",
     "https://*.pornhub.com/",
     "https://*.tracking.exposed/"

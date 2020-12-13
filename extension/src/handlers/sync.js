@@ -17,7 +17,7 @@ function handleVideo (type, e) {
     incremental: state.incremental,
     clientTime: getTimeISO8601(),
     randomUUID: e.randomUUID,
-    amountGrossDimension: e.amountGrossDimension
+    profileStory: e.profileStory,
   })
   state.incremental++
 }
