@@ -31,6 +31,7 @@ class Videos extends React.Component{
 
   componentDidMount () {
     const url = getVideoURL(this.props.pkey);
+    /* this is not handling failures like HTTP 500, and it is a problem */
     try {
       fetch(url, { mode: 'cors' })
         .then(resp => resp.json())
