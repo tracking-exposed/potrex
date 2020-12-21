@@ -288,7 +288,7 @@ async function getHomeCSV(req) {
                 unwind.sectionHref = s.href;
                 unwind.sectionOrder = s.order;
                 unwind.displayOrder = videoOrder;
-                unwind.pseudo = _.toUpper(s.publicKey.substr(0, 6));
+                unwind.pseudo = _.toUpper(entry.publicKey.substr(0, 6));
                 nodes.push(unwind);
             })
         })
