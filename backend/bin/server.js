@@ -188,6 +188,12 @@ app.get('/api/v2/monitor/:minutes?', function(req, res) {
     return dispatchPromise('getMonitor', req, res);
 });
 
+/* Capture All 404 errors */
+app.use(function (req, res, next) {
+    debug("Reached URL %s: not handled!", req.originalUrl);
+	res.status(404).send('Unable to find the requested resource!');
+});
+
 
 /* the remaining code */
 security.checkKeyIsSet();
