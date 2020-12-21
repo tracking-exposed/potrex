@@ -68,7 +68,14 @@ function boot () {
     // You can learn more in the [`./handlers`](./handlers/index.html) directory.
     registerHandlers(hub)
 
-    profileStory = localStorage.getItem('watchedVideoIds')
+    const jsonHistory = localStorage.getItem('watchedVideoIds');
+    try {
+      /* we do not save the actual videoId but the amount of activity previously
+      * recorded by pornhub */
+      profileStory = JSON.parse(jsonHistory).length;
+    } catch(e) {
+      profileStory = 0;
+    }
 
     return localLookup(response => {
       // `response` contains the user's public key and its status,
@@ -230,7 +237,7 @@ function hrefUpdateMonitor () {
           return
         }
       }
-      console.log('Selector match in ', window.location.href,
+      console.log('Selector ', selector,' match in ', window.location.href,
         ', sending', _.size(e.html()),
         ' <- size:', e.length, 'counters:',
         lastVideoCNT, 'still < then', NUMBER_OF_RETRANSMISSION)
@@ -257,9 +264,7 @@ function testElement (nodeHTML, selector) {
   }, false)
 
   if (exists) { return false }
-
   if (!s) { return false }
-
   cache.push(s)
 
   hub.event('newVideo', {
