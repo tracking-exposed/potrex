@@ -45,8 +45,8 @@ function getMirror(req) {
 function appendLast(req) {
     /* this is used by getMirror, to mirror what the server is getting
      * used by developers with password,
-     ---- TODO should be personalized and logged */
-    const MAX_STORED_CONTENT = 10;
+     ---- TODO should be personal-token-based and logged */
+    const MAX_STORED_CONTENT = 15;
     if(!last) last = [];
     if(_.size(last) > MAX_STORED_CONTENT) 
         last = _.tail(last);
@@ -91,7 +91,6 @@ async function processEvents2(req) {
             publicKey: headers.publickey,
             randomUUID: body.randomUUID,
         });
-        const isVideo = body.href.match(/viewkey=/) ? true : false;
         const html = {
             id,
             metadataId,
@@ -100,12 +99,9 @@ async function processEvents2(req) {
             clientTime: new Date(body.clientTime),
             savingTime: new Date(),
             html: body.element,
-            size: _.size(body.element),
-            isVideo,
             randomUUID: body.randomUUID,
-            selector: body.selector,
             incremental: body.incremental,
-            amountGrossDimension: body.amountGrossDimension,
+            profileStory: body.profileStory,
             packet: i,
         }
         return html;
@@ -132,9 +128,7 @@ async function processEvents2(req) {
 
 const hdrs =  {
     'content-length': 'length',
-    // 'x-potrex-build': 'build',
     'x-potrex-version': 'version',
-    'x-potrex-nonauthcookieid': 'supporterId',
     'x-potrex-publickey': 'publickey',
     'x-potrex-signature': 'signature'
 };

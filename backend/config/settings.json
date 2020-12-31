@@ -4,9 +4,8 @@
       "stats": "trexstats",
       "htmls": "htmls",
       "metadata": "metadata",
-      "groups": "groups",
-      "thumbnails": "thumbnails",
-      "retrieved": "retrieved"
+      "retrieved": "retrieved",
+      "categories": "categories"
   },
 
   "mongoHost": "localhost",

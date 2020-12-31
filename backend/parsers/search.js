@@ -4,12 +4,14 @@ const debug = require('debug')('parser:video');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
-const parsedet = require('../lib/parsedetails');
+// const parsedet = require('../lib/parsedetails');
 
 const stats = { skipped: 0, error: 0, suberror: 0, success: 0 };
 nconf.argv().env().file({ file: "config/settings.json" });
 
-function page(envelop) {
+function search(envelop) {
+
+    return false;
 
     let retval = _.omit(envelop.impression, ['html', '_id']);
     const dom = new JSDOM(envelop.impression.html);
@@ -100,6 +102,4 @@ function page(envelop) {
 };
 
 
-module.exports = {
-    page,
-};
+module.exports = search;

@@ -257,7 +257,7 @@ async function getRandomRecent(req) {
 
     const minutesago = 60 * 24 * 2;
     const maxAmount = 12;
-    const lt = moment().subtract('m', minutesago);
+    const lt = moment().subtract(minutesago, 'm');
 
     const content = await automo.getRandomRecent(new Date(lt.toISOString), maxAmount);
     debug("getRandomRecent: max %d active more then %d minutes, %s",

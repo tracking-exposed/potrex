@@ -16,11 +16,9 @@ ret = db.htmls.createIndex({ publicKey: -1 }); checkret('htmls publicKey', ret);
 ret = db.htmls.createIndex({ metadataId: -1 }); checkret('htmls metadataId', ret);
 ret = db.htmls.createIndex({ processed: 1 }); checkret('htmls processed', ret);
 
-ret = db.retrieved.createIndex({ id: 1 }, { unique: true} ); checkret('retrieved id', ret);
-ret = db.retrieved.createIndex({ savingTime: -1 }); checkret('retrived savingTime', ret);
+ret = db.retrieved.createIndex({ videoId: 1 }, { unique: true} ); checkret('retrieved videoId', ret);
 
-ret = db.thumbnails.createIndex({ id: 1 }, { unique: true} ); checkret('thumbnails id', ret);
-ret = db.thumbnails.createIndex({ savingTime: -1 }); checkret('thumbnails savingTime', ret);
+ret = db.categories.createIndex({ videoId: 1 }, { unique: true} ); checkret('categories videoId', ret);
 
 function checkret(info, retval) {
     retval.info = info;

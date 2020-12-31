@@ -1,33 +1,55 @@
 const _ = require('lodash');
-const debug = require('debug')('lib:parsedetails');
+const moment = require('moment');
+const debug = require('debug')('parsers:shared');
 
-function attributeURL(href) {
+function attribution(relink) {
+  /* a relative link like: /model/crystal-lust or /channels/roccosiffredi */
+  return relink.split('/')[1];
+}
 
-    if(href.match(/viewkey=/)) {
-        return {
-            href: href,
-            type: 'video',
-            videoId: href.replace(/.*viewkey=/, '')
-        };
-    } else if(href.match(/\/recommended/)) {
-        return {
-            href,
-            type: 'recommended',
-        };
+function dissectV(v) {
+    const tre = v.parentNode.parentNode.parentNode.querySelector('.usernameWrap');
+    const linked = tre ? tre.querySelector('a') : null;
+    const authorLink = linked ? linked.getAttribute('href') : null;
+    const viewstr = v.parentNode.parentNode.querySelector('.views > var').textContent
+    const views = unitParse(viewstr);
+    const valuestr = v.parentNode.parentNode.querySelector('.value').textContent;
+    const value = _.parseInt(valuestr);
+    const thumbaddr = v.querySelector('[data-mediumthumb]').getAttribute('data-mediumthumb');
+    const publisherType = attribution(authorLink);
+    const duration = v.parentNode.querySelector('.duration').textContent.trim();
+    const fixedDuration = fixHumanizedTime(duration);
+    const durationSeconds = moment.duration(fixedDuration).asSeconds();
+
+    const href = v.getAttribute('href');
+    const p = new URLSearchParams(v.href.replace(/\/view_video\.php\?/, ''));
+    const videoId = p.get('viewkey');
+
+    return {
+        title: v.getAttribute('data-title'),
+        authorName: tre ? tre.textContent.trim() : null,
+        authorLink,
+        durationSeconds,
+        publisherType,
+        duration,
+        views,
+        value,
+        thumbnail: thumbaddr,
+        href,
+        videoId
     }
-
-    const chunks = href.split('/');
-    if(_.size(chunks) == 4 && chunks[3] == "") {
-        /* homepage: ["https:","","www.pornhub.com",""] */
-        return {
-            href,
-            type: 'home'
-        }
-    }
-
-    debug("UNMANAGED url %s match video", href);
-    return { href: href, type: null };
 };
+
+function fixHumanizedTime(inputstr) {
+    // this function fix the time 0:10, 10:10, in HH:MM:SS
+    if(inputstr.length == 4)
+        return '0:0' + inputstr;
+    if(inputstr.length == 5)
+        return '0:' + inputstr;
+    if(inputstr.length >= 9)
+        debug("Warning this is weird in fixHumanizedTime: [%s]", inputstr);
+    return inputstr;
+}
 
 function getFeatured(D) {
     
@@ -41,20 +63,8 @@ function getFeatured(D) {
                 return null;
             }
 
-        let videos = 
-          _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), function(v) {
-            let tre = v.parentNode.parentNode.parentNode.querySelector('.usernameWrap');
-            let linked = tre ? tre.querySelector('a') : null;
-
-            debugger; // TODO thumbnails
-            return {
-              title: v.getAttribute('data-title'),
-              authorName: tre ? tre.textContent.trim() : null,
-              authorLink: linked ? linked.getAttribute('href') : null,
-              duration: v.parentNode.querySelector('.duration').textContent.trim(),
-              href: v.getAttribute('href')
-            }
-          });
+        let videos = _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), dissectV);
+        
         if(_.startsWith(secondTag,'H')) {
             return {
                 order,
@@ -67,10 +77,29 @@ function getFeatured(D) {
         return null;
     });
 
-    debug("Potential titles %d -> %s",
-        _.size(titles), _.map(sections, 'display'));
+    // debug("Potential titles %d -> %s", _.size(titles), _.map(sections, 'display'));
     return { sections };
 }
+
+
+const unitMap = { "K": 1000, "M": 1000000, "none": 1 };
+
+function unitParse(str) {
+  /* in PH the only presence of '.' is to count some 6.1M, no comma,
+     this is a simplification from fbtrex code */
+    const unit = str.substr(-1);
+    const multiplier = _.isUndefined(unitMap[unit]) ? unitMap["none"] : unitMap[unit];
+    const mult = str.replace(/(\c)/, '');
+    const commadot = !!mult.match(/[.]/);
+    const commaless = mult.replace(/[.]/, '');
+
+    let amount = _.parseInt(commaless) * multiplier;
+    if(commadot && multiplier != 1)
+        amount = amount / 10;
+
+    // console.log(str, unit, multiplier, mult, commadot, commaless, amount);
+    return amount;
+};
 
 function getSequence(D) {
 
@@ -188,20 +217,21 @@ function getCategories(D) {
   if(_.size(cats) !== 1)
     debug("Odd? the categories are not 1? %d", _.size(cats));
 
-  let categories = [];
-  _.each(cats[0].querySelectorAll('a'), function(e) {
-    if(!_.startsWith(e.textContent, '+'))
-        categories.push(e.textContent.trim());
+  return _.map(cats[0].querySelectorAll('a[href]'), function(e) {
+    return {
+      name: e.textContent.trim(),
+      href: e.getAttribute('href'),
+    }
   });
-  return { categories: categories };
 };
 
 
 module.exports = {
-    attributeURL,
     getFeatured,
     getMetadata,
     getRelated,
     getCategories,
     getSequence,
+    unitParse,
+    fixHumanizedTime,
 };
