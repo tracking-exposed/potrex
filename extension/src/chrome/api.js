@@ -5,7 +5,7 @@ import config from '../config'
 import { decodeString, decodeKey } from '../utils'
 import db from './db'
 
-function post (apiUrl, data, cookieId) {
+function post (apiUrl, data) {
   return new Promise((resolve, reject) => {
     db.get('local').then(keypair => {
       const xhr = new XMLHttpRequest()
@@ -16,7 +16,6 @@ function post (apiUrl, data, cookieId) {
 
       xhr.setRequestHeader('Content-Type', 'application/json')
       xhr.setRequestHeader('X-potrex-Version', config.VERSION)
-      // xhr.setRequestHeader('X-potrex-Build', config.BUILD);
 
       if (!keypair) {
         reject('Cannot sign payload, no keypair found!')
@@ -26,7 +25,6 @@ function post (apiUrl, data, cookieId) {
       const signature = nacl.sign.detached(decodeString(payload),
         decodeKey(keypair.secretKey))
 
-      xhr.setRequestHeader('X-potrex-NonAuthCookieId', cookieId)
       xhr.setRequestHeader('X-potrex-PublicKey', keypair.publicKey)
       xhr.setRequestHeader('X-potrex-Signature', bs58.encode(signature))
 

@@ -13,8 +13,8 @@
 //
 // On the other side there are **event pages**. They are scripts triggered by
 // some events sent from the **content script**. Since they run in *browser-space*,
-// they have the permission (if granted) to do cross-domain requests, access
-// cookies, and [much more](https://developer.chrome.com/extensions/declare_permissions).
+// they have the permission (if granted) to do cross-domain requests,
+// and [much more](https://developer.chrome.com/extensions/declare_permissions).
 // All **event pages** are contained in the [`./background`](./background/app.html) folder.
 // (the name is **background** for historical reasons and it might be subject of changes
 // in the future).
@@ -47,46 +47,34 @@ let profileStory = null
 // Boot the user script. This is the first function called.
 // Everything starts from here.
 function boot () {
-  if (_.endsWith(window.location.origin, 'pornhub.tracking.exposed')) {
-    if (_.isUndefined($('#extension--parsable').html())) {
-      return null
-    } else {
-      // $(".extension-missing").hide();
-      return null
-    }
-  } else if (_.endsWith(window.location.origin, 'pornhub.com')) {
-    // this get executed on pornhub.com and it is the start of potrex extension
-    console.log(`potrex version ${config.VERSION} loading; Config object:`)
-    console.log(config)
+  // this get executed on pornhub.com and it is the start of potrex extension
+  console.log(`potrex version ${config.VERSION} loading; Config object: ${config}`);
 
-    // is an hidden div, created on pornhub.com domain,
-    // visibile when the recording is triggered
-    createLoadiv()
+  // is an hidden div, created on pornhub.com domain,
+  // visibile when the recording is triggered
+  createLoadiv()
 
-    // Register all the event handlers.
-    // An event handler is a piece of code responsible for a specific task.
-    // You can learn more in the [`./handlers`](./handlers/index.html) directory.
-    registerHandlers(hub)
+  // Register all the event handlers.
+  // An event handler is a piece of code responsible for a specific task.
+  // You can learn more in the [`./handlers`](./handlers/index.html) directory.
+  registerHandlers(hub)
 
+  try {
+    /* we do not save the actual videoId but the amount of activity previously
+    * recorded by pornhub */
     const jsonHistory = localStorage.getItem('watchedVideoIds');
-    try {
-      /* we do not save the actual videoId but the amount of activity previously
-      * recorded by pornhub */
-      profileStory = JSON.parse(jsonHistory).length;
-    } catch(e) {
-      profileStory = 0;
-    }
-
-    return localLookup(response => {
-      // `response` contains the user's public key and its status,
-      console.log('localLookup responded:', response)
-      hrefUpdateMonitor()
-      flush()
-    })
-  } else if (_.startsWith(window.location.origin, 'localhost')) {
-    console.log('localhost: ignored condition')
-    return null
+    profileStory = JSON.parse(jsonHistory).length;
+  } catch(e) {
+    console.want("Error in estimating amount of past activities", e);
+    profileStory = -1;
   }
+
+  return localLookup(response => {
+    // `response` contains the user's public key and its status,
+    console.log('localLookup responded:', response)
+    hrefUpdateMonitor()
+    flush()
+  })
 }
 
 function createLoadiv () {

@@ -1,11 +1,11 @@
 {
   "manifest_version": 2,
 
-  "name": "tracking.exposed, research tool for the adult industry platform biases",
-  "short_name": "potrex",
-  "description": "poTREX it is a tool for a safe-for-work analysis on the adult-industry content providers; https://pornhub.tracking.exposed for more.",
-  "version": "0.4.0",
-  "author": "few proud humans (and robots!) challenging the algorithm monopolists: we're https://tracking.exposed",
+  "name": "PH for accountant: analysis toolkit",
+  "short_name": "i-am-an-accountant",
+  "description": "A personalization scraper to analyze the biggest adult-industry content provider: https://pornhub.tracking.exposed",
+  "version": "0.4.2",
+  "author": "few proud humans (and robots) challenging the algorithm monopolists: we're https://tracking.exposed",
 
   "icons": {
       "16": "potrex16.png",
@@ -19,10 +19,8 @@
   },
 
   "permissions": [
-    "storage",
     "http://localhost:10000/",
-    "https://*.pornhub.com/",
-    "https://*.tracking.exposed/"
+    "storage"
   ],
 
   "background": {
@@ -35,7 +33,6 @@
       "matches": [
           "http://localhost/*",
           "http://127.0.0.1/*",
-          "https://*.tracking.exposed/*",
           "https://*.pornhub.com/*"
       ],
       "js": ["./app.js"]

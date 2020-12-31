@@ -11,7 +11,7 @@ grep -v localhost manifest.json | grep -v 127\.0 > ./dist/manifest.json
 #V=`git tag -l | head -1`
 #sed -es'/BUILD_VERSION/'$V'/' src/popup/popup.html  > dist/popup.html
 
-cp src/popup/popup.html ./dist/
+cp src/popup/* ./dist/
 cp icons/dist/* ./dist
 cd ./dist
 zip extension.zip *
