@@ -6,21 +6,38 @@ const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
 
+function fixHomeSimply(e) {
+    let v = _.get(e, 'sections.videos');
+    v.sectionName = e.sections.display;
+    v.sectionHref = e.sections.href;
+    v.sectionOrder = e.sections.order;
+    v.profileStory = e.profileStory;
+    v.savingTime = new Date(e.savingTime);
+    v.categories = _.map(_.first(e.categories).categories, 'name');
+    v.site = e.site;
+    return v;
+}
+
 async function getPersonal(req) {
-    const DEFMAX = 40;
     const k =  req.params.publicKey;
     if(_.size(k) < 26)
         return { json: { "message": "Invalid publicKey", "error": true }};
 
-    const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
-    debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX);
-    const data = await automo.getSummaryByPublicKey(k, { amount, skip });
-    data.request = {
-        amount,
-        skip,
-        when: moment().toISOString()
-    }
-    return { json: data };
+    const what = req.params.what;
+    debug("Asked to get data kind %s, but at the moment only the home is supported", what);
+
+    /* const { amount, skip } = params.optionParsing(req.params.paging, DEFMAX);
+    debug("getPersonal: amount %d skip %d, default max %d", amount, skip, DEFMAX); */
+    const data = await automo.getSummaryByPublicKey(k, what);
+    /* what is ignored at the moment only 'home' is returned, along
+       supporter (the person) and total (Int) */
+
+    const formatted = _.map(data.homedata, fixHomeSimply);
+    return { json: {
+        home: formatted,
+        supporter: data.supporter,
+        total: data.total
+    }};
 };
 
 async function getPersonalCSV(req) {
@@ -28,7 +45,6 @@ async function getPersonalCSV(req) {
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
 
-    debug("%j", { publicKey: k, type: 'home'});
     const data = await automo.getMetadataByFilter({ publicKey: k, type: 'home'}, { amount: CSV_MAX_SIZE, skip: 0 });
 
     const unrolledData = _.reduce(data, function(memo, metadata) {

@@ -309,6 +309,10 @@ async function getHomeCSV(req) {
     };
 }
 
+async function getUnwindedHomeCSV(req) {
+console.log("Not yer implemented");
+}
+
 module.exports = {
     getLast,
     getVideoId,
@@ -317,4 +321,5 @@ module.exports = {
     getByAuthor,
     getRandomRecent,
     getHomeCSV,
+    getUnwindedHomeCSV,
 };

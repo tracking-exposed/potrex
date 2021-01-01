@@ -126,6 +126,9 @@ app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
 app.get('/api/v1/homeCSV/:amount?', function(req, res) {
     return dispatchPromise('getHomeCSV', req, res);
 });
+app.get('/api/v1/homeUnwindedCSV/:amount?', function(req, res) {
+    return dispatchPromise('getUnwindedHomeCSV', req, res);
+});
 app.get('/api/v1/author/:query/:amount?', function(req, res) {
     return dispatchPromise('getByAuthor', req, res);
 });
@@ -138,7 +141,7 @@ app.post('/api/v2/events', function(req, res) {
 app.get('/api/v1/personal/:publicKey/csv', function(req, res) {
     return dispatchPromise('getPersonalCSV', req, res);
 });
-app.get('/api/v1/personal/:publicKey/:paging?', function(req, res) {
+app.get('/api/v1/personal/:publicKey/:what?', function(req, res) {
     return dispatchPromise('getPersonal', req, res);
 });
 app.delete('/api/v2/personal/:publicKey/selector/id/:id', (req, res) => {

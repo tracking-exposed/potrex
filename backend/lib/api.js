@@ -19,6 +19,7 @@ var apiList = {
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,
     getHomeCSV:       require('../routes/public').getHomeCSV,
+    getUnwindedHomeCSV:require('../routes/public').getUnwindedHomeCSV,
 
     getRandomRecent:  require('../routes/public').getRandomRecent,
 

@@ -13,50 +13,38 @@ const moment = require('moment');
 const utils = require('../lib/utils');
 const mongo3 = require('./mongo3');
 
-async function getSummaryByPublicKey(publicKey, options) {
-    /* this function return the basic information necessary to compile the
-       landing personal page */
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+const DEFAULTMAX = 100;
 
+async function getSummaryByPublicKey(publicKey, kind) {
+    /* this function return the basic information necessary to compile the
+       landing personal page, 'options' might specify for specific details */
+    const mongoc = await mongo3.clientConnect({concurrency: 1});
     const supporter = await mongo3.readOne(mongoc,
         nconf.get('schema').supporters, { publicKey });
 
     if(!supporter || !supporter.publicKey)
         throw new Error("Authentication failure");
 
-    const metadata = await mongo3.readLimit(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey }, { savingTime: -1 },
-        options.amount * 4, options.skip);
-        // this        * 4 is because of the duplication stripping below
+    const options = { skip: 0, amount: DEFAULTMAX };
 
-    const uniquified = _.reduce(metadata, function(memo, m) {
-        if(m.videoId && memo.lastVideoId == m.videoId)
-            return memo;
-
-        memo.lastVideoId = m.videoId;
-        memo.acc.push(m);
-        return memo;
-    }, { acc: [], lastVideoId: null } );
-
-    const unique = _.take(_.sortBy(uniquified.acc, { savingTime: -1}), options.amount);
-    debug("%d - %d - %d", _.size(uniquified.acc), _.size(metadata), _.size(unique));
-
+    // the 'type' home is the only one supported and hardcoded ATM
+    const homedata = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
+        { $match: { publicKey, type:'home', profileStory: { "$exists": true }} },
+        { $unwind: "$sections" },
+        { $unwind: "$sections.videos" },
+        { $lookup: {
+            from: 'categories',
+            localField: "sections.videos.videoId",
+            foreignField: 'videoId',
+            as: 'categories'
+        } }
+    ]);
     const total = await mongo3.count(mongoc,
-        nconf.get('schema').metadata, { publicKey: supporter.publicKey, title: {
-            $exists: true
-        } });
-
+        nconf.get('schema').metadata, {
+            publicKey: supporter.publicKey, type: 'home'
+        });
     await mongoc.close();
-
-    const fields = [ 'metadataId', 'id','videoId', 'savingTime', 'title',
-                     'producer', 'categories', 'related', 'views', 'relative',
-                    'type', 'sections' ];
-
-    const recent = _.map(unique, function(e) {
-        e.relative = moment.duration( moment(e.savingTime) - moment() ).humanize() + " ago";
-        return _.pick(e, fields);
-    })
-    return { supporter, recent, total };
+    return { supporter, homedata, total };
 }
 
 async function getMetadataByPublicKey(publicKey, options) {
