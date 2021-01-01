@@ -32,6 +32,15 @@ const theme = createMuiTheme({
     },
 });
 
+
+const LOCALHOST_SERVER = 'http://localhost:10000';
+
+function buildCSVlinks(subject) {
+  if (window.location.origin.match(/localhost/))
+    return `${LOCALHOST_SERVER}/api/v1/${subject}`;
+  return `/api/v1/${subject}/`;
+}
+
 function main () {
     const key = window.location.hash ? window.location.hash.substr(1) : "";
     if(key.length < 40) {
@@ -43,10 +52,23 @@ function main () {
     } else {
         ReactDOM.render(
             <ThemeProvider theme={theme}>
-                Metadata:
-                <Videos pkey={key}/>
-                Raw content:
+                <h5>
+                    <a href={buildCSVlinks('homeCSV')} target="_blank">
+                        Last 200 anonymized Home CSV 
+                    </a> 
+                    ― same, but enhanced with <a href={buildCSVlinks('homeUnwindedCSV')} target="_blank">
+                        flattened categories (CSV)
+                    </a>
+                    ― <a href={buildCSVlinks('PersonalHomeCSV')} target="_blank">
+                        Your Metadata CSV (Home only)
+                    </a>
+                     ― preview:
+                </h5>
+                <Homes pkey={key}/>
+                Raw content submit by this profile
                 <Raw pkey={key} />
+                Profile info:
+                <code>TODO</code>
             </ThemeProvider>, document.getElementById('react--provided')
         );
     }

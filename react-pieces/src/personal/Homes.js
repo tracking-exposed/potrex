@@ -11,23 +11,15 @@ import BeachAccessIcon from '@material-ui/icons/BeachAccess';
 import Evidence from './Evidence';
 
 const styles = {
-  width: '400px',
+
 };
 
 const LOCALHOST_SERVER = 'http://localhost:10000';
 
-function getSearchPatterns(paging) {
-  if (paging) console.log("remember the paging is disabled");
+function getHomeJSON(pkey) {
   if (window.location.origin.match(/localhost/))
-    return `${LOCALHOST_SERVER}/api/v2/search/keywords/`;
-  return `/api/v2/search/keywords/`;
-}
-
-function getSearchesResults(term, paging) {
-  if (paging) console.log("remember the paging is disabled");
-  if (window.location.origin.match(/localhost/))
-    return `${LOCALHOST_SERVER}/api/v2/homes/${term}/`;
-  return `/api/v2/homes/${term}/`;
+    return `${LOCALHOST_SERVER}/api/v1/personal/${pkey}/home`;
+  return `/api/v1/personal/${pkey}/home`;
 }
 
 class Homes extends React.Component{
@@ -38,7 +30,7 @@ class Homes extends React.Component{
   }
 
   componentDidMount () {
-    const url = getSearchPatterns();
+    const url = getHomeJSON(this.props.pkey);
     fetch(url, { mode: 'cors' })
       .then(resp => resp.json())
       .then(data => this.setState({status: 'done', data }));
@@ -65,9 +57,9 @@ class Homes extends React.Component{
       );
     }
 
-    const selist = _.get(this.state.data, 'selist');
+    const home = _.get(this.state.data, 'home');
 
-    if(!(this.state.data && selist && selist.length > 1 )) {
+    if(!(this.state.data && home && home.length > 1 )) {
       return (
         <div style={styles}>
           <Card>
@@ -78,15 +70,11 @@ class Homes extends React.Component{
     }
     
     const items = []
-
-    for (const sevid of selist ) {
-      // sevid.id it is a list temporarly ignored, maybe usable in advanced searches
-      console.log(sevid);
-      items.push(<Evidence
-        term={sevid.t}
-        amount={sevid.amount}
-        totalVideos={sevid.searches}
-        key={_.random(0, 0xffff) } /> 
+    for (const sevid of home) {
+      // console.log(sevid);
+      items.push(<pre key={_.random(0, 0xffff)}>
+        {JSON.stringify(sevid, undefined, 2)}
+      </pre>
       );
       items.push(<Divider variant="inset" component="li" />);
     }

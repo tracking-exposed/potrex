@@ -61,7 +61,9 @@ class Raw extends React.Component{
     try {
       for (const rawe of this.state.data.content) {
         // sevid.id it is a list temporarly ignored, maybe usable in advanced searches
-        items.push(<ListItemText primary={JSON.stringify(rawe)}></ListItemText>);
+        items.push(<pre key={_.random(0, 0xffff)}>
+          {JSON.stringify(rawe, undefined, 2)}
+        </pre>);
         items.push(<Divider variant="inset" component="li" />);
       }
       console.log("Raw elements produced successfully", items.length);
