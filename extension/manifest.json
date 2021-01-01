@@ -19,8 +19,7 @@
   },
 
   "permissions": [
-    "http://localhost:10000/",
-    "storage"
+      "storage"
   ],
 
   "background": {
@@ -31,8 +30,6 @@
   "content_scripts": [
     {
       "matches": [
-          "http://localhost/*",
-          "http://127.0.0.1/*",
           "https://*.pornhub.com/*"
       ],
       "js": ["./app.js"]
