@@ -62,11 +62,9 @@ function decodeFromBase58 (s) {
 }
 
 function verifyRequestSignature(req) {
-    // Assume that the tuple (userId, publicKey) exists in the DB.
-    var userId = req.headers['x-potrex-userId'];
-    var publicKey = req.headers['x-potrex-publickey'];
-    var signature = req.headers['x-potrex-signature'];
-    var message = req.body;
+    const publicKey = req.headers['x-potrex-publickey'];
+    const signature = req.headers['x-potrex-signature'];
+    let message = req.body;
 
     // FIXME: apparently with Express 4 the body is a streamed buffer,
     // and I don't want to dig in that now. My "There I Fix It" solution
@@ -77,9 +75,9 @@ function verifyRequestSignature(req) {
     //   This works good when the client sending the data is in JavaScript
     //   as well, since key order is given by the insertion order.
 
-    if (req.headers['content-type'] === 'application/json') {
+    if (req.headers['content-type'] === 'application/json')
         message = JSON.stringify(req.body)
-    }
+    // this should always be the case as we use the express JSON-body middleware
 
     return nacl.sign.detached.verify(
         stringToArray(message),

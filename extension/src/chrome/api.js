@@ -24,6 +24,7 @@ function post (apiUrl, data) {
 
       const signature = nacl.sign.detached(decodeString(payload),
         decodeKey(keypair.secretKey))
+      console.log("NaCl signed", payload.length, "bytes", from, data.length, "objects");
 
       xhr.setRequestHeader('X-potrex-PublicKey', keypair.publicKey)
       xhr.setRequestHeader('X-potrex-Signature', bs58.encode(signature))
@@ -53,7 +54,7 @@ function get (apiUrl, version, userId) {
 
       xhr.open('GET', url, true)
 
-      xhr.setRequestHeader('X-YTtrex-Version', version)
+      xhr.setRequestHeader('X-potrex-Version', version)
       xhr.send()
       xhr.onload = function () {
         if (this.status >= 200 && this.status < 300) {

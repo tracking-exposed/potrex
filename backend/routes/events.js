@@ -64,7 +64,7 @@ function headerError(headers) {
 
 async function processEvents2(req) {
 
-    const headers = processHeaders(_.get(req, 'headers'), hdrs);
+    const headers = processHeaders(_.get(req, 'headers'), mandatoryHeaders);
     if(headers.error)
         return headerError(headers);
 
@@ -100,9 +100,8 @@ async function processEvents2(req) {
             savingTime: new Date(),
             html: body.element,
             randomUUID: body.randomUUID,
-            incremental: body.incremental,
+            incremental: i + "-" + body.incremental,
             profileStory: body.profileStory,
-            packet: i,
         }
         return html;
     });
@@ -126,7 +125,7 @@ async function processEvents2(req) {
     }};
 };
 
-const hdrs =  {
+const mandatoryHeaders =  {
     'content-length': 'length',
     'x-potrex-version': 'version',
     'x-potrex-publickey': 'publickey',
@@ -150,7 +149,7 @@ function TOFU(pubkey) {
 module.exports = {
     processEvents2,
     getMirror,
-    hdrs: hdrs,
+    mandatoryHeaders,
     processHeaders,
     TOFU: TOFU
 };

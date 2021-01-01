@@ -48,7 +48,8 @@ let profileStory = null
 // Everything starts from here.
 function boot () {
   // this get executed on pornhub.com and it is the start of potrex extension
-  console.log(`potrex version ${config.VERSION} loading; Config object: ${config}`);
+  console.log(`potrex version ${config.VERSION}`);
+  console.log(`Config object: ${config}`);
 
   // is an hidden div, created on pornhub.com domain,
   // visibile when the recording is triggered
