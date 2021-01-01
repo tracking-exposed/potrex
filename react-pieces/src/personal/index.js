@@ -59,7 +59,7 @@ function main () {
                     ― same, but enhanced with <a href={buildCSVlinks('homeUnwindedCSV')} target="_blank">
                         flattened categories (CSV)
                     </a>
-                    ― <a href={buildCSVlinks('PersonalHomeCSV')} target="_blank">
+                    ― <a href={buildCSVlinks('personal/' + key + '/csv')} target="_blank">
                         Your Metadata CSV (Home only)
                     </a>
                      ― preview:
