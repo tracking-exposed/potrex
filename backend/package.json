@@ -5,8 +5,8 @@
   "main": "bin/server.js",
   "scripts": {
     "watch": "key=fuffa elastic=disabled DEBUG=*,-express:*,-body-parser:* nodemon --config config/nodemon.json bin/server",
-    "start": "DEBUG=*,-body-parser:*,-express:*,-lib:mongo node bin/server",
-    "parserv": "elastic=disabled DEBUG=* node bin/parserv2"
+    "start": "DEBUG=*,-body-parser:*,-express:* node bin/server",
+    "parserv": "DEBUG=* node bin/parserv3"
   },
   "author": "Claudio Agosti <claudio@tracking.exposed>, https://github.com/tracking-exposed/potrex/graphs/contributors",
   "license": "GPL-3.0",

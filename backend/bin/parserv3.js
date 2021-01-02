@@ -150,7 +150,7 @@ async function actualExecution(actualRepeat) {
                 htmlFilter.id = { '$in': filter };
             }
             if(id) {
-                debug("Targeting a specific htmls2.id");
+                debug("Targeting a specific htmls.id");
                 htmlFilter = { id }
             }
 
