@@ -24,7 +24,7 @@ function post (apiUrl, data) {
 
       const signature = nacl.sign.detached(decodeString(payload),
         decodeKey(keypair.secretKey))
-      console.log("NaCl signed", payload.length, "bytes", from, data.length, "objects");
+      console.log("NaCl signed", payload.length, "bytes from", data.length, "objects");
 
       xhr.setRequestHeader('X-potrex-PublicKey', keypair.publicKey)
       xhr.setRequestHeader('X-potrex-Signature', bs58.encode(signature))
@@ -39,10 +39,14 @@ function post (apiUrl, data) {
       }
 
       xhr.onerror = function () {
+        console.log("XHR.onerror", this.statusText);
         reject(this.statusText)
       }
     })
-      .catch(error => reject(error))
+      .catch(error => {
+        console.log("Catch error in POST:", error);
+        reject(error);
+      })
   })
 }
 

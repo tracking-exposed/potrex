@@ -49,7 +49,7 @@ let profileStory = null
 function boot () {
   // this get executed on pornhub.com and it is the start of potrex extension
   console.log(`potrex version ${config.VERSION}`);
-  console.log(`Config object: ${config}`);
+  console.log(`Config object: ${JSON.stringify(config, undefined, 2)}`);
 
   // is an hidden div, created on pornhub.com domain,
   // visibile when the recording is triggered
@@ -222,7 +222,7 @@ function hrefUpdateMonitor () {
       if (!diff) {
         lastVideoCNT++
         if (lastVideoCNT > NUMBER_OF_RETRANSMISSION) {
-          console.log(`Ignoring URL (${lastVideoURL}), been sent already ${NUMBER_OF_RETRANSMISSION} `)
+          // console.log(`Ignoring URL (${lastVideoURL}), been sent already ${NUMBER_OF_RETRANSMISSION} `)
           return
         }
       }

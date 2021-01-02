@@ -41,7 +41,7 @@ function setDefaults (val) {
 }
 
 function userLookup (ignoredarg, sendResponse) {
-  console.log('ignored', ignoredarg)
+  // console.log('ignored', ignoredarg) // this would have been a cookieId (but require 'domains' permission in manifest)
   const userId = FIXED_USER_NAME
   db.get(userId).then(val => {
     if (isEmpty(val)) {
