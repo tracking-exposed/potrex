@@ -89,8 +89,8 @@ server.listen(nconf.get('port'), nconf.get('interface'));
 console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('port'));
 /* configuration of express4 */
 app.use(cors());
-app.use(bodyParser.json({limit: '5mb' }));
-app.use(bodyParser.urlencoded({ limit: '5mb', extended: true, parameterLimit: 10 }));
+app.use(bodyParser.json({limit: '8mb' }));
+app.use(bodyParser.urlencoded({ limit: '8mb', extended: true, parameterLimit: 10 }));
 
 /* LEGACY TO BE VERIFIED */
 app.get('/api/v1/basic', function(req, res) {
