@@ -13,7 +13,12 @@ function fixHomeSimply(e) {
     v.sectionOrder = e.sections.order;
     v.profileStory = e.profileStory;
     v.savingTime = new Date(e.savingTime);
-    v.categories = _.map(_.first(e.categories).categories, 'name');
+    try {
+        v.categories = _.map(_.first(e.categories).categories, 'name');
+    } catch(error) {
+        debug("Error in accessing categories: %s", error.message);
+        v.categories = [ "error-investigate" ];
+    }
     v.site = e.site;
     return v;
 }

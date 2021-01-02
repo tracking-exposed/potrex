@@ -20,9 +20,6 @@ async function checkDuplicates(mongoc, listof, dbColumn) {
 
 async function downloader(envelop, previous) {
 
-    if(!nconf.get('storagertrvd'))
-        throw new Error("Storage not configured, downloader.update disabled");
-
     /* calculate how many potential vids should be fetched */
     const videos = _.flatten(_.map(previous.home.sections, 'videos'));
     const potential = _.map(videos, function(v) {
@@ -51,7 +48,7 @@ async function fetchHTMLs(mongoc, listof, dbColumn) {
         debug("Connecting to fetch: %s", d.url);
         let response = await fetch(d.url);
         if(response.status !== 200) {
-            debug("Error in %s? %s", d.url, response.statusText);
+            debug("Error in %s: %s", d.url, response.statusText);
         } else {
             d.html = await response.text();
             await mongo3.upsertOne(mongoc, dbColumn, {videoId: d.videoId}, d);
