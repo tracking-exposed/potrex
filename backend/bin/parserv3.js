@@ -113,6 +113,7 @@ async function executeParsingChain(htmlFilter) {
 
     console.table(_.map(results, function(e) {
         _.set(e.log, 'id', e.source.html.id);
+        _.set(e.log, 'metadataId', e.source.html.metadataId);
         _.set(e.log, 'type', _.get(e, 'findings.nature.type'));
         return e.log;
     }));

@@ -212,6 +212,7 @@ function getRelated(D) {
 };
 
 function getCategories(D) {
+  // used by parsers/categorizer 
   const cats = D.querySelectorAll('.categoriesWrapper');
 
   if(_.size(cats) !== 1)

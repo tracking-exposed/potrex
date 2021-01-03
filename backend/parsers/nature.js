@@ -61,6 +61,9 @@ function nature(envelop, previous) {
     addParams(urlO, retval, {
       page: 'page',
     });
+  } else if(_.startsWith(urlO.pathname, '/categories')) {
+    retval.type = "explicitlist";
+    retval.name = retval.urlO.pathname.split('/').pop();
   } else {
     retval.type = "unknown";
     debug("not attributed URL pathname %s", urlO.href);
