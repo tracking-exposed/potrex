@@ -19,12 +19,12 @@ var apiList = {
     getRelated:       require('../routes/public').getRelated,
     getVideoCSV:      require('../routes/public').getVideoCSV,
     getHomeCSV:       require('../routes/public').getHomeCSV,
-    getUnwindedHomeCSV:require('../routes/public').getUnwindedHomeCSV,
 
     getRandomRecent:  require('../routes/public').getRandomRecent,
 
     getByAuthor:      require('../routes/public').getByAuthor,
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,
+    getUnwindedHomeCSV:require('../routes/personal').getUnwindedHomeCSV,
 
     /* return user' last videos */
     getSubmittedRAW:    require('../routes/personal').getSubmittedRAW,

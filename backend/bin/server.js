@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const _ = require('lodash');
-const moment = require('moment');
 const bodyParser = require('body-parser');
 const Promise = require('bluebird');
 const debug = require('debug')('potrex');
@@ -126,7 +125,7 @@ app.get('/api/v1/videoCSV/:query/:amount?', function(req, res) {
 app.get('/api/v1/homeCSV/:amount?', function(req, res) {
     return dispatchPromise('getHomeCSV', req, res);
 });
-app.get('/api/v1/homeUnwindedCSV/:amount?', function(req, res) {
+app.get('/api/v1/homeUnwindedCSV/:publicKey', function(req, res) {
     return dispatchPromise('getUnwindedHomeCSV', req, res);
 });
 app.get('/api/v1/author/:query/:amount?', function(req, res) {

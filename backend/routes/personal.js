@@ -1,10 +1,12 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:personal');
+const nconf = require('nconf');
 
 const automo = require('../lib/automo');
 const params = require('../lib/params');
 const CSV = require('../lib/CSV');
+const mongo3 = require('../lib/mongo3');
 
 function fixHomeSimply(e) {
     let v = _.get(e, 'sections.videos');
@@ -45,41 +47,35 @@ async function getPersonal(req) {
     }};
 };
 
+function unNestHome(memo, metadata) {
+    const nested = _.map(metadata.sections, function(section) {
+        return _.map(section.videos, function(video, o) {
+            return {
+                sectionOrder: section.order + 1,
+                sectionName: section.display,
+                videoOrder: o + 1,
+                videoTitle: video.title,
+                authorName: video.authorName,
+                videoId: video.videoId,
+                savingTime: metadata.savingTime,
+                metadataId: metadata.id,
+            }
+        })
+    });
+    return _.concat(memo, _.flatten(nested));
+}
+
 async function getPersonalCSV(req) {
-    // only HOMEPAGES 
+    // only HOMEPAGES — /api/v1/personal/:publicKey/csv
     const CSV_MAX_SIZE = 1000;
     const k =  req.params.publicKey;
-
     const data = await automo.getMetadataByFilter({ publicKey: k, type: 'home'}, { amount: CSV_MAX_SIZE, skip: 0 });
-
-    const unrolledData = _.reduce(data, function(memo, metadata) {
-        const nested = _.map(metadata.sections, function(section) {
-            return _.map(section.videos, function(video, o) {
-                return {
-                    sectionOrder: section.order + 1,
-                    sectionName: section.display,
-                    sectionHref: section.href,
-                    videoOrder: o + 1,
-                    videoTitle: video.title,
-                    authorName: video.authorName,
-                    authorHref: video.authorLink,
-                    duration: video.duration,
-                    videoHref: video.href,
-                    savingTime: metadata.savingTime,
-                    metadataId: metadata.metadataId,
-                    id: metadata.id
-                }
-            })
-        });
-
-        return _.concat(memo, _.flatten(nested));
-    }, [])
-
+    // get metadata by filter actually return metadata object so we need unnesting
+    const unrolledData = _.reduce(data, unNestHome, []);
     const csv = CSV.produceCSVv1(unrolledData);
 
     debug("getPersonalCSV produced %d bytes from %d homepages (max %d)",
         _.size(csv), _.size(data), CSV_MAX_SIZE);
-
     if(!_.size(csv))
         return { text: "Data not found: are you sure you've any pornhub homepage acquired?" };
 
@@ -92,6 +88,50 @@ async function getPersonalCSV(req) {
         text: csv,
     };
 };
+
+async function getUnwindedHomeCSV(req) {
+    // /api/v1/homeUnwindedCSV/:amount?
+    const CSV_MAX_SIZE = 1000;
+    const k =  req.params.publicKey;
+    const data = await automo.getMetadataByFilter({ publicKey: k, type: 'home'}, { amount: CSV_MAX_SIZE, skip: 0 });
+
+    // get metadata by filter actually return metadata object so we need unnesting
+    const unrolledData = _.reduce(data, unNestHome, []);
+    debug("unrolled %d", unrolledData.length);
+    let simplified = [];
+    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    debug("unrolling %d", unrolledData.length)
+    for (video of unrolledData) {
+        const c = await mongo3.readOne(mongoc, nconf.get('schema').categories, { videoId: video.videoId});
+        debug("%j = %d", { videoId: video.videoId}, c ? c.categories.length : -1);
+        _.each(c ? c.categories: [], function(catentry) { 
+            let simpled = _.extend(video, { category: catentry.name });
+            simpled.id = video.videoOrder + video.metadataId.substring(0, 7);
+            simplified.push(
+                _.omit(simpled, ['videoOrder', 'sectionOrder'])
+            );
+        })
+    }
+    await mongoc.close();
+    debug("unwinded to %d", simplified.length)
+    const csv = CSV.produceCSVv1(simplified);
+
+    debug("getUnwindedHomeCSV produced %d bytes from %d homepages (max %d)",
+        _.size(csv), _.size(data), CSV_MAX_SIZE);
+
+    if(!_.size(csv))
+        return { text: "Data not found: are you sure you've any pornhub homepage acquired?" };
+
+    const filename = 'unwinded-' + moment().format("YY-MM-DD") + ".csv"
+    return {
+        headers: {
+            "Content-Type": "csv/text",
+            "Content-Disposition": "attachment; filename=" + filename
+        },
+        text: csv,
+    };
+}
+
 
 async function getSubmittedRAW(req) {
     const MAX = 30;
@@ -178,6 +218,7 @@ module.exports = {
     getPersonal,
     getSubmittedRAW,
     getPersonalCSV,
+    getUnwindedHomeCSV,
     getPersonalRelated,
     getEvidences,
     removeEvidence,
