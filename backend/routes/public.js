@@ -271,7 +271,7 @@ async function getRandomRecent(req) {
 };
 
 async function getHomeCSV(req) {
-    const MAXENTRY = 100;
+    const MAXENTRY = 2000;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
     const homes = await automo.getArbitrary({
         type: 'home'
@@ -295,8 +295,14 @@ async function getHomeCSV(req) {
     })
 
     const csv = CSV.produceCSVv1(nodes);
-    const filename = 'home-' +  moment().format("YY-MM-DD") + ".csv"
-    debug("homeCSV: produced %d bytes, returning %s", _.size(csv), filename);
+    const filename =
+        (homes.length == MAXENTRY) ?
+        'overflow-home-' +  moment().format("YY-MM-DD") + ".csv" :
+        'home-' +  moment().format("YY-MM-DD") + ".csv";
+
+    debug("homeCSV: produced %d bytes from %d homes %d videos, returning %s",
+        _.size(csv), homes.length, _.size(nodes), filename);
+
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
