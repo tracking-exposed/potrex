@@ -97,13 +97,10 @@ async function getUnwindedHomeCSV(req) {
 
     // get metadata by filter actually return metadata object so we need unnesting
     const unrolledData = _.reduce(data, unNestHome, []);
-    debug("unrolled %d", unrolledData.length);
     let simplified = [];
     const mongoc = await mongo3.clientConnect({concurrency: 10});
-    debug("unrolling %d", unrolledData.length)
     for (video of unrolledData) {
         const c = await mongo3.readOne(mongoc, nconf.get('schema').categories, { videoId: video.videoId});
-        debug("%j = %d", { videoId: video.videoId}, c ? c.categories.length : -1);
         _.each(c ? c.categories: [], function(catentry) { 
             let simpled = _.extend(video, { category: catentry.name });
             simpled.id = video.videoOrder + video.metadataId.substring(0, 7);
@@ -113,7 +110,6 @@ async function getUnwindedHomeCSV(req) {
         })
     }
     await mongoc.close();
-    debug("unwinded to %d", simplified.length)
     const csv = CSV.produceCSVv1(simplified);
 
     debug("getUnwindedHomeCSV produced %d bytes from %d homepages (max %d)",

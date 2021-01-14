@@ -24,7 +24,7 @@ function getString(req, what) {
 }
 
 function optionParsing(amountString, max) {
-    const MAXOBJS = max ? max : 200;
+    const MAXOBJS = max ? max : 2000;
     try {
         const amount = _.parseInt(_.first(amountString.split('-')));
         const skip = _.parseInt(_.last(amountString.split('-')));

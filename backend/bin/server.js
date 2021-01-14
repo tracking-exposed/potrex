@@ -4,7 +4,6 @@ const app = express();
 const server = require('http').Server(app);
 const _ = require('lodash');
 const bodyParser = require('body-parser');
-const Promise = require('bluebird');
 const debug = require('debug')('potrex');
 const nconf = require('nconf');
 const cors = require('cors');

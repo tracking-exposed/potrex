@@ -54,7 +54,7 @@ function main () {
             <ThemeProvider theme={theme}>
                 <h5>
                     <a href={buildCSVlinks('homeCSV')} target="_blank">
-                        Last 200 anonymized Home CSV 
+                        Last 2000 Home CSV 
                     </a> 
                     ― same, but enhanced with <a href={buildCSVlinks('homeUnwindedCSV')} target="_blank">
                         flattened categories (CSV)
