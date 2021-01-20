@@ -50,19 +50,16 @@ async function getPersonal(req) {
 function unNestHome(memo, metadata) {
     const nested = _.map(metadata.sections || [], function(section) {
         return _.map(section ? section.videos || [] : [], function(video, o) {
-            return {
+	    return _.extend(video, {
                 sectionOrder: section.order + 1,
                 sectionName: section.display,
 		sectionHref: section.href,
                 videoOrder: o + 1,
-                videoTitle: video.title,
-                authorName: video.authorName,
-                videoId: video.videoId,
-                savingTime: metadata.savingTime,
                 metadataId: metadata.id,
 		site: metadata.site,
-		suppseudo: metadata.publicKey.substr(0, 6)
-            }
+		suppseudo: metadata.publicKey.substr(0, 6),
+		profileStory: metadata.profileStory,
+	    });
         })
     });
     return _.concat(memo, _.flatten(nested));
