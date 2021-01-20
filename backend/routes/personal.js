@@ -48,8 +48,8 @@ async function getPersonal(req) {
 };
 
 function unNestHome(memo, metadata) {
-    const nested = _.map(metadata.sections, function(section) {
-        return _.map(section.videos, function(video, o) {
+    const nested = _.map(metadata.sections || [], function(section) {
+        return _.map(section.videos || [], function(video, o) {
             return {
                 sectionOrder: section.order + 1,
                 sectionName: section.display,
@@ -59,6 +59,8 @@ function unNestHome(memo, metadata) {
                 videoId: video.videoId,
                 savingTime: metadata.savingTime,
                 metadataId: metadata.id,
+		site: metadata.site,
+		suppseudo: metadata.publicKey.substr(0, 6)
             }
         })
     });
@@ -115,7 +117,7 @@ async function getUnwindedHomeCSV(req) {
     if(!_.size(csv))
         return { text: "Data not found: are you sure you've any pornhub homepage acquired?" };
 
-    const filename = 'unwinded—home—' + moment().format("YY-MM-DD") + "—" + _.size(data) + ".csv";
+    const filename = 'unwinded-home-' + moment().format("YY-MM-DD") + "-" + _.size(data) + ".csv";
     return {
         headers: {
             "Content-Type": "csv/text",
