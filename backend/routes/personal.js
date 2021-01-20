@@ -92,33 +92,30 @@ async function getPersonalCSV(req) {
 async function getUnwindedHomeCSV(req) {
     // /api/v1/homeUnwindedCSV/:amount?
     const CSV_MAX_SIZE = 1000;
-    const k =  req.params.publicKey;
-    const data = await automo.getMetadataByFilter({ publicKey: k, type: 'home'}, { amount: CSV_MAX_SIZE, skip: 0 });
+    const { amount, skip } = params.optionParsing(req.params.amount, CSV_MAX_SIZE);
+    const data = await automo.getMetadataByFilter({ type: 'home'}, { amount, skip });
 
     // get metadata by filter actually return metadata object so we need unnesting
     const unrolledData = _.reduce(data, unNestHome, []);
     let simplified = [];
+    debug("%d data %d unrolled", _.size(data), _.size(unrolledData));
     const mongoc = await mongo3.clientConnect({concurrency: 10});
     for (video of unrolledData) {
         const c = await mongo3.readOne(mongoc, nconf.get('schema').categories, { videoId: video.videoId});
-        _.each(c ? c.categories: [], function(catentry) { 
-            let simpled = _.extend(video, { category: catentry.name });
-            simpled.id = video.videoOrder + video.metadataId.substring(0, 7);
-            simplified.push(
-                _.omit(simpled, ['videoOrder', 'sectionOrder'])
-            );
-        })
+        video.categories = c ? _.map(c.categories, 'name').join("+") : "";
+        video.id = video.videoOrder + video.metadataId.substring(0, 7);
+        simplified.push(video);
     }
     await mongoc.close();
     const csv = CSV.produceCSVv1(simplified);
 
-    debug("getUnwindedHomeCSV produced %d bytes from %d homepages (max %d)",
-        _.size(csv), _.size(data), CSV_MAX_SIZE);
+    debug("getUnwindedHomeCSV produced %d bytes from %d homepages amount %d skip %d (max %d)",
+        _.size(csv), _.size(data), amount, skip, CSV_MAX_SIZE);
 
     if(!_.size(csv))
         return { text: "Data not found: are you sure you've any pornhub homepage acquired?" };
 
-    const filename = 'unwinded-' + moment().format("YY-MM-DD") + ".csv"
+    const filename = 'unwinded—home—' + moment().format("YY-MM-DD") + "—" + _.size(data) + ".csv";
     return {
         headers: {
             "Content-Type": "csv/text",
