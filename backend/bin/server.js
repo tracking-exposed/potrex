@@ -43,7 +43,6 @@ async function dispatchPromise(name, req, res) {
         debug("API name %s (%s): ERROR: missing function", name, req.url);
         return returnHTTPError(req, res, name, "Server Error");
     }
-    debug("executing API %s (%s)", name, req.url);
 
     try {
         const httpresult = await func(req);
@@ -122,6 +121,9 @@ app.get('/api/v1/related/:query', async (req, res) => {
 });
 app.get('/api/v1/videoCSV/:query/:amount?', async (req, res) => {
     return await dispatchPromise('getVideoCSV', req, res);
+});
+app.get('/api/v1/home/:amount?', async (req, res) => {
+    return await dispatchPromise('getHomes', req, res);
 });
 app.get('/api/v1/homeCSV/:amount?', async (req, res) => {
     return await dispatchPromise('getHomeCSV', req, res);

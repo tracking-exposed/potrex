@@ -270,6 +270,23 @@ async function getRandomRecent(req) {
     return { json: keylist };
 };
 
+async function getHomes(req) {
+    const MAXENTRY = 2000;
+    const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
+    const homes = await automo.getArbitrary({
+        type: 'home'
+    }, amount, skip);
+
+    const clean = _.map(homes, function(h) {
+        _.unset(h, '_id');
+	h.suppseudo = h.publicKey.substr(0, 6);
+        _.unset(h, 'publicKey');
+	return h;
+    });
+    debug("getHomes: return %d homes", _.size(clean));
+    return { json: clean};
+}
+
 async function getHomeCSV(req) {
     const MAXENTRY = 2000;
     const { amount, skip } = params.optionParsing(req.params.paging, MAXENTRY);
@@ -322,5 +339,6 @@ module.exports = {
     getVideoCSV,
     getByAuthor,
     getRandomRecent,
+    getHomes,
     getHomeCSV,
 };
