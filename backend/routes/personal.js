@@ -49,7 +49,7 @@ async function getPersonal(req) {
 
 function unNestHome(memo, metadata) {
     const nested = _.map(metadata.sections || [], function(section) {
-        return _.map(section.videos || [], function(video, o) {
+        return _.map(section ? section.videos || [] : [], function(video, o) {
             return {
                 sectionOrder: section.order + 1,
                 sectionName: section.display,
