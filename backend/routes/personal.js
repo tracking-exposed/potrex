@@ -53,6 +53,7 @@ function unNestHome(memo, metadata) {
             return {
                 sectionOrder: section.order + 1,
                 sectionName: section.display,
+		sectionHref: section.href,
                 videoOrder: o + 1,
                 videoTitle: video.title,
                 authorName: video.authorName,
