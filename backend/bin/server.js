@@ -128,7 +128,7 @@ app.get('/api/v1/home/:amount?', async (req, res) => {
 app.get('/api/v1/homeCSV/:amount?', async (req, res) => {
     return await dispatchPromise('getHomeCSV', req, res);
 });
-app.get('/api/v1/homeUnwindedCSV/:publicKey', async (req, res) => {
+app.get('/api/v1/homeUnwindedCSV/:amount?', async (req, res) => {
     return await dispatchPromise('getUnwindedHomeCSV', req, res);
 });
 app.get('/api/v1/author/:query/:amount?', async (req, res) => {
