@@ -25,7 +25,7 @@
         ]
     }, {
         "name": "contributions",
-        "column": "metadata",
+        "column": "metadata2",
         "timevar": "savingTime",
         "variables": [
             {
@@ -95,7 +95,7 @@
         ]
     }, {
         "name": "video-metadata",
-        "column": "metadata",
+        "column": "metadata2",
         "timevar": "savingTime",
         "variables": [
             {
@@ -121,7 +121,7 @@
         ]
     }, {
         "name": "home-metadata",
-        "column": "metadata",
+        "column": "metadata2",
         "timevar": "savingTime",
         "variables": [
             {
