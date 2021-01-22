@@ -145,6 +145,18 @@
                 "selector": { "sections.4": { "$exists": true }}
             },
             {
+                "name": "section-6",
+                "selector": { "sections.5": { "$exists": true }}
+            },
+            {
+                "name": "section-7",
+                "selector": { "sections.6": { "$exists": true }}
+            },
+            {
+                "name": "section-8",
+                "selector": { "sections.7": { "$exists": true }}
+            },
+            {
                 "name": "total",
                 "selector": { "type": "home" }
             }
