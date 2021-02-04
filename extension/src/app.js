@@ -66,7 +66,7 @@ function boot () {
     const jsonHistory = localStorage.getItem('watchedVideoIds');
     profileStory = JSON.parse(jsonHistory).length;
   } catch(e) {
-    console.want("Error in estimating amount of past activities", e);
+    console.warn("Error in estimating amount of past activities", e);
     profileStory = -1;
   }
 

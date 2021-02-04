@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "PH for accountant: algorithm analysis toolkit",
+  "name": "algorithm analysis toolkit for “accountant”",
   "short_name": "i-am-an-accountant",
-  "description": "A personalization scraper to analyze the biggest adult-industry content provider: https://pornhub.tracking.exposed",
-  "version": "0.4.3",
+  "description": "A personalization scraper to analyze the biggest adult-industry provider — https://pornhub.tracking.exposed",
+  "version": "0.4.4",
   "author": "few proud humans (and robots) challenging the algorithm monopolists: we're https://tracking.exposed",
 
   "icons": {
