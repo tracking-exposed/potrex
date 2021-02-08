@@ -50,11 +50,31 @@ async function researchHomeCSV(req) {
 
     const json = await researchHome(req);
 
-    const csv = CSV.produceCSVv1(json.data);
-    const filename = 'research-homes-' + _.size(json.data) + "-" + moment().format("YYYY-MM-DD") + ".csv";
+    const nodes = [];
+    const dinfo = {};
+    _.each(json.json, function(entry) {
+        _.each(_.filter(entry.sections, null), function(s) {
+            _.each(s.videos, function(v, videoOrder) {
+                let unwind = _.extend(v, _.omit(entry, [
+                    'clientTime', 'sections', 'href', 'type' ]));
+                unwind.sectionName = s.display;
+                unwind.sectionHref = s.href;
+                unwind.sectionOrder = s.order;
+                unwind.displayOrder = videoOrder;
+                nodes.push(unwind);
+            });
+            if( dinfo[_.size(entry.sections)] )
+                dinfo[_.size(entry.sections)] += 1;
+            else
+                dinfo[_.size(entry.sections)] = 1;
+        });
+    })
 
-    debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
-        _.size(csv), homes.length, _.size(nodes), filename);
+    const csv = CSV.produceCSVv1(nodes);
+    const filename = 'research-homes-' + _.size(json.json) + "-" + moment().format("YYYY-MM-DD") + ".csv";
+
+    debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s (dinfo %j)",
+        _.size(csv), json.json.length, _.size(nodes), filename, dinfo);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
