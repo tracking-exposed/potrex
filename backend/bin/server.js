@@ -173,6 +173,13 @@ app.get('/api/v2/raw/:publicKey/:paging?', async (req, res) => {
     return await dispatchPromise('getSubmittedRAW', req, res);
 });
 
+/* reserarch api */
+app.get('/api/v2/research/homes', async (req, res) => {
+    return await dispatchPromise('researchHome', req, res);
+});
+app.get('/api/v2/research/homes/CSV', async (req, res) => {
+    return await dispatchPromise('researchHomeCSV', req, res);
+});
 
 /* ADMIN */
 app.get('/api/v1/mirror/:key', async (req, res) => {

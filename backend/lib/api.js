@@ -49,6 +49,10 @@ var apiList = {
 
     /* work in progress, admin, tag */
     getMonitor:        require('../routes/monitor').getMonitor,
+
+    /* Q1 2021 researches */
+    researchHome:      require('../routes/research').researchHome,
+    researchHomeCSV:   require('../routes/research').researchHomeCSV,
 };
 
 module.exports = {
