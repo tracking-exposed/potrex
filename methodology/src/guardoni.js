@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const debug = require('debug')('methodology:test-1');
+const bcons = require('debug')('browser:console');
 const puppeteer = require("puppeteer-extra")
 const { TimeoutError } = require("puppeteer/lib/api");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
@@ -38,9 +39,10 @@ async function main() {
   const dist = path.resolve(path.join(cwd, '..', 'extension', 'dist'));
   const udd = path.resolve(path.join(cwd, 'profiles', 'qualcosa'));
   debug("%s %s", dist, udd);
+  let browser = null;
   try {
     puppeteer.use(pluginStealth());
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
         headless: false,
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
@@ -60,17 +62,35 @@ async function main() {
 
 async function operateBroweser(browser, directives) {
     const page = (await browser.pages())[0];
-    await page.setViewport({width: 1024, height: 768});
+//    await page.setViewport({width: 1024, height: 768});
+    let extensioninfo = null;
     for (directive of directives) {
       await page.goto(directive, { 
         waitUntil: "networkidle0",
       });
       debug("loaded %s", directive);
-      await page.waitFor(2000);
+      page
+        .on('console', function(message) {
+          bcons(`${message.text()}`);
+          if(message.text().match(/publicKey/)) {
+              extensioninfo = JSON.parse(message.text());
+              debug("%j", extensioninfo);
+          }
+        })
+        .on('pageerror', ({ message }) => debug('error' + message))
+        .on('response', response =>
+          debug(`response: ${response.status()} ${response.url()}`))
+        .on('requestfailed', request =>
+          debug(`requestfail: ${request.failure().errorText} ${request.url()}`));
+
+      await page.waitFor(4000);
+      const innerWidth = await page.evaluate(_ => { return window.innerWidth });
+      const innerHeight = await page.evaluate(_ => { return window.innerHeight });
+      debug("Completed! %s %s", innerHeight, innerWidth);
+
       try {
-        const frames = await page.frames();
         const y = await page.evaluate(_ => { return document.querySelector('html')} );
-        debug("frames %s -- html %d", frames, y.length);
+        debug("frames -- html %j", y);
       }
       catch(error) {
         debug("error in primo test %s", error);
@@ -84,10 +104,7 @@ async function operateBroweser(browser, directives) {
       });
       debug(profileStory);
     }
-
-    const innerWidth = await page.evaluate(_ => { return window.innerWidth });
-    const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-    debug("Completed! %s %s", innerHeight, innerWidth);
+    await page.close();
 }
 
 main ();
