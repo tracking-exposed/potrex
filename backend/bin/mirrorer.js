@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var _ = require('lodash');
 var Promise = require('bluebird');
-var debug = require('debug')('bin:mirrorer');
+var debug = require('debug')('potrex:mirrorer');
 var request = Promise.promisifyAll(require('request'));
 var nconf = require('nconf');
 
@@ -15,18 +15,18 @@ const sourceUrl = `${source}/api/v1/mirror/${nconf.get('key')}/`;
 const dest = nconf.get('dest') || 'http://localhost:10000';
 const destUrl = `${dest}/api/v2/events`;
 
-debug("Fetching latest samples via %s", sourceUrl);
+debug("Fetching %s for %s", sourceUrl, dest);
 return request
     .getAsync({url: sourceUrl, rejectUnauthorized: false } )
     .then(function(res) {
-        debug("Download completed (%d)", _.size(res.body) );
+        // debug("Download completed (%d)", _.size(res.body) );
         return res.body;
     })
     .then(JSON.parse)
     .then(function(e) {
         if(!e.content)
             process.exit(0);
-        debug("Retrieved %d elements", _.size(e.content) );
+        // debug("Retrieved %d elements", _.size(e.content) );
         return e.content;
     })
     .map(function(copiedReq) {
@@ -42,5 +42,5 @@ return request
             })
     }, { concurrency: 1})
     .catch(function(error) {
-        debug("――― [E] %s", error.message);
+        debug("――― [E] %s", error.message, new Date());
     });

@@ -72,7 +72,8 @@ function boot () {
 
   return localLookup(response => {
     // `response` contains the user's public key and its status,
-    console.log('localLookup responded:', response)
+    console.log('localLookup responded:');
+    console.log(JSON.stringify(response));
     hrefUpdateMonitor()
     flush()
   })
