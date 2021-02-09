@@ -19,3 +19,5 @@ extension/docs/
 extension/node_modules/
 backend/node_modules/
 react-pieces/node_modules/
+methodology/node_modules/
+methodology/profiles/*

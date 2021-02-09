@@ -31,19 +31,15 @@ var returnHTTPError = function(req, res, funcName, where) {
     return false;
 };
 
-
 /* This function wraps all the API call, checking the verionNumber
  * managing error in 4XX/5XX messages and making all these asyncronous
  * I/O with DB, inside this Bluebird */
 async function dispatchPromise(name, req, res) {
-
     var func = _.get(APIs.implementations, name, null);
-
     if(_.isNull(func)) {
         debug("API name %s (%s): ERROR: missing function", name, req.url);
         return returnHTTPError(req, res, name, "Server Error");
     }
-
     try {
         const httpresult = await func(req);
 
