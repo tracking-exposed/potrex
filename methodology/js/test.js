@@ -76,6 +76,13 @@ async function operateBroweser(browser, directives) {
         debug("error in primo test %s", error);
         process.exit(1);
       }
+
+      const profileStory = await page.evaluate(() => {
+        const jsonHistory = localStorage.getItem('watchedVideoIds');
+        profileStory = JSON.parse(jsonHistory).length;
+        return profileStory;
+      });
+      debug(profileStory);
     }
 
     const innerWidth = await page.evaluate(_ => { return window.innerWidth });
