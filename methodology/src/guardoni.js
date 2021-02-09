@@ -52,6 +52,7 @@ async function main() {
         ],
     });
     await operateBroweser(browser, directives);
+    await browser.close();
   } catch(error) {
     console.log("cdcsdcsd errore", error);
     await browser.close();
@@ -61,50 +62,50 @@ async function main() {
 }
 
 async function operateBroweser(browser, directives) {
-    const page = (await browser.pages())[0];
+  const page = (await browser.pages())[0];
 //    await page.setViewport({width: 1024, height: 768});
-    let extensioninfo = null;
-    for (directive of directives) {
-      await page.goto(directive, { 
-        waitUntil: "networkidle0",
-      });
-      debug("loaded %s", directive);
-      page
-        .on('console', function(message) {
-          bcons(`${message.text()}`);
-          if(message.text().match(/publicKey/)) {
-              extensioninfo = JSON.parse(message.text());
-              debug("%j", extensioninfo);
-          }
-        })
-        .on('pageerror', ({ message }) => debug('error' + message))
-        .on('response', response =>
-          debug(`response: ${response.status()} ${response.url()}`))
-        .on('requestfailed', request =>
-          debug(`requestfail: ${request.failure().errorText} ${request.url()}`));
+  let extensioninfo = null;
+  for (directive of directives) {
+    await page.goto(directive, { 
+      waitUntil: "networkidle0",
+    });
+    debug("loaded %s", directive);
+    page
+      .on('console', function(message) {
+        bcons(`${message.text()}`);
+        if(message.text().match(/publicKey/)) {
+            extensioninfo = JSON.parse(message.text());
+            debug("%j", extensioninfo);
+        }
+      })
+      .on('pageerror', ({ message }) => debug('error' + message))
+      .on('response', response =>
+        debug(`response: ${response.status()} ${response.url()}`))
+      .on('requestfailed', request =>
+        debug(`requestfail: ${request.failure().errorText} ${request.url()}`));
 
-      await page.waitFor(4000);
-      const innerWidth = await page.evaluate(_ => { return window.innerWidth });
-      const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-      debug("Completed! %s %s", innerHeight, innerWidth);
+    await page.waitFor(4000);
+    const innerWidth = await page.evaluate(_ => { return window.innerWidth });
+    const innerHeight = await page.evaluate(_ => { return window.innerHeight });
+    debug("Completed! %s %s", innerHeight, innerWidth);
 
-      try {
-        const y = await page.evaluate(_ => { return document.querySelector('html')} );
-        debug("frames -- html %j", y);
-      }
-      catch(error) {
-        debug("error in primo test %s", error);
-        process.exit(1);
-      }
-
-      const profileStory = await page.evaluate(() => {
-        const jsonHistory = localStorage.getItem('watchedVideoIds');
-        profileStory = JSON.parse(jsonHistory).length;
-        return profileStory;
-      });
-      debug(profileStory);
+    try {
+      const y = await page.evaluate(_ => { return document.querySelector('html')} );
+      debug("frames -- html %j", y);
     }
-    await page.close();
+    catch(error) {
+      debug("error in primo test %s", error);
+      process.exit(1);
+    }
+
+    const profileStory = await page.evaluate(() => {
+      const jsonHistory = localStorage.getItem('watchedVideoIds');
+      return JSON.parse(jsonHistory);
+    });
+    debug(profileStory);
+  }
+  console.log("---------------------------")
+  // await page.close();
 }
 
 main ();
