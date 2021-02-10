@@ -46,6 +46,7 @@ async function researchHome(req) {
     // get metadata by filter actually return metadata object so we need unnesting
     const unrolledData = _.reduce(data, personal.unNestHome, []);
     let extended = [];
+    let missing = 0;
     debug("%d data %d unrolled", _.size(data), _.size(unrolledData));
     const mongoc = await mongo3.clientConnect({concurrency: 10});
     for (video of unrolledData) {
@@ -59,7 +60,7 @@ async function researchHome(req) {
                 c.macro = "NOT"+c.href;
             return c;
         });
-        if(!c) debug("Missing category for video %s", video.videoId);
+        if(!c) missing++;
         video.id = video.videoOrder + video.metadataId.substring(0, 7);
         video.who = method[video.publicKey];
 
@@ -67,7 +68,9 @@ async function researchHome(req) {
         extended.push(video);
     }
 
-    debug("researchHomes: return %d elements", _.size(extended));
+    debug("researchHomes: return %d elements and %d missing",
+        _.size(extended), missing);
+
     return { json: extended};
 }
 
