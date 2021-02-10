@@ -1,9 +1,12 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:research');
+const nconf = require('nconf');
 
 const automo = require('../lib/automo');
+const mongo3 = require('../lib/mongo3');
 const CSV = require('../lib/CSV');
+const personal = require('./personal');
 
 /* this file implement API developed for research purpose, they might not have any 
  * use outside of Q1-2021 experiments */
@@ -34,47 +37,55 @@ async function researchHome(req) {
         "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12 
     };
     const keys = _.keys(method);
-    const homes = await automo.getArbitrary({ type: 'home', publicKey: { "$in": keys } }, 5000, 0);
-    const clean = _.map(homes, function(h) {
-        _.unset(h, '_id');
-        h.suppseudo = h.publicKey.substr(0, 6);
-        h.who = method[h.publicKey];
-        _.unset(h, 'publicKey');
-        return h;
-    });
-    debug("researchHomes: return %d elements", _.size(clean));
-    return { json: clean};
+
+    const data = await automo.getMetadataByFilter(
+        { type: 'home', publicKey: { "$in": keys } },
+        { amount: 5000, skip: 0}
+    );
+
+    // get metadata by filter actually return metadata object so we need unnesting
+    const unrolledData = _.reduce(data, personal.unNestHome, []);
+    let extended = [];
+    debug("%d data %d unrolled", _.size(data), _.size(unrolledData));
+    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    for (video of unrolledData) {
+        const c = await mongo3.readOne(mongoc, nconf.get('schema').categories, { videoId: video.videoId});
+        const scrapedc = c ? c.categories : [];
+        video.categories = _.map(scrapedc, function(c) {
+            const isSupported = _.find(MACROc, { href: c.href });
+            if(isSupported)
+                c.macro = isSupported.macro;
+            else
+                c.macro = "NOT"+c.href;
+            return c;
+        });
+        if(!c) debug("Missing category for video %s", video.videoId);
+        video.id = video.videoOrder + video.metadataId.substring(0, 7);
+        video.who = method[video.publicKey];
+
+        _.unset(video, 'publicKey');
+        extended.push(video);
+    }
+
+    debug("researchHomes: return %d elements", _.size(extended));
+    return { json: extended};
 }
 
 async function researchHomeCSV(req) {
 
     const json = await researchHome(req);
 
-    const nodes = [];
-    const dinfo = {};
-    _.each(json.json, function(entry) {
-        _.each(_.filter(entry.sections, null), function(s) {
-            _.each(s.videos, function(v, videoOrder) {
-                let unwind = _.extend(v, _.omit(entry, [
-                    'clientTime', 'sections', 'href', 'type' ]));
-                unwind.sectionName = s.display;
-                unwind.sectionHref = s.href;
-                unwind.sectionOrder = s.order;
-                unwind.displayOrder = videoOrder;
-                nodes.push(unwind);
-            });
-            if( dinfo[_.size(entry.sections)] )
-                dinfo[_.size(entry.sections)] += 1;
-            else
-                dinfo[_.size(entry.sections)] = 1;
-        });
-    })
+    const nodes = _.map(json.json, function(entry) {
+        entry.categorylist = _.map(entry.categories, 'name').join('+');
+        entry.macrolist = _.map(entry.categories, 'macro').join('-');
+        return _.omit(entry, ['thumbnail','categories']);
+    });
 
     const csv = CSV.produceCSVv1(nodes);
     const filename = 'research-homes-' + _.size(json.json) + "-" + moment().format("YYYY-MM-DD") + ".csv";
 
-    debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s (dinfo %j)",
-        _.size(csv), json.json.length, _.size(nodes), filename, dinfo);
+    debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
+        _.size(csv), json.json.length, _.size(nodes), filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
@@ -87,6 +98,434 @@ async function researchHomeCSV(req) {
         text: csv,
     };
 }
+
+const MACROc = [
+    {
+        "name": "Live Cams", "macro": "Format",
+        "href": "/live?track=6002"
+    },
+    {
+        "name": "Popular With Women", "macro": "Fantasies",
+        "href": "/popularwithwomen"
+    },
+    {
+        "name": "Verified Amateurs", "macro": "Format",
+        "href": "/video?c=138"
+    },
+    {
+        "name": "Verified Models", "macro": "Format",
+        "href": "/video?c=139"
+    },
+    {
+        "name": "Virtual Reality", "macro": "Format",
+        "href": "/vr"
+    },
+    {
+        "name": "German", "macro": "Appearance",
+        "href": "/video?c=95"
+    },
+    {
+        "name": "60FPS", "macro": "Format",
+        "href": "/video?c=105"
+    },
+    {
+        "name": "Amateur", "macro": "Format",
+        "href": "/video?c=3"
+    },
+    {
+        "name": "Anal", "macro": "Practices",
+        "href": "/video?c=35"
+    },
+    {
+        "name": "Arab", "macro": "Appearance",
+        "href": "/video?c=98"
+    },
+    {
+        "name": "Asian", "macro": "Appearance",
+        "href": "/video?c=1"
+    },
+    {
+        "name": "Babe", "macro": "Appearance",
+        "href": "/categories/babe"
+    },
+    {
+        "name": "Babysitter", "macro": "Fantasies",
+        "href": "/video?c=89"
+    },
+    {
+        "name": "BBW", "macro": "Appearance",
+        "href": "/video?c=6"
+    },
+    {
+        "name": "Behind The Scenes", "macro": "Format",
+        "href": "/video?c=141"
+    },
+    {
+        "name": "Big Ass", "macro": "Appearance",
+        "href": "/video?c=4"
+    },
+    {
+        "name": "Big Dick", "macro": "Appearance",
+        "href": "/video?c=7"
+    },
+    {
+        "name": "Big Tits", "macro": "Appearance",
+        "href": "/video?c=8"
+    },
+    {
+        "name": "Bisexual Male", "macro": "Fantasies",
+        "href": "/video?c=76"
+    },
+    {
+        "name": "Blonde", "macro": "Appearance",
+        "href": "/video?c=9"
+    },
+    {
+        "name": "Blowjob", "macro": "Practices",
+        "href": "/video?c=13"
+    },
+    {
+        "name": "Bondage",  "macro": "Fantasies",
+        "href": "/video?c=10"
+    },
+    {
+        "name": "Brazilian", "macro": "Appearance",
+        "href": "/video?c=102"
+    },
+    {
+        "name": "British", "macro": "Appearance",
+        "href": "/video?c=96"
+    },
+    {
+        "name": "Brunette", "macro": "Appearance",
+        "href": "/video?c=11"
+    },
+    {
+        "name": "Bukkake", "macro": "Practices",
+        "href": "/video?c=14"
+    },
+    {
+        "name": "Cartoon",  "macro": "Format",
+        "href": "/video?c=86"
+    },
+    {
+        "name": "Casting", "macro": "Fantasies",
+        "href": "/video?c=90"
+    },
+    {
+        "name": "Celebrity", "macro": "Fantasies",
+        "href": "/video?c=12"
+    },
+    {
+        "name": "Closed Captions", "macro": "Format",
+        "href": "/video?c=732"
+    },
+    {
+        "name": "College", "macro": "Fantasies",
+        "href": "/categories/college"
+    },
+    {
+        "name": "Compilation", "macro": "Format",
+        "href": "/video?c=57"
+    },
+    {
+        "name": "Cosplay", "macro": "Fantasies",
+        "href": "/video?c=241"
+    },
+    {
+        "name": "Creampie", "macro": "Practices",
+        "href": "/video?c=15"
+    },
+    {
+        "name": "Cuckold", "macro": "Fantasies",
+        "href": "/video?c=242"
+    },
+    {
+        "name": "Cumshot", "macro": "Practices",
+        "href": "/video?c=16"
+    },
+    {
+        "name": "Czech", "macro": "Appearance",
+        "href": "/video?c=100"
+    },
+    {
+        "name": "Described Video", "macro": "Format",
+        "href": "/described-video"
+    },
+    {
+        "name": "Double Penetration", "macro": "Practices",
+        "href": "/video?c=72"
+    },
+    {
+        "name": "Ebony", "macro": "Appearance",
+        "href": "/video?c=17"
+    },
+    {
+        "name": "Euro", "macro": "Appearance",
+        "href": "/video?c=55"
+    },
+    {
+        "name": "Exclusive", "macro": "Format",
+        "href": "/video?c=115"
+    },
+    {
+        "name": "Feet", "macro": "Fantasies",
+        "href": "/video?c=93"
+    },
+    {
+        "name": "Female Orgasm", "macro": "Practices",
+        "href": "/video?c=502"
+    },
+    {
+        "name": "Fetish", "macro": "Fantasies",
+        "href": "/video?c=18"
+    },
+    {
+        "name": "Fingering", "macro": "Practices",
+        "href": "/video?c=592"
+    },
+    {
+        "name": "Fisting", "macro": "Practices",
+        "href": "/video?c=19"
+    },
+    {
+        "name": "French", "macro": "Appearance",
+        "href": "/video?c=94"
+    },
+    {
+        "name": "Funny", "macro": "Fantasies",
+        "href": "/video?c=32"
+    },
+    {
+        "name": "Gangbang", "macro": "Practices",
+        "href": "/video?c=80"
+    },
+    {
+        "name": "Gay", "macro": "Fantasies",
+        "href": "/gayporn"
+    },
+    {
+        "name": "Handjob", "macro": "Practices",
+        "href": "/video?c=20"
+    },
+    {
+        "name": "Hardcore", "macro": "Fantasies",
+        "href": "/video?c=21"
+    },
+    {
+        "name": "HD Porn", "macro": "Format",
+        "href": "/hd"
+    },
+    {
+        "name": "Hentai", "macro": "Format",
+        "href": "/categories/hentai"
+    },
+    {
+        "name": "Indian", "macro": "Appearance",
+        "href": "/video?c=101"
+    },
+    {
+        "name": "Interactive", "macro": "Format",
+        "href": "/interactive"
+    },
+    {
+        "name": "Interracial",  "macro": "Fantasies",
+        "href": "/video?c=25"
+    },
+    {
+        "name": "Italian", "macro": "Appearance",
+        "href": "/video?c=97"
+    },
+    {
+        "name": "Japanese", "macro": "Appearance",
+        "href": "/video?c=111"
+    },
+    {
+        "name": "Korean", "macro": "Appearance",
+        "href": "/video?c=103"
+    },
+    {
+        "name": "Latina", "macro": "Appearance",
+        "href": "/video?c=26"
+    },
+    {
+        "name": "Lesbian", "macro": "Fantasies",
+        "href": "/video?c=27"
+    },
+    {
+        "name": "Massage", "macro": "Fantasies",
+        "href": "/video?c=78"
+    },
+    {
+        "name": "Masturbation", "macro": "Practices",
+        "href": "/video?c=22"
+    },
+    {
+        "name": "Mature", "macro": "Appearance",
+        "href": "/video?c=28"
+    },
+    {
+        "name": "MILF", "macro": "Appearance",
+        "href": "/video?c=29"
+    },
+    {
+        "name": "Muscular Men", "macro": "Appearance",
+        "href": "/video?c=512"
+    },
+    {
+        "name": "Music", "macro": "Format",
+        "href": "/video?c=121"
+    },
+    {
+        "name": "Old/Young", "macro": "Fantasies",
+        "href": "/video?c=181"
+    },
+    {
+        "name": "Orgy", "macro": "Practices",
+        "href": "/video?c=2"
+    },
+    {
+        "name": "Parody", "macro": "Fantasies",
+        "href": "/video?c=201"
+    },
+    {
+        "name": "Party", "macro": "Fantasies",
+        "href": "/video?c=53"
+    },
+    {
+        "name": "Pissing", "macro": "Practices",
+        "href": "/video?c=211"
+    },
+    {
+        "name": "Pornstar", "macro": "Format",
+        "href": "/categories/pornstar"
+    },
+    {
+        "name": "POV", "macro": "Format",
+        "href": "/video?c=41"
+    },
+    {
+        "name": "Public", "macro": "Fantasies",
+        "href": "/video?c=24"
+    },
+    {
+        "name": "Pussy Licking", "macro": "Practices",
+        "href": "/video?c=131"
+    },
+    {
+        "name": "Reality", "macro": "Format",
+        "href": "/video?c=31"
+    },
+    {
+        "name": "Red Head", "macro": "Appearance",
+        "href": "/video?c=42"
+    },
+    {
+        "name": "Role Play", "macro": "Fantasies",
+        "href": "/video?c=81"
+    },
+    {
+        "name": "Romantic", "macro": "Fantasies",
+        "href": "/video?c=522"
+    },
+    {
+        "name": "Rough Sex", "macro": "Fantasies",
+        "href": "/video?c=67"
+    },
+    {
+        "name": "Russian", "macro": "Appearance",
+        "href": "/video?c=99"
+    },
+    {
+        "name": "School", "macro": "Fantasies",
+        "href": "/video?c=88"
+    },
+    {
+        "name": "Scissoring", "macro": "Practices",
+        "href": "/video?c=532"
+    },
+    {
+        "name": "SFW", "macro": "Format",
+        "href": "/sfw"
+    },
+    {
+        "name": "Small Tits", "macro": "Appearance",
+        "href": "/video?c=59"
+    },
+    {
+        "name": "Smoking", "macro": "Fantasies",
+        "href": "/video?c=91"
+    },
+    {
+        "name": "Solo Female", "macro": "Fantasies",
+        "href": "/video?c=492"
+    },
+    {
+        "name": "Solo Male", "macro": "Fantasies",
+        "href": "/video?c=92"
+    },
+    {
+        "name": "Squirt", "macro": "Practices",
+        "href": "/video?c=69"
+    },
+    {
+        "name": "Step Fantasy", "macro": "Fantasies",
+        "href": "/video?c=444"
+    },
+    {
+        "name": "Strap On", "macro": "Practices",
+        "href": "/video?c=542"
+    },
+    {
+        "name": "Striptease", "macro": "Fantasies",
+        "href": "/video?c=33"
+    },
+    {
+        "name": "Tattooed Women", "macro": "Appearance",
+        "href": "/video?c=562"
+    },
+    {
+        "name": "Teen", "macro": "Appearance",
+        "href": "/categories/teen"
+    },
+    {
+        "name": "Threesome", "macro": "Fantasies",
+        "href": "/video?c=65"
+    },
+    {
+        "name": "Toys", "macro": "Fantasies",
+        "href": "/video?c=23"
+    },
+    {
+        "name": "Trans Male", "macro": "Appearance",
+        "href": "/video?c=602"
+    },
+    {
+        "name": "Trans With Girl", "macro": "Fantasies",
+        "href": "/video?c=572"
+    },
+    {
+        "name": "Trans With Guy", "macro": "Fantasies",
+        "href": "/video?c=582"
+    },
+    {
+        "name": "Transgender", "macro": "Appearance",
+        "href": "/transgender"
+    },
+    {
+        "name": "Verified Couples", "macro": "Format",
+        "href": "/video?c=482"
+    },
+    {
+        "name": "Vintage", "macro": "Format",
+        "href": "/video?c=43"
+    },
+    {
+        "name": "Webcam", "macro": "Format",
+        "href": "/video?c=61"
+    }
+];
+
 
 module.exports = {
     researchHome,

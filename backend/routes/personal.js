@@ -50,16 +50,17 @@ async function getPersonal(req) {
 function unNestHome(memo, metadata) {
     const nested = _.map(metadata.sections || [], function(section) {
         return _.map(section ? section.videos || [] : [], function(video, o) {
-	    return _.extend(video, {
+            return _.extend(video, {
                 sectionOrder: section.order + 1,
                 sectionName: section.display,
-		sectionHref: section.href,
+                sectionHref: section.href,
                 videoOrder: o + 1,
                 metadataId: metadata.id,
-		site: metadata.site,
-		suppseudo: metadata.publicKey.substr(0, 6),
-		profileStory: metadata.profileStory,
-	    });
+                site: metadata.site,
+                publicKey: metadata.publicKey,
+                suppseudo: metadata.publicKey.substr(0, 6),
+                profileStory: metadata.profileStory,
+            });
         })
     });
     return _.concat(memo, _.flatten(nested));
@@ -215,4 +216,7 @@ module.exports = {
     getPersonalRelated,
     getEvidences,
     removeEvidence,
+
+    unNestHome,
+    fixHomeSimply,
 };
