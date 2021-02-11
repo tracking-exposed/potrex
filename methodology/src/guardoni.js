@@ -10,6 +10,7 @@ const path = require('path');
 const fs = require('fs');
 
 nconf.argv().env();
+const DELAY = nconf.get('delay') || 10000;
 
 async function dumpFrameTree(frame, indent) {
     const title = await frame.title();
@@ -57,6 +58,8 @@ async function main() {
     console.log("chromium --user-data-dir=profile/path to initialize a new profile");
     process.exit(1)
   }
+  if(DELAY < 10000)
+    console.log("Warning delay is less than 10 seconds (--delay expect milliseconds)")
   let browser = null;
   try {
     puppeteer.use(pluginStealth());
@@ -93,7 +96,7 @@ async function operateBroweser(browser, directives) {
         bcons(`${message.text()}`);
         if(message.text().match(/publicKey/)) {
             extensioninfo = JSON.parse(message.text());
-            debug("%j", extensioninfo);
+            console.log(extensioninfo);
         }
       })
       .on('pageerror', ({ message }) => debug('error' + message))
@@ -102,19 +105,10 @@ async function operateBroweser(browser, directives) {
       .on('requestfailed', request =>
         debug(`requestfail: ${request.failure().errorText} ${request.url()}`));
 
-    await page.waitFor(4000);
+    await page.waitFor(DELAY);
     const innerWidth = await page.evaluate(_ => { return window.innerWidth });
     const innerHeight = await page.evaluate(_ => { return window.innerHeight });
     debug("Completed! %s %s", innerHeight, innerWidth);
-
-    try {
-      const y = await page.evaluate(_ => { return document.querySelector('html')} );
-      debug("frames -- html %j", y);
-    }
-    catch(error) {
-      debug("error in primo test %s", error);
-      process.exit(1);
-    }
 
     const profileStory = await page.evaluate(() => {
       const jsonHistory = localStorage.getItem('watchedVideoIds');
