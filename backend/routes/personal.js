@@ -60,6 +60,7 @@ function unNestHome(memo, metadata) {
                 publicKey: metadata.publicKey,
                 suppseudo: metadata.publicKey.substr(0, 6),
                 profileStory: metadata.profileStory,
+                savingTime: metadata.savingTime,
             });
         })
     });

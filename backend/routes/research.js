@@ -15,8 +15,10 @@ async function researchErrors() {
     }
 }
 function addToErrors(celem) {
-    debug("%d registering error — %j", collectedErrors.length, celem);
-    collectedErrors.push(celem);
+    if(!_.find(collectedErrors, { name: celem.name })) {
+        debug("%d registering error — %j", collectedErrors.length, celem);
+        collectedErrors.push(celem);
+    }
 }
 /* this file implement API developed for research purpose, they might not have any 
  * use outside of Q1-2021 experiments */
@@ -67,8 +69,8 @@ async function researchHome(req) {
             if(isSupported)
                 c.macro = isSupported.macro;
             else {
-                c.macro = "NOT"+c.href;
                 addToErrors(c);
+                c.macro = "NOT"+c.href;
             }
             return c;
         });
