@@ -53,6 +53,7 @@ var apiList = {
     /* Q1 2021 researches */
     researchHome:      require('../routes/research').researchHome,
     researchHomeCSV:   require('../routes/research').researchHomeCSV,
+    researchErrors:    require('../routes/research').researchErrors,
 };
 
 module.exports = {

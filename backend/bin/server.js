@@ -176,6 +176,9 @@ app.get('/api/v2/research/homes', async (req, res) => {
 app.get('/api/v2/research/homes/CSV', async (req, res) => {
     return await dispatchPromise('researchHomeCSV', req, res);
 });
+app.get('/api/v2/research/homes/errors', async (req, res) => {
+    return await dispatchPromise('researchErrors', req, res);
+});
 
 /* ADMIN */
 app.get('/api/v1/mirror/:key', async (req, res) => {
