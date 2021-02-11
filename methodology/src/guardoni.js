@@ -7,6 +7,7 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const nconf = require('nconf');
 const fetch = require('node-fetch');
 const path = require('path');
+const fs = require('fs');
 
 nconf.argv().env();
 
@@ -17,6 +18,7 @@ async function dumpFrameTree(frame, indent) {
         dumpFrameTree(child, indent + '  ');
     }
 }
+
 
 async function main() {
 
@@ -36,9 +38,25 @@ async function main() {
   }
 
   const cwd = process.cwd();
-  const dist = path.resolve(path.join(cwd, '..', 'extension', 'dist'));
-  const udd = path.resolve(path.join(cwd, 'profiles', 'qualcosa'));
-  debug("%s %s", dist, udd);
+  const dist = path.resolve(path.join(cwd, 'extension', 'dist'));
+  if(!fs.existsSync(dist)) {
+    console.log('Directory '+ dist +' not found, please download:');
+    console.log('https://github.com/tracking-exposed/potrex/releases/download/0.4.99/extension.zip');
+    console.log("and be sure manifest.json is in" + dist);
+    process.exit(1)
+  }
+
+  const profile = nconf.get('profile');
+  if(!profile) {
+    console.log("--profile it is necessary and must be an absolute path")
+    process.exit(1)
+  }
+  const udd = path.resolve(profile);
+  if(!fs.existsSync(udd)) {
+    console.log("--profile directory do not exist" + udd);
+    console.log("chromium --user-data-dir=profile/path to initialize a new profile");
+    process.exit(1)
+  }
   let browser = null;
   try {
     puppeteer.use(pluginStealth());

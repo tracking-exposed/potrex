@@ -8,10 +8,21 @@ const mongo3 = require('../lib/mongo3');
 const CSV = require('../lib/CSV');
 const personal = require('./personal');
 
+const collectedErrors = [];
+async function researchErrors() {
+    return {
+        json: collectedErrors
+    }
+}
+function addToErrors(celem) {
+    debug("%d registering error — %j", collectedErrors.length, celem);
+    collectedErrors.push(celem);
+}
 /* this file implement API developed for research purpose, they might not have any 
  * use outside of Q1-2021 experiments */
 
 async function researchHome(req) {
+
     const method = {
         "HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
         "BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,
@@ -37,7 +48,6 @@ async function researchHome(req) {
         "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12 
     };
     const keys = _.keys(method);
-
     const data = await automo.getMetadataByFilter(
         { type: 'home', publicKey: { "$in": keys } },
         { amount: 5000, skip: 0}
@@ -56,23 +66,23 @@ async function researchHome(req) {
             const isSupported = _.find(MACROc, { href: c.href });
             if(isSupported)
                 c.macro = isSupported.macro;
-            else
+            else {
                 c.macro = "NOT"+c.href;
+                addToErrors(c);
+            }
             return c;
         });
         if(!c) missing++;
         video.id = video.videoOrder + video.metadataId.substring(0, 7);
         video.who = method[video.publicKey];
-
         _.unset(video, 'publicKey');
         extended.push(video);
     }
-
     debug("researchHomes: return %d elements and %d missing",
         _.size(extended), missing);
-
     return { json: extended};
 }
+
 
 async function researchHomeCSV(req) {
 
@@ -533,4 +543,5 @@ const MACROc = [
 module.exports = {
     researchHome,
     researchHomeCSV,
+    researchErrors,
 };
