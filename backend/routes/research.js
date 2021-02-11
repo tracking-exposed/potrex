@@ -47,7 +47,9 @@ async function researchHome(req) {
         "5zuMxNj2w5ja1KgdJCa9yj11xuVMahnWirpFVK26q4tB": 9,
         "6zU5x5YoqipLnHrmiZ3y9YDVguAszQJZHJ8UFYh23L6t": 10,
         "7YJyHav9qDZohgt8SGjr3M2pNi1DYnAze5TbmDmPdsiQ": 11,
-        "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12,        
+        "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12,    
+        
+        '3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5': "tre", 
     };
     const keys = _.keys(method);
     const data = await automo.getMetadataByFilter(
