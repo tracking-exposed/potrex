@@ -84,7 +84,7 @@ async function main() {
 
 async function operateBroweser(browser, directives) {
   const page = (await browser.pages())[0];
-//    await page.setViewport({width: 1024, height: 768});
+  // await page.setViewport({width: 1024, height: 768});
   let extensioninfo = null;
   for (directive of directives) {
     await page.goto(directive, { 
@@ -106,18 +106,17 @@ async function operateBroweser(browser, directives) {
         debug(`requestfail: ${request.failure().errorText} ${request.url()}`));
 
     await page.waitFor(DELAY);
-    const innerWidth = await page.evaluate(_ => { return window.innerWidth });
-    const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-    debug("Completed! %s %s", innerHeight, innerWidth);
+    // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
+    // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
 
     const profileStory = await page.evaluate(() => {
       const jsonHistory = localStorage.getItem('watchedVideoIds');
       return JSON.parse(jsonHistory);
     });
-    debug(profileStory);
+    debug("Profile story (video logged in localstorage): %d  — %s",
+      profileStory || 0, profileStory);
   }
-  console.log("---------------------------")
-  // await page.close();
+  console.log("Loop done, processed directives:", directives.length);
 }
 
 main ();
