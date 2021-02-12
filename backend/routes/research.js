@@ -47,7 +47,17 @@ async function researchHome(req) {
         "5zuMxNj2w5ja1KgdJCa9yj11xuVMahnWirpFVK26q4tB": 9,
         "6zU5x5YoqipLnHrmiZ3y9YDVguAszQJZHJ8UFYh23L6t": 10,
         "7YJyHav9qDZohgt8SGjr3M2pNi1DYnAze5TbmDmPdsiQ": 11,
-        "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12,    
+        "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12,
+        "AcCGvjbJtbJCum5ihscTRvNGLVaFhaDufqNHpbaoLTJH": 1,
+        "CqajNTFmhjPRCkqHaRAb4VRFGbrYpJ19sBa4QuPFKKHk": 2,
+        "H3YodFrLnpntpkc1X9pBuVDp6nmGjZXwtvYkZYQpy1Jv": 3,
+        "7q5ppjHTGPWMTttK1QVNyZhcEBeguCrHmgVgAcExnr5h": 5,
+        "5gpJp5VQiiWme5Ba3mWKKwGkLGtRSHxAZqw9gtDQCwFN": 6,
+        "8wqWU7wUGgedVr2cdS9y9n3j9UYGbAZ1tJhwPXncvL3u": 7,
+        "92QufgUFDqEVNnwQwyfgQWPHYDmAeNibdEWQhEZC99kN": 8,
+        "6q8FLNaLNyF7WvQXK1JNuNuuNFHd3VDMeJvBd8de4158": 9,
+        "E31uv1gHW8YeSdhvxtWu9qxsLAkvD5eMBu4pqQ5PeimU": 10,
+        "7XjnMBex6xv3s4iHRTp3DwhCNpYqqdPwwHUPsh5diQqe": 16,
 
         "3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5": "tre"
     };
