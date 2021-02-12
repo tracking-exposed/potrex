@@ -126,10 +126,10 @@ const MACROc = [{
         macro:"Format"
     },{
         name:"FFM in Threesome", href:"/video?c=761",
-        macro:"Practice",
+        macro:"Practices",
     },{
         name:"FMM in Threesome", href:"/video?c=771",
-        macro:"Practice",
+        macro:"Practices",
     },{
         name:"180° in Virtual Reality", href:"/video?c=622",
         macro:"Format",
