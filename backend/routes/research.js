@@ -25,7 +25,7 @@ function addToErrors(celem) {
 
 async function researchHome(req) {
 
-    const method = {
+    const method = { /*
         "HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
         "BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,
         "48jnnhZBB8YiL1Jxoj7dEGZfbQZaz2sUVWAfFv8Sjqr4": 3,
@@ -48,8 +48,8 @@ async function researchHome(req) {
         "6zU5x5YoqipLnHrmiZ3y9YDVguAszQJZHJ8UFYh23L6t": 10,
         "7YJyHav9qDZohgt8SGjr3M2pNi1DYnAze5TbmDmPdsiQ": 11,
         "FU6eLaMjXsJfdwPF6Kb6Qoz5qDunUvTn38G4LqWPJyC9": 12,    
-        
-        '3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5': "tre", 
+        '3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5': "tre", */
+        "GyLrGkwLXzKWaUMEMFewjvm1AGtxzGx2iDeQRmL11jLe": "seicento",
     };
     const keys = _.keys(method);
     const data = await automo.getMetadataByFilter(
@@ -61,7 +61,10 @@ async function researchHome(req) {
     const unrolledData = _.reduce(data, personal.unNestHome, []);
     let extended = [];
     let missing = 0;
-    debug("%d data %d unrolled", _.size(data), _.size(unrolledData));
+    debug("%d data %d unrolled (ratio %d)",
+        _.size(data), _.size(unrolledData),
+        _.parseInt(_.size(unrolledData) / _.size(data), 1)
+    );
     const mongoc = await mongo3.clientConnect({concurrency: 10});
     for (video of unrolledData) {
         const c = await mongo3.readOne(mongoc, nconf.get('schema').categories, { videoId: video.videoId});
@@ -116,8 +119,25 @@ async function researchHomeCSV(req) {
     };
 }
 
-const MACROc = [
-    {
+const MACROc = [{
+        name:"Vertical Video", href:"/video?c=871",
+        macro:"Format"
+    },{
+        name:"FFM in Threesome", href:"/video?c=761",
+        macro:"Practice",
+    },{
+        name:"FMM in Threesome", href:"/video?c=771",
+        macro:"Practice",
+    },{
+        name:"180° in Virtual Reality", href:"/video?c=622",
+        macro:"Format",
+    },{
+        name:"3D in Virtual Reality", href:"/video?c=642",
+        macro:"Format",
+    },{
+        name:"POV in Virtual Reality", href:"/video?c=702",
+        macro:"Format",
+    },{
         "name": "Live Cams", "macro": "Format",
         "href": "/live?track=6002"
     },
