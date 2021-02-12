@@ -65,11 +65,11 @@ async function main() {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch({
         headless: false,
+        userDataDir: udd,
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
           "--load-extension=" + dist,
-          "--disable-extensions-except=" + dist,
-          "--user-data-dir=" + udd,
+          "--disable-extensions-except=" + dist
         ],
     });
     await operateBroweser(browser, directives);
