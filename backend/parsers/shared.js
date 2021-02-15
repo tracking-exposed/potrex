@@ -52,33 +52,38 @@ function fixHumanizedTime(inputstr) {
 }
 
 function getFeatured(D) {
-    
-    let titles = D.querySelectorAll('.sectionTitle');
+  const x = D.querySelectorAll('.pcVideoListItem');
+  const returned = _.map(x, function(n, order) {
+      const ret = { order };
 
-    const sections = _.map(titles, function(node, order) {
-        const secondTag = node.children[1].tagName;
-        if(!(node.children[1].children && node.children[1].children[0] &&
-             node.children[1].children[0].tagName) ) {
-                debug("nope in %d", order)
-                return null;
-            }
+      let title = n.querySelector('.linkVideoThumb').getAttribute('data-title');
+      if(!title)
+        title = n.querySelector('a').getAttribute('title');
+      if(!title)
+        title = n.querySelector('.title').textContent.trim();
 
-        let videos = _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), dissectV);
-        
-        if(_.startsWith(secondTag,'H')) {
-            return {
-                order,
-                tagName: node.children[1].tagName,
-                href: node.children[1].children[0].getAttribute('href'),
-                display: node.children[1].children[0].textContent.trim(),
-                videos,
-            }
-        }   
-        return null;
-    });
+      _.set(ret, 'duration', n.querySelector('.duration').textContent.trim());
+      _.set(ret, 'publicationRelative', n.querySelector('.added').textContent.trim());
+      _.set(ret, 'views', n.querySelector('.views').querySelector('var').textContent);
+      _.set(ret, 'viewString', n.querySelector('.views').textContent.trim());
+      _.set(ret, 'title', title);
+      const href = n.querySelector('a').getAttribute('href');
+      _.set(ret, 'href', href);
+      const videoId = n.querySelector('a').getAttribute('href').replace(/.*\?viewkey=/, '');
+      _.set(ret, 'videoId', videoId);
+      _.set(ret, 'thumbnail', n.querySelector('img').getAttribute('data-thumb_url'));
 
-    // debug("Potential titles %d -> %s", _.size(titles), _.map(sections, 'display'));
-    return { sections };
+      try {
+          const usernameWrap = n.querySelector('.usernameWrap');
+          _.set(ret, 'authorLink', usernameWrap.querySelector('a').getAttribute('href'));
+          _.set(ret, 'authorName', usernameWrap.textContent.trim());
+      } catch(error) { 
+          ret.authorLink = null;
+          ret.authorName = null;
+      }
+      return ret;
+  });
+  return returned;
 }
 
 
@@ -105,8 +110,6 @@ function getSequence(D) {
 
   const blocks = _.map(D.querySelectorAll("li[_vkey]"), function(n, order) {
       const ret = { order };
-      if( n.querySelector('a').getAttribute('href')  == '/view_video.php?viewkey=ph5e10412154ca3')
-        debugger;
 
       let title = n.querySelector('.linkVideoThumb').getAttribute('data-title');
       if(!title)

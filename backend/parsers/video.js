@@ -64,7 +64,6 @@ function videoBlockMeta(e, i) {
     const duration = e.querySelector('.duration').textContent.trim();
     const fixedDuration = shared.fixHumanizedTime(duration);
     const durationSeconds = moment.duration(fixedDuration).asSeconds();
-    debugger;
     const viewstr = testText([".views", ".views > var"], e);
     const views = viewstr ? shared.unitParse(viewstr) : -1;
     const price = e.querySelector('.price') ? e.querySelector('.price').textContent : null;

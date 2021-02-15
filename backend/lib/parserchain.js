@@ -14,6 +14,7 @@ module.exports = {
         'home',
         'video',
         'search',
+        'related',
         'downloader',
         'categorizer'
     ],
@@ -21,6 +22,7 @@ module.exports = {
     home: require('../parsers/home'),
     video: require('../parsers/video'),
     search: require('../parsers/search'),
+    related: require('../parsers/related'),
     downloader: require('../parsers/downloader'),
     categorizer: require('../parsers/categorizer'),
 
@@ -35,14 +37,24 @@ module.exports = {
 function buildMetadata(entry) {
     // this contains the original .source (html, impression, timeline), the .findings and .failures 
     // the metadata is aggregated by unit and not unrolled in any way
+    let metadata = null;
 
-    if(entry.findings.nature.type !== 'home') return null;
+    if(entry.findings.nature.type == 'home') {
+        metadata = _.merge(
+            _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
+            entry.findings.home,
+            entry.findings.nature
+        );
+    } else if(entry.findings.nature.type == 'search') {
+        metadata = _.merge(
+            _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
+            entry.findings.search,
+            entry.findings.params,
+            entry.findings.related,
+            entry.findings.nature
+        );
+    }
 
-    const metadata = _.merge(
-        _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
-        entry.findings.home,
-        entry.findings.nature
-    );
     metadata.savingTime = new Date(entry.source.html.savingTime);
     metadata.clientTime = new Date(entry.source.html.clientTime);
     metadata.id = entry.source.html.metadataId;
