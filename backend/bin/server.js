@@ -179,6 +179,12 @@ app.get('/api/v2/research/homes/CSV', async (req, res) => {
 app.get('/api/v2/research/homes/errors', async (req, res) => {
     return await dispatchPromise('researchErrors', req, res);
 });
+app.get('/api/v2/research/queries/:keylist', async (req, res) => {
+    return await dispatchPromise('queries', req, res);
+});
+app.get('/api/v2/research/queries/:keylist/CSV', async (req, res) => {
+    return await dispatchPromise('queriesCSV', req, res);
+});
 
 /* ADMIN */
 app.get('/api/v1/mirror/:key', async (req, res) => {

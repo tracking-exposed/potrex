@@ -67,6 +67,25 @@ function unNestHome(memo, metadata) {
     return _.concat(memo, _.flatten(nested));
 }
 
+function unNestQuery(memo, metadata) {
+    const unnested = _.map(metadata.results, function(video, o) {
+        return _.extend(video, {
+            query: metadata.params.query,
+            href: metadata.href,
+            relatedN: _.size(metadata.related),
+            videoOrder: o + 1,
+            metadataId: metadata.id,
+            site: metadata.site,
+            publicKey: metadata.publicKey,
+            suppseudo: metadata.publicKey.substr(0, 6),
+            profileStory: metadata.profileStory,
+            savingTime: metadata.savingTime,
+            related: metadata.related,
+        });
+    });
+    return _.concat(memo, unnested);
+}
+
 async function getPersonalCSV(req) {
     // only HOMEPAGES — /api/v1/personal/:publicKey/csv
     const CSV_MAX_SIZE = 1000;
@@ -219,5 +238,6 @@ module.exports = {
     removeEvidence,
 
     unNestHome,
+    unNestQuery,
     fixHomeSimply,
 };

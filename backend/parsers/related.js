@@ -9,7 +9,7 @@ function related(envelop, previous) {
     const relatedS = envelop.jsdom.querySelector('.relatedSearchTermsBottom');
     const retval = _.map(relatedS.querySelectorAll('a'), function(anchor) {
         return {
-            name: anchor.textContent,
+            name: anchor.textContent.trim(),
             href: anchor.getAttribute('href')
         };
     })

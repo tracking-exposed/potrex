@@ -109,6 +109,7 @@ async function researchHome(req) {
         _.unset(video, 'publicKey');
         extended.push(video);
     }
+    await mongoc.close();
     debug("researchHomes: return %d elements and %d missing",
         _.size(extended), missing);
     return { json: extended};
@@ -143,6 +144,109 @@ async function researchHomeCSV(req) {
     };
 }
 
+function urlkeycodify(dict) {
+    /* from dict return the c-format */
+    const rets = _.reduce(dict, function(memo, name, key) {
+        if(memo.length)
+            memo += ","
+        memo += key + "-" + name;
+        return memo;
+    }, "");
+    debug("claudify: %j -> %s", JSON.stringify(dict, undefined, 2), rets);
+    return rets;
+}
+
+function urlkeyparse(string) {
+    /* from sting in c-format return dict */
+    const chunks = string.split(',');
+    const retd = _.reduce(chunks, function(memo, identity) {
+        const key = identity.replace(/-.*/, '');
+        const name = identity.replace(/.*-/, '');
+        _.set(memo, key, name);
+        return memo;
+    }, {});
+    debug("clauparse: %s -> %s", string, JSON.stringify(retd, undefined, 2));
+    return retd;
+}
+
+async function queries(req) {
+
+    const example = {
+        "B8ibxhV4sd45sWDMHwmuXX87eFXz39eADpykDhCwFAL8": 13,
+        "9emuTneBzMr7p4PS2scZKgnNGwAQteEiChs4sFCNBmxN": 14,
+    };
+    let filter = null;
+    try {
+        filter = urlkeyparse(req.params.keylist);
+    } catch(error) {
+        debug("Fail parsing, error:", error.message);
+        return {
+            json: {
+                error: error.message,
+                param: req.params.keylist,
+                example: urlkeycodify(example)
+            }
+        };
+    }
+
+    if(!_.keys(filter).length) {
+        debug("Missing list like: %s", urlkeycodify(example));
+        return {
+            json: {
+                error: "missing list, empty json",
+                param: req.params.keylist,
+                example: urlkeycodify(example)
+            }
+        };
+    }
+
+    let data = null;
+    try {
+        data = await automo.getMetadataByFilter(
+            { type: 'search', publicKey: { "$in": _.keys(filter) } },
+            { amount: 5000, skip: 0}
+        );
+    } catch(error) {
+        debug("Error in accessing DB %s", error.message);
+        throw error;
+    }
+
+    // get metadata by filter actually return metadata object so we need unnesting
+    const unrolledData = _.map(_.reduce(data, personal.unNestQuery, []), function(video) {
+        video.id = video.videoOrder + video.metadataId.substring(0, 7);
+        video.who = filter[video.publicKey];
+        _.unset(video, 'publicKey');
+        return video;
+    });
+    debug("query transformation: from DB data %d, %d unrolled", _.size(data), _.size(unrolledData));
+    return { json: unrolledData};
+}
+
+async function queriesCSV(req) {
+
+    const json = await queries(req);
+    const nodes = _.map(json.json, function(entry) {
+        entry.relatedlist = _.map(entry.related, 'name').join(',');
+        return _.omit(entry, ['thumbnail','related']);
+    });
+    const csv = CSV.produceCSVv1(nodes);
+    const filename = 'research-queries-' + _.size(json.json) + "-" + moment().format("YYYY-MM-DD") + ".csv";
+
+    debug("queriesCSV: produced %d bytes from %d homes %d videos, returning %s",
+        _.size(csv), json.json.length, _.size(nodes), filename);
+
+    if(!_.size(csv))
+        return { text: "Error: no CSV generated 🤷" };
+
+    return {
+        headers: {
+            "Content-Type": "csv/text",
+            "Content-Disposition": "attachment; filename=" + filename
+        },
+        text: csv,
+    };
+
+}
 const MACROc = [{
         name:"Vertical Video", href:"/video?c=871",
         macro:"Format"
@@ -592,4 +696,6 @@ module.exports = {
     researchHome,
     researchHomeCSV,
     researchErrors,
+    queriesCSV,
+    queries,
 };

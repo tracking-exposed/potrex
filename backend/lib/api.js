@@ -54,6 +54,8 @@ var apiList = {
     researchHome:      require('../routes/research').researchHome,
     researchHomeCSV:   require('../routes/research').researchHomeCSV,
     researchErrors:    require('../routes/research').researchErrors,
+    queries:           require('../routes/research').queries,
+    queriesCSV:        require('../routes/research').queriesCSV,
 };
 
 module.exports = {
