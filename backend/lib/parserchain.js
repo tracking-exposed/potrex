@@ -58,7 +58,7 @@ function buildMetadata(entry) {
     metadata.savingTime = new Date(entry.source.html.savingTime);
     metadata.clientTime = new Date(entry.source.html.clientTime);
     metadata.id = entry.source.html.metadataId;
-
+    metadata.htmlId = entry.source.html.id;
     return metadata;
 }
 

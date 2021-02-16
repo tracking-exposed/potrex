@@ -6,6 +6,12 @@ function related(envelop, previous) {
     if(previous.nature.type !== "search")
         return false;
 
+    if(envelop.jsdom.querySelector("#noResultBigText")) {
+        return {
+            results: []
+        }
+    }
+
     const relatedS = envelop.jsdom.querySelector('.relatedSearchTermsBottom');
     const retval = _.map(relatedS.querySelectorAll('a'), function(anchor) {
         return {

@@ -20,6 +20,9 @@ function addParams(src, dest, namemap) {
       _.set(memo, dkey, found[1])
       return memo;
     }, {});
+    if(namemap["page"] && !dest.params.page) {
+      dest.params.page = 1;
+    }
   }
 }
 

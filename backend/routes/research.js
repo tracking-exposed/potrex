@@ -213,7 +213,8 @@ async function queries(req) {
 
     // get metadata by filter actually return metadata object so we need unnesting
     const unrolledData = _.map(_.reduce(data, personal.unNestQuery, []), function(video) {
-        video.id = video.videoOrder + video.metadataId.substring(0, 7);
+        if(!_.isUndefined(video.videoOrder))
+            video.id = video.videoOrder + video.metadataId.substring(0, 7);
         video.who = filter[video.publicKey];
         _.unset(video, 'publicKey');
         return video;

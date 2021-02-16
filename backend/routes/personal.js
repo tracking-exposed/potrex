@@ -68,9 +68,12 @@ function unNestHome(memo, metadata) {
 }
 
 function unNestQuery(memo, metadata) {
+    /* remind self, search query without result have a 'reason' for not having a 
+     * result, but they are not technically 'videos' */
     const unnested = _.map(metadata.results, function(video, o) {
         return _.extend(video, {
             query: metadata.params.query,
+            page: metadata.params.page,
             href: metadata.href,
             relatedN: _.size(metadata.related),
             videoOrder: o + 1,
@@ -81,8 +84,26 @@ function unNestQuery(memo, metadata) {
             profileStory: metadata.profileStory,
             savingTime: metadata.savingTime,
             related: metadata.related,
+            reason: metadata.reason,
         });
     });
+    if(!metadata.results.length) {
+        // this happens with reason = 'no results for this query' || 'banned query'
+        debug("A dummy video-entry for search query results: %s", metadata.reason)
+        unnested.push({
+            query: metadata.params.query,
+            page: metadata.params.page,
+            href: metadata.href,
+            relatedN: 0,
+            metadataId: metadata.id,
+            site: metadata.site,
+            publicKey: metadata.publicKey,
+            suppseudo: metadata.publicKey.substr(0, 6),
+            profileStory: metadata.profileStory,
+            savingTime: metadata.savingTime,
+            reason: metadata.reason,
+        })
+    }
     return _.concat(memo, unnested);
 }
 
