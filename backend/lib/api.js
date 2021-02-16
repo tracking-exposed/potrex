@@ -56,6 +56,7 @@ var apiList = {
     researchErrors:    require('../routes/research').researchErrors,
     queries:           require('../routes/research').queries,
     queriesCSV:        require('../routes/research').queriesCSV,
+    guardoniv1ByMetadata:require('../routes/research').guardoniv1ByMetadata,
 };
 
 module.exports = {

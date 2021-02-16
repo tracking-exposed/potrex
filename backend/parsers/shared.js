@@ -55,6 +55,12 @@ function getFeatured(D) {
   const x = D.querySelectorAll('.pcVideoListItem');
   const returned = _.map(x, function(n, order) {
       const ret = { order };
+      const href = n.querySelector('a').getAttribute('href');
+
+      if(!_.startsWith(href, '/'))
+        return false;
+
+      const videoId = n.querySelector('a').getAttribute('href').replace(/.*\?viewkey=/, '');
 
       let title = n.querySelector('.linkVideoThumb').getAttribute('data-title');
       if(!title)
@@ -67,9 +73,7 @@ function getFeatured(D) {
       _.set(ret, 'views', n.querySelector('.views').querySelector('var').textContent);
       _.set(ret, 'viewString', n.querySelector('.views').textContent.trim());
       _.set(ret, 'title', title);
-      const href = n.querySelector('a').getAttribute('href');
       _.set(ret, 'href', href);
-      const videoId = n.querySelector('a').getAttribute('href').replace(/.*\?viewkey=/, '');
       _.set(ret, 'videoId', videoId);
       _.set(ret, 'thumbnail', n.querySelector('img').getAttribute('data-thumb_url'));
 

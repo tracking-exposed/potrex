@@ -185,6 +185,9 @@ app.get('/api/v2/research/queries/:keylist', async (req, res) => {
 app.get('/api/v2/research/queries/:keylist/CSV', async (req, res) => {
     return await dispatchPromise('queriesCSV', req, res);
 });
+app.get('/api/v2/research/query/:metadataId/guardoni', async (req, res) => {
+    return await dispatchPromise('guardoniv1ByMetadata', req, res);
+});
 
 /* ADMIN */
 app.get('/api/v1/mirror/:key', async (req, res) => {

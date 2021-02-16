@@ -144,6 +144,20 @@ async function researchHomeCSV(req) {
     };
 }
 
+async function guardoniv1ByMetadata(req) {
+
+    const data = await automo.getMetadataByFilter(
+        { type: 'search', id: req.params.metadataId },
+        { amount: 1, skip: 0}
+    );
+
+    const videoIds = _.map(data[0].results, function(video) {
+        return 'https://www.pornhub.com' + video.href;
+    });
+
+    return { json: videoIds };
+}
+
 function urlkeycodify(dict) {
     /* from dict return the c-format */
     const rets = _.reduce(dict, function(memo, name, key) {
@@ -699,4 +713,5 @@ module.exports = {
     researchErrors,
     queriesCSV,
     queries,
+    guardoniv1ByMetadata,
 };
