@@ -9,16 +9,18 @@
 *.sublime-project
 *.sublime-workspace
 *.sublime-workspace
-
 .env
 
 extension/build/
 extension/dist/
 extension/docs/
-
 extension/node_modules/
+
 backend/node_modules/
+backend/downloadable/*
+
 react-pieces/node_modules/
+
 methodology/node_modules/
 methodology/profiles/*
 methodology/extension
