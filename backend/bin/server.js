@@ -80,8 +80,8 @@ server.listen(nconf.get('port'), nconf.get('interface'));
 console.log(" Listening on http://" + nconf.get('interface') + ":" + nconf.get('port'));
 /* configuration of express4 */
 app.use(cors());
-app.use(bodyParser.json({limit: '8mb' }));
-app.use(bodyParser.urlencoded({ limit: '8mb', extended: true, parameterLimit: 10 }));
+app.use(bodyParser.json({limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10 }));
 
 app.get('/api/v1/uptime', async (req, res) => {
     res.send("OK");
@@ -170,12 +170,6 @@ app.get('/api/v2/raw/:publicKey/:paging?', async (req, res) => {
 });
 
 /* reserarch api */
-app.get('/api/v2/research/homes', async (req, res) => {
-    return await dispatchPromise('researchHome', req, res);
-});
-app.get('/api/v2/research/homes/CSV', async (req, res) => {
-    return await dispatchPromise('researchHomeCSV', req, res);
-});
 app.get('/api/v2/research/homes/errors', async (req, res) => {
     return await dispatchPromise('researchErrors', req, res);
 });
