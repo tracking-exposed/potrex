@@ -112,7 +112,7 @@ async function researchHome() {
         _.unset(video, 'publicKey');
         extended.push(video);
 
-        if(counter++ == 50)
+        if( (counter++ % 500) == 100 )
             debug("Enriched %d videos so far", _.size(extended));
     }
     await mongoc.close();
@@ -123,7 +123,7 @@ async function researchHome() {
 
 (async function() {
     const json = await researchHome();
-    if(!json || !json.data) {
+    if(!json.json.data) {
         console.log("missing data");
         process.exit(1);
     }
