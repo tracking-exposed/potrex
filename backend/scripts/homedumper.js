@@ -62,7 +62,6 @@ const method = {
     "B8ibxhV4sd45sWDMHwmuXX87eFXz39eADpykDhCwFAL8": 13,
     "9emuTneBzMr7p4PS2scZKgnNGwAQteEiChs4sFCNBmxN": 14,
     "HiL7bM8GEzvyD8XVMtm9PaQkRQqFwWUFPti4mqdLUWTZ": 15,
-    "8WWgiEspXhCTVtGUSgwecd1inX4rt9bSjoHAe6g3JFN3": "exper",
 
     "3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5": "tre"
 };

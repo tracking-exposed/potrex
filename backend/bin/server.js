@@ -193,7 +193,7 @@ app.get('/api/v1/mirror/:key', async (req, res) => {
     return await dispatchPromise('getMonitor', req, res);
 });
 
-app.get('/downloadable/research-home.csv', function(req, res){
+app.get('/api/v2/file/research-home.csv', function(req, res){
     const file = `${__dirname}/../downloadable/research-home.csv`;
     debug("Downloading %s", file);
     res.download(file); 
