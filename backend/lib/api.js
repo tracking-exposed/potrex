@@ -51,8 +51,6 @@ var apiList = {
     getMonitor:        require('../routes/monitor').getMonitor,
 
     /* Q1 2021 researches */
-    researchHome:      require('../routes/research').researchHome,
-    researchHomeCSV:   require('../routes/research').researchHomeCSV,
     researchErrors:    require('../routes/research').researchErrors,
     queries:           require('../routes/research').queries,
     queriesCSV:        require('../routes/research').queriesCSV,

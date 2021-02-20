@@ -65,9 +65,6 @@ nconf.env().argv().file({file: 'config/settings.json'});
     };
         // "GyLrGkwLXzKWaUMEMFewjvm1AGtxzGx2iDeQRmL11jLe": "seicento",
 
-
-
-
 async function researchHome() {
 
     const keys = _.keys(method);
@@ -110,10 +107,14 @@ async function researchHome() {
     return { json: extended};
 }
 
-
-async function researchHomeCSV(req) {
-
-    const json = await researchHome(req);
+(async function() {
+    console.log("beginning");
+    const json = researchHome();
+    debug("data %j", json);
+    if(!json || !json.json) {
+        console.log("missing data");
+        process.exit(1);
+    }
 
     const nodes = _.map(json.json, function(entry) {
         entry.categorylist = _.map(entry.categories, 'name').join('+');
@@ -137,10 +138,5 @@ async function researchHomeCSV(req) {
         },
         text: csv,
     };
-}
 
-(async function() {
-    console.log("beginning");
-    const data = researchHome();
-    debug("data %j", data);
 })();
