@@ -193,12 +193,17 @@ app.get('/api/v1/mirror/:key', async (req, res) => {
     return await dispatchPromise('getMonitor', req, res);
 });
 
+app.get('/downloadable/research-home.csv', function(req, res){
+    const file = `${__dirname}/../downloadable/research-home.csv`;
+    debug("Downloading %s", file);
+    res.download(file); 
+}
+);
 /* Capture All 404 errors */
 app.use(async (req, res, next) => {
     debug("Reached URL %s: not handled!", req.originalUrl);
 	res.status(404).send('Unable to find the requested resource!');
 });
-
 
 /* the remaining code */
 security.checkKeyIsSet();

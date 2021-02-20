@@ -62,6 +62,7 @@ const method = {
     "B8ibxhV4sd45sWDMHwmuXX87eFXz39eADpykDhCwFAL8": 13,
     "9emuTneBzMr7p4PS2scZKgnNGwAQteEiChs4sFCNBmxN": 14,
     "HiL7bM8GEzvyD8XVMtm9PaQkRQqFwWUFPti4mqdLUWTZ": 15,
+    "8WWgiEspXhCTVtGUSgwecd1inX4rt9bSjoHAe6g3JFN3": "exper",
 
     "3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5": "tre"
 };
@@ -112,7 +113,7 @@ async function researchHome() {
         _.unset(video, 'publicKey');
         extended.push(video);
 
-        if( (counter++ % 500) == 100 )
+        if( (counter++ % 2500) == 100 )
             debug("Enriched %d videos so far", _.size(extended));
     }
     await mongoc.close();
@@ -135,9 +136,10 @@ async function researchHome() {
     });
 
     const csv = CSV.produceCSVv1(nodes);
-    const filename = json.json.overflow ? 
+    const filename = json.json.overflow ? /*
         'research-homes-OVERFLOW-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD") : 
-        'research-homes-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD");
+        'research-homes-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD"); */
+        "research-home" : "research-home"; // filename has to be always the same as it expected in express
 
     debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
         _.size(csv), json.json.data.length, _.size(nodes), filename);

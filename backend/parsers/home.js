@@ -8,8 +8,8 @@ function home(envelop, previous) {
     if(previous.nature.type !== "home")
         return false;
 
-    const featured = shared.getFeatured(envelop.jsdom);
-    return featured;
+    const sections = shared.getHomeVideos(envelop.jsdom);
+    return { sections };
 };
 
 module.exports = home;

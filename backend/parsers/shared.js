@@ -90,6 +90,36 @@ function getFeatured(D) {
   return returned;
 }
 
+function getHomeVideos(D) {
+    
+    let titles = D.querySelectorAll('.sectionTitle');
+
+    const sections = _.map(titles, function(node, order) {
+        const secondTag = node.children[1].tagName;
+        if(!(node.children[1].children && node.children[1].children[0] &&
+             node.children[1].children[0].tagName) ) {
+                debug("nope in %d", order)
+                return null;
+            }
+
+        let videos = _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), dissectV);
+        
+        if(_.startsWith(secondTag,'H')) {
+            return {
+                order,
+                tagName: node.children[1].tagName,
+                href: node.children[1].children[0].getAttribute('href'),
+                display: node.children[1].children[0].textContent.trim(),
+                videos,
+            }
+        }   
+        return null;
+    });
+
+    // debug("Potential titles %d -> %s", _.size(titles), _.map(sections, 'display'));
+    return sections:
+}
+
 
 const unitMap = { "K": 1000, "M": 1000000, "none": 1 };
 
@@ -223,7 +253,10 @@ function getCategories(D) {
   const cats = D.querySelectorAll('.categoriesWrapper');
 
   if(_.size(cats) !== 1)
-    debug("Odd? the categories are not 1? %d", _.size(cats));
+    debug("getCategories found strage condition: the categories are not 1? %d", _.size(cats));
+
+  if(!cats[0])
+    return [];
 
   return _.map(cats[0].querySelectorAll('a[href]'), function(e) {
     return {
@@ -236,6 +269,7 @@ function getCategories(D) {
 
 module.exports = {
     getFeatured,
+    getHomeVideos,
     getMetadata,
     getRelated,
     getCategories,
