@@ -117,7 +117,7 @@ function getHomeVideos(D) {
     });
 
     // debug("Potential titles %d -> %s", _.size(titles), _.map(sections, 'display'));
-    return sections:
+    return sections;
 }
 
 
