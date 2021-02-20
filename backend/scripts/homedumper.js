@@ -2,6 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:research');
 const nconf = require('nconf');
+const fs = require('fs');
 
 const automo = require('../lib/automo');
 const mongo3 = require('../lib/mongo3');
@@ -70,6 +71,7 @@ async function researchHome() {
 
     const MAXDATA = 5000;
     const keys = _.keys(method);
+    let overflow = false;
     debug("Considering %d publicKeys", _.size(keys));
     const data = await automo.getMetadataByFilter(
         { type: 'home', publicKey: { "$in": keys } },
@@ -77,6 +79,7 @@ async function researchHome() {
     );
     if(_.size(data) === MAXDATA) {
         console.log("Warning no paging supported, limit reach", MAXDATA);
+        overflow = true;
     }
 
     // get metadata by filter actually return metadata object so we need unnesting
@@ -88,6 +91,8 @@ async function researchHome() {
         _.round(_.size(unrolledData) / _.size(data), 1)
     );
     const mongoc = await mongo3.clientConnect({concurrency: 10});
+    let counter = 0;
+    debug("Iterating over categories from %d videos", _.size(unrolledData));
     for (video of unrolledData) {
         const c = await mongo3.readOne(mongoc, nconf.get('schema').categories, { videoId: video.videoId});
         const scrapedc = c ? c.categories : [];
@@ -106,42 +111,43 @@ async function researchHome() {
         video.who = method[video.publicKey];
         _.unset(video, 'publicKey');
         extended.push(video);
+
+        if(counter++ == 50)
+            debug("Enriched %d videos so far", _.size(extended));
     }
     await mongoc.close();
     debug("researchHomes: return %d elements and %d missing",
         _.size(extended), missing);
-    return { json: extended};
+    return { json: { data: extended, overflow }};
 }
 
 (async function() {
     const json = await researchHome();
-    debug("data %j", json);
-    if(!json || !json.json) {
+    if(!json || !json.data) {
         console.log("missing data");
         process.exit(1);
     }
 
-    const nodes = _.map(json.json, function(entry) {
+    const nodes = _.map(json.json.data, function(entry) {
         entry.categorylist = _.map(entry.categories, 'name').join('+');
         entry.macrolist = _.map(entry.categories, 'macro').join('-');
         return _.omit(entry, ['thumbnail','categories']);
     });
 
     const csv = CSV.produceCSVv1(nodes);
-    const filename = 'research-homes-' + _.size(json.json) + "-" + moment().format("YYYY-MM-DD") + ".csv";
+    const filename = json.json.overflow ? 
+        'research-homes-OVERFLOW-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD") : 
+        'research-homes-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD");
 
     debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
-        _.size(csv), json.json.length, _.size(nodes), filename);
+        _.size(csv), json.json.data.length, _.size(nodes), filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
-    return {
-        headers: {
-            "Content-Type": "csv/text",
-            "Content-Disposition": "attachment; filename=" + filename
-        },
-        text: csv,
-    };
+    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 2));
+    debug("Written .json file, now writing CSV...");
+    fs.writeFileSync("downloadable/" + filename + ".csv", csv);
 
+    console.log("Writing complete");
 })();
