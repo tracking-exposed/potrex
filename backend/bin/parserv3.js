@@ -120,12 +120,15 @@ async function executeParsingChain(htmlFilter) {
     for (const entry of results) {
         try {
             const metaentry = pchain.buildMetadata(entry);
-            let x = await pchain.updateMetadataAndMarkHTML(metaentry);
-            logof.push(x);
+            if(metaentry) {
+                let x = await pchain.updateMetadataAndMarkHTML(metaentry);
+                logof.push(x);
+            }
         } catch(error) {
             debug("Lost a submission (%s) ID %s (currenty done %d)", error.message, entry.source.html.id, _.size(logof));
         }
     }
+    /* logof isn't used, and it contains log of update/write operation to mongodb */
 
     return {
         findings: _.map(results, function(e) { return _.size(e.findings) }),

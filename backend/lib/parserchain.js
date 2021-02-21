@@ -45,7 +45,8 @@ function buildMetadata(entry) {
             entry.findings.home,
             entry.findings.nature
         );
-    } else if(entry.findings.nature.type == 'search') {
+    }
+    else if(entry.findings.nature.type == 'search') {
         metadata = _.merge(
             _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
             entry.findings.search,
@@ -54,6 +55,7 @@ function buildMetadata(entry) {
             entry.findings.nature
         );
     }
+    else return null; // 'video' 'pornstar' etc.. are discharged now.
 
     metadata.savingTime = new Date(entry.source.html.savingTime);
     metadata.clientTime = new Date(entry.source.html.clientTime);
