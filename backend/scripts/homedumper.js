@@ -75,10 +75,10 @@ const research_Home = {
 };
     // "GyLrGkwLXzKWaUMEMFewjvm1AGtxzGx2iDeQRmL11jLe": "seicento",
 
-async function researchHome() {
+async function returnJSONfromKeys(userList) {
 
     const MAXDATA = 5000;
-    const keys = _.keys(method);
+    const keys = _.keys(userList);
     let overflow = false;
     debug("Considering %d publicKeys", _.size(keys));
     const data = await automo.getMetadataByFilter(
@@ -116,7 +116,7 @@ async function researchHome() {
         });
         if(!c) missing++;
         video.id = video.videoOrder + video.metadataId.substring(0, 7);
-        video.who = method[video.publicKey];
+        video.who = userList[video.publicKey];
         _.unset(video, 'publicKey');
         extended.push(video);
 
@@ -129,10 +129,11 @@ async function researchHome() {
     return { json: { data: extended, overflow }};
 }
 
-(async function() {
-    const json = await researchHome();
+async function produceCSV(userList, filename) {
+    debug("Produring %s from %d entries", filename, _.size(_.keys(userList)));
+    const json = await returnJSONfromKeys(userList);
     if(!json.json.data) {
-        console.log("missing data");
+        console.log("Not produced any data for ", filename, ": missing data");
         process.exit(1);
     }
 
@@ -150,10 +151,14 @@ async function researchHome() {
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
-    const filename = 'personalized-history'
     // fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 2));
     debug("Writing CSV...");
     fs.writeFileSync("downloadable/" + filename + ".csv", csv);
 
     console.log("Writing complete");
+};
+
+(async function() {
+    await produceCSV(personalized_Activity, 'personalized-history');
+    await produceCSV(research_Home, 'research-home');
 })();

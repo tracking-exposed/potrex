@@ -194,12 +194,17 @@ app.get('/api/v1/mirror/:key', async (req, res) => {
 });
 
 // https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv
-app.get('/api/v2/file/personalized-history.csv', function(req, res){
+app.get('/api/v2/file/personalized-history.csv', function(req, res) {
     const file = `${__dirname}/../downloadable/personalized-history.csv`;
     debug("Downloading %s", file);
     res.download(file); 
-}
-);
+});
+// https://pornhub.tracking.exposed/api/v2/file/research-home.csv
+app.get('/api/v2/file/research-home.csv', function(req, res) {
+    const file = `${__dirname}/../downloadable/search-home.csv`;
+    debug("Downloading %s", file);
+    res.download(file); 
+});
 /* Capture All 404 errors */
 app.use(async (req, res, next) => {
     debug("Reached URL %s: not handled!", req.originalUrl);
