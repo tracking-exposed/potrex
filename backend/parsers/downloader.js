@@ -20,6 +20,8 @@ async function checkDuplicates(mongoc, listof, dbColumn) {
 
 async function downloader(envelop, previous) {
 
+    if(previous.nature.type !== 'home') return false;
+
     /* calculate how many potential vids should be fetched */
     const videos = _.flatten(_.map(previous.home.sections, 'videos'));
     const potential = _.map(videos, function(v) {
