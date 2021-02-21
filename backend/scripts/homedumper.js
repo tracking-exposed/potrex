@@ -11,13 +11,21 @@ const personal = require('../routes/personal');
 const research = require('../routes/research');
 const { max } = require('moment');
 
-
 /* this file implement API developed for research purpose, they might not have any 
  * use outside of Q1-2021 experiments */
 
 nconf.env().argv().file({file: 'config/settings.json'});
 
-const method = { 
+/* questo produce il file 'personalized-activities.csv' e contiene le chiavi della seconda fase */
+const personalized_Activity = {
+
+}
+
+/* questa lista produce 'research-home' e produce un dato che è "compromesso" a un giorno di dati UK,
+ * per questo ora non viene più generato, ma si deve far riferimento a questa versione esportata su github:
+
+ */
+const research_Home = { 
     //"HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
     //"BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,
     //"48jnnhZBB8YiL1Jxoj7dEGZfbQZaz2sUVWAfFv8Sjqr4": 3,
@@ -135,10 +143,6 @@ async function researchHome() {
     });
 
     const csv = CSV.produceCSVv1(nodes);
-    const filename = json.json.overflow ? /*
-        'research-homes-OVERFLOW-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD") : 
-        'research-homes-' + _.size(json.json.data) + "-" + moment().format("YYYY-MM-DD"); */
-        "research-home" : "research-home"; // filename has to be always the same as it expected in express
 
     debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
         _.size(csv), json.json.data.length, _.size(nodes), filename);
@@ -146,8 +150,9 @@ async function researchHome() {
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
-    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 2));
-    debug("Written .json file, now writing CSV...");
+    const filename = 'personalized-history'
+    // fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 2));
+    debug("Writing CSV...");
     fs.writeFileSync("downloadable/" + filename + ".csv", csv);
 
     console.log("Writing complete");

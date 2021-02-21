@@ -12,15 +12,6 @@ const fs = require('fs');
 nconf.argv().env();
 const DELAY = nconf.get('delay') || 10000;
 
-async function dumpFrameTree(frame, indent) {
-    const title = await frame.title();
-    debug("%s %s %s (%s)", indent, frame.url(), frame.name(), title);
-    for (const child of frame.childFrames()) {
-        dumpFrameTree(child, indent + '  ');
-    }
-}
-
-
 async function main() {
 
   const sourceUrl = nconf.get('source');
@@ -82,7 +73,7 @@ async function main() {
 
 }
 
-async function operateBroweser(browser, directives) {
+async function operateBrowser(browser, directives) {
   const page = (await browser.pages())[0];
   // await page.setViewport({width: 1024, height: 768});
   let extensioninfo = null;
@@ -96,7 +87,7 @@ async function operateBroweser(browser, directives) {
         bcons(`${message.text()}`);
         if(message.text().match(/publicKey/)) {
             extensioninfo = JSON.parse(message.text());
-            console.log(extensioninfo);
+            console.log("The publicKey", extensioninfo.publicKey);
         }
       })
       .on('pageerror', ({ message }) => debug('error' + message))

@@ -32,16 +32,16 @@ async function categorize(envelop, previous) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
     const catinfo = [];
 
-        for(section of previous.home.sections) {
-            for(video of section.videos) {
-                try {
-                    const cinfo = await attemptCatInfo(mongoc, video.videoId);
-                    catinfo.push(cinfo);
-                } catch(error) {
-                    debug("Unacceptable error in categorize: %s", error.message);
-                }
+    for(section of previous.home.sections) {
+        for(video of section.videos) {
+            try {
+                const cinfo = await attemptCatInfo(mongoc, video.videoId);
+                catinfo.push(cinfo);
+            } catch(error) {
+                debug("Unacceptable error in categorize: %s", error.message);
             }
         }
+    }
 
     await mongoc.close();
     return catinfo;

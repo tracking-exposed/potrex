@@ -193,8 +193,9 @@ app.get('/api/v1/mirror/:key', async (req, res) => {
     return await dispatchPromise('getMonitor', req, res);
 });
 
-app.get('/api/v2/file/research-home.csv', function(req, res){
-    const file = `${__dirname}/../downloadable/research-home.csv`;
+// https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv
+app.get('/api/v2/file/personalized-history.csv', function(req, res){
+    const file = `${__dirname}/../downloadable/personalized-history.csv`;
     debug("Downloading %s", file);
     res.download(file); 
 }
