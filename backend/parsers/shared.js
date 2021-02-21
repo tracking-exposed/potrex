@@ -98,7 +98,7 @@ function getHomeVideos(D) {
         const secondTag = node.children[1].tagName;
         if(!(node.children[1].children && node.children[1].children[0] &&
              node.children[1].children[0].tagName) ) {
-                debug("No section name in %s (order from 0: %d)", node.children[1].outerHTML, order)
+                debug("No section name (location %d from 0) in: {%s}", order, node.children[1].outerHTML);
                 return null;
             }
 
@@ -117,7 +117,7 @@ function getHomeVideos(D) {
     });
 
     // debug("Potential titles %d -> %s", _.size(titles), _.map(sections, 'display'));
-    return sections;
+    return _.compact(sections);
 }
 
 
