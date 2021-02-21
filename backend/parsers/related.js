@@ -8,11 +8,14 @@ function related(envelop, previous) {
 
     if(envelop.jsdom.querySelector("#noResultBigText")) {
         return {
-            results: []
-        }
+            related: null,
+            reason: envelop.jsdom.querySelector("#noResultBigText").textContent,
+        };
     }
 
     const relatedS = envelop.jsdom.querySelector('.relatedSearchTermsBottom');
+    if(!relatedS) return { related: null };
+
     const retval = _.map(relatedS.querySelectorAll('a'), function(anchor) {
         return {
             name: anchor.textContent.trim(),
