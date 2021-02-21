@@ -12,15 +12,20 @@ async function attemptCatInfo(mongoc, videoId) {
         nconf.get('schema').categories, { videoId });
 
     if(!cinfo) {
-        const e = await mongo3.readOne(mongoc,
-            nconf.get('schema').retrieved, { videoId });
-        const dom = new JSDOM(e.html).window.document;
-        const t = shared.getCategories(dom);
-        cinfo = await mongo3.writeOne(mongoc, nconf.get('schema').categories, {
-            videoId,
-            categories: t,
-            when: new Date()
-        });
+        try {
+            const e = await mongo3.readOne(mongoc,
+                nconf.get('schema').retrieved, { videoId });
+            const dom = new JSDOM(e.html).window.document;
+            const t = shared.getCategories(dom);
+            cinfo = await mongo3.writeOne(mongoc, nconf.get('schema').categories, {
+                videoId,
+                categories: t,
+                when: new Date()
+            });
+        } catch(error) {
+            debug("Impossible return categories of %s: %s", videoId, error.message);
+            return null;
+        }
     }
     return cinfo;
 }
@@ -29,14 +34,15 @@ async function categorize(envelop, previous) {
 
     if(previous.nature.type !== 'home') return false;
 
-    const mongoc = await mongo3.clientConnect({concurrency: 1});
+    const mongoc = await mongo3.clientConnect({concurrency: 10});
     const catinfo = [];
 
-    for(section of previous.home.sections) {
-        for(video of section.videos) {
+    for(section of (previous.home && previous.home.sections ? previous.home.sections: []) ) {
+        for(video of (section && section.videos ? section.videos: []) ) {
             try {
                 const cinfo = await attemptCatInfo(mongoc, video.videoId);
-                catinfo.push(cinfo);
+                if(cinfo)
+                    catinfo.push(cinfo);
             } catch(error) {
                 debug("Unacceptable error in categorize: %s", error.message);
             }
