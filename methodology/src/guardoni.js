@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const debug = require('debug')('methodology:test-1');
+const debug = require('debug')('guardoni');
 const bcons = require('debug')('browser:console');
 const puppeteer = require("puppeteer-extra")
 const { TimeoutError } = require("puppeteer/lib/api");
@@ -11,6 +11,7 @@ const fs = require('fs');
 
 nconf.argv().env();
 const DELAY = nconf.get('delay') || 10000;
+const skip = nconf.get('skip') || 0;
 
 async function main() {
 
@@ -20,9 +21,8 @@ async function main() {
   try {
     const response = await fetch(sourceUrl);
     directives = await response.json();
-    debug("directives: %s", directives);
-    debug("xxx: %j", response);
-    if(!directives.length) throw new Error("directives missing!");
+    if(!directives.length)
+      throw new Error("directives missing!");
   } catch (error) {
     debug("Error: %s", error.message);
     console.log(error.response.body);
@@ -63,49 +63,61 @@ async function main() {
           "--disable-extensions-except=" + dist
         ],
     });
-    await operateBroweser(browser, directives);
+    try {
+      await operateBrowser(browser, directives);
+    } catch(error) {
+      console.log("Error spotted in browser execution: %s", error.message);
+      console.log("Please take the last directive number and execute the command with --skip <number> as option");
+    }
     await browser.close();
   } catch(error) {
-    console.log("cdcsdcsd errore", error);
+    console.log("Error spotted in browser management:", error.message);
     await browser.close();
     process.exit(1);
   }
+}
 
+async function setPageEvent(page) {
+  page
+    .on('console', function(message) {
+      bcons(`${message.text()}`);
+      if(message.text().match(/publicKey/)) {
+          const extensioninfo = JSON.parse(message.text());
+          console.log("The publicKey: ", extensioninfo.publicKey);
+      }
+    })
+    .on('pageerror', ({ message }) => debug('error' + message)) /*
+    .on('response', response =>
+      debug(`response: ${response.status()} ${response.url()}`))
+    .on('requestfailed', request =>
+      debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
 }
 
 async function operateBrowser(browser, directives) {
   const page = (await browser.pages())[0];
   // await page.setViewport({width: 1024, height: 768});
-  let extensioninfo = null;
+  let counter = 0;
   for (directive of directives) {
-    await page.goto(directive, { 
-      waitUntil: "networkidle0",
-    });
-    debug("loaded %s", directive);
-    page
-      .on('console', function(message) {
-        bcons(`${message.text()}`);
-        if(message.text().match(/publicKey/)) {
-            extensioninfo = JSON.parse(message.text());
-            console.log("The publicKey", extensioninfo.publicKey);
-        }
-      })
-      .on('pageerror', ({ message }) => debug('error' + message))
-      .on('response', response =>
-        debug(`response: ${response.status()} ${response.url()}`))
-      .on('requestfailed', request =>
-        debug(`requestfail: ${request.failure().errorText} ${request.url()}`));
+    counter++;
+    if(!(skip >= counter)) {
+      await page.goto(directive, { 
+        waitUntil: "networkidle0",
+      });
+      debug("loaded %d directive: %s", counter, directive);
+      await setPageEvent(page);
 
-    await page.waitFor(DELAY);
-    // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
-    // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
+      await page.waitFor(DELAY);
+      // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
+      // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
 
-    const profileStory = await page.evaluate(() => {
-      const jsonHistory = localStorage.getItem('watchedVideoIds');
-      return JSON.parse(jsonHistory);
-    });
-    debug("Profile story (video logged in localstorage): %d  — %s",
-      profileStory || 0, profileStory);
+      const profileStory = await page.evaluate(() => {
+        const jsonHistory = localStorage.getItem('watchedVideoIds');
+        return JSON.parse(jsonHistory);
+      });
+      debug("Profile story (video logged in localstorage): %s", profileStory);
+    } else {
+      console.log("skipping directive %d: %s", counter, directive);
+    }
   }
   console.log("Loop done, processed directives:", directives.length);
 }
