@@ -109,7 +109,7 @@ async function returnJSONfromKeys(userList) {
             if(isSupported)
                 c.macro = isSupported.macro;
             else {
-                addToErrors(c);
+                console.log("Missing", c);
                 c.macro = "NOT"+c.href;
             }
             return c;
