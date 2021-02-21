@@ -98,7 +98,7 @@ function getHomeVideos(D) {
         const secondTag = node.children[1].tagName;
         if(!(node.children[1].children && node.children[1].children[0] &&
              node.children[1].children[0].tagName) ) {
-                debug("nope in %d", order)
+                debug("No section name in %s (order from 0: %d)", node.children[1].outerHTML, order)
                 return null;
             }
 
