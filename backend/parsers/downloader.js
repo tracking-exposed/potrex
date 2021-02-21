@@ -23,8 +23,8 @@ async function downloader(envelop, previous) {
     if(previous.nature.type !== 'home') return false;
 
     /* calculate how many potential vids should be fetched */
-    const videos = _.flatten(_.map(previous.home.sections, 'videos'));
-    const potential = _.map(videos, function(v) {
+    const videos = _.flatten(_.map(_.get(previous, 'home.sections', []), 'videos'));
+    const potential = _.map(_.filter(videos, 'href'), function(v) {
         return {
             url: 'http://www.pornhub.com' + v.href,
             when: new Date(),
