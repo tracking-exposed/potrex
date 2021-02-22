@@ -8,7 +8,7 @@ import db from '../db'
 const bo = chrome || browser
 
 // defaults of the settings stored in 'config' and controlled by popup
-const DEFAULT_SETTINGS = { active: true, ux: true }
+const DEFAULT_SETTINGS = { active: false, ux: true }
 const FIXED_USER_NAME = 'local'
 
 bo.runtime.onMessage.addListener((request, sender, sendResponse) => {
