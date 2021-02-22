@@ -55,6 +55,13 @@ function buildMetadata(entry) {
             entry.findings.nature
         );
     }
+    else if(entry.findings.nature.type == 'video') {
+        metadata = _.merge(
+            _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
+            entry.findings.video,
+            entry.findings.nature
+        );
+    }
     else return null; // 'video' 'pornstar' etc.. are discharged now.
 
     metadata.savingTime = new Date(entry.source.html.savingTime);

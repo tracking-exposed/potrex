@@ -90,14 +90,31 @@ function video(envelop, previous) {
 
     if(previous.nature.type !== 'video') return false;
 
+    /* as first we've to get if the 'h1' is a title or an error message */
+    const title = envelop.jsdom.querySelector('div > h1');
+
+    if(!title) {
+        debug("Video page without a title!?");
+        return false;
+    }
+
+    const hasClass = title.parentNode.getAttribute('class');
+    if(!hasClass) {
+        /* this video landed on a removed page or a wrong typed pornhub id */
+        return {
+            error: true,
+            message: title.textContent,
+        };
+    }
+
     /* this apply both to the video below and also the one on the right column */
     const vb = envelop.jsdom.querySelectorAll('li.videoBlock');
     const related = _.map(Array.from(vb), videoBlockMeta)
-    const title = envelop.jsdom.querySelector('h1').textContent.trim();
+    const titleString = title.textContent.trim();
     const sidekind = envelop.jsdom.querySelector('.section_bar_sidebar').textContent.trim();
 
     return {
-        title,
+        title: titleString,
         sidekind,
         categories: shared.getCategories(envelop.jsdom),
         related,
