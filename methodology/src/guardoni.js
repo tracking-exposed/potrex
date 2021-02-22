@@ -103,7 +103,7 @@ async function operateBrowser(browser, directives) {
       await page.goto(directive, { 
         waitUntil: "networkidle0",
       });
-      debug("loaded %d directive: %s", counter, directive);
+      console.log("loaded", counter, "directive", directive);
       await setPageEvent(page);
 
       await page.waitFor(DELAY);
