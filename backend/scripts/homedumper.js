@@ -18,7 +18,7 @@ nconf.env().argv().file({file: 'config/settings.json'});
 
 /* questo produce il file 'personalized-activities.csv' e contiene le chiavi della seconda fase */
 const personalized_Activity = {
-
+    "6yd7CZWjs9QLoFHStEgBnJujEZbs6PUxqw15nUgmExQm": "prelim1",
 }
 
 /* questa lista produce 'research-home' e produce un dato che è "compromesso" a un giorno di dati UK,

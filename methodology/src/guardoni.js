@@ -64,7 +64,7 @@ async function main() {
         ],
     });
     try {
-      await operateBrowser(browser, directives);
+      await operateBrowser(browser, directives, sourceUrl);
     } catch(error) {
       console.log("Error spotted in browser execution: %s", error.message);
       console.log("Please take the last directive number and execute the command with --skip <number> as option");
@@ -93,18 +93,18 @@ async function setPageEvent(page) {
       debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
 }
 
-async function operateBrowser(browser, directives) {
+async function operateBrowser(browser, directives, sourceUrl) {
   const page = (await browser.pages())[0];
   // await page.setViewport({width: 1024, height: 768});
   let counter = 0;
+  await setPageEvent(page);
   for (directive of directives) {
     counter++;
     if(!(skip >= counter)) {
       await page.goto(directive, { 
         waitUntil: "networkidle0",
       });
-      console.log("loaded", counter, "directive", directive);
-      await setPageEvent(page);
+      console.log("loaded", counter, "directive", directive, "from", sourceUrl);
 
       await page.waitFor(DELAY);
       // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
@@ -114,9 +114,9 @@ async function operateBrowser(browser, directives) {
         const jsonHistory = localStorage.getItem('watchedVideoIds');
         return JSON.parse(jsonHistory);
       });
-      debug("Profile story (video logged in localstorage): %s", profileStory);
+      console.log("Profile story (video logged in localstorage):", profileStory.length, "videos associated to this profile");
     } else {
-      console.log("skipping directive %d: %s", counter, directive);
+      console.log("Skipping directive", counter, directive, "from", sourceUrl);
     }
   }
   console.log("Loop done, processed directives:", directives.length);
