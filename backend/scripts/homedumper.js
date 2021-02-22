@@ -16,15 +16,12 @@ const { max } = require('moment');
 
 nconf.env().argv().file({file: 'config/settings.json'});
 
-/* questo produce il file 'personalized-activities.csv' e contiene le chiavi della seconda fase */
+/* https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv */
 const personalized_Activity = {
     "6yd7CZWjs9QLoFHStEgBnJujEZbs6PUxqw15nUgmExQm": "prelim1",
 }
 
-/* questa lista produce 'research-home' e produce un dato che è "compromesso" a un giorno di dati UK,
- * per questo ora non viene più generato, ma si deve far riferimento a questa versione esportata su github:
-
- */
+/* research-home.csv + https://github.com/tracking-exposed/experiments-data/tree/master/potests/potest_12-19feb */
 const research_Home = { 
     //"HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
     //"BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,
