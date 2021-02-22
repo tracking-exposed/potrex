@@ -218,6 +218,11 @@ const MACROc = [{
         "href": "/video?c=141"
     },
     {
+        "name": "Uncensored in Hentai",
+        "macro": "Format",
+        "href": '/video?c=722'
+    },
+    {
         "name": "Big Ass", "macro": "Appearance",
         "href": "/video?c=4"
     },
