@@ -132,11 +132,16 @@ async function operateBrowser(browser, directives, sourceUrl) {
         await page.waitFor(DELAY);
         const profileStory = await page.evaluate(() => {
           const jsonHistory = localStorage.getItem('watchedVideoIds');
-          return JSON.parse(jsonHistory);
+          try {
+            return JSON.parse(jsonHistory);
+          } catch(error) {
+            console.log("Unable to extract profileStory, assuming a clean profile");
+            return [];
+          }
         });
         console.log("Profile story (video logged in localstorage):", profileStory.length, "videos associated to this profile");
       } catch(error) {
-        console.log("[!!!] Error in loading:", directive, "number", counter, "error", error.message, "details", error.stack);
+        console.log("[!!!] Error in loading:", directive, "number", counter, "error", error.message, "details:\n", error.stack);
         // if it is fatal, it is because an explicit option say so
         if(fatal)
           process.exit(1);
