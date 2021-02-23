@@ -12,6 +12,7 @@ const fs = require('fs');
 nconf.argv().env();
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
+const fatal = nconf.get('fatal') || false;
 
 async function main() {
 
@@ -118,6 +119,9 @@ async function operateBrowser(browser, directives, sourceUrl) {
         console.log("Profile story (video logged in localstorage):", profileStory.length, "videos associated to this profile");
       } catch(error) {
         console.log("[!!!] Error in loading:", directive, "number", counter, "error", error.message, "details", error.stack);
+        // if it is fatal, it is because an explicit option say so
+        if(fatal)
+          process.exit(1);
       }
     } else {
       console.log("Skipping directive", counter, directive, "from", sourceUrl);
