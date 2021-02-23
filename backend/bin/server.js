@@ -204,6 +204,7 @@ app.get('/api/v2/file/research-home.csv', function(req, res) {
     const file = `${__dirname}/../downloadable/research-home.csv`;
     debug("Downloading %s", file);
     res.download(file); 
+});
 
 // https://pornhub.tracking.exposed/api/v2/file/personalized-history.json
 app.get('/api/v2/file/personalized-history.json', function(req, res) {
