@@ -25,9 +25,11 @@ async function localbrowser() {
   const effectivedir = path.join(platformdir, scndfiles[0]);
   if(scndfiles[0] == 'chrome-win') {
     return path.join(effectivedir, 'chrome.exe');
-  } else {
-    console.log("Assuming if you're not on windows you're on Linux");
+  } else if(scndfiles[0] == 'chrome-linux') {
     return path.join(effectivedir, 'chrome');
+  } else {
+    console.log("We assume you're not on windows nor in Linux— so please talk to claudio and tell him you're using mac");
+    process.exit(1)
   }
 }
 
