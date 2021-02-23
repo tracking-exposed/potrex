@@ -50,6 +50,8 @@ async function main() {
     process.exit(1);
   }
 
+  console.log("[XXXX IMPORTANT XXXXXX] you should run this command to build your dummy profile:\n",
+    await localbrowser(), "--user-data-dir=profiles/your-new-profile");
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension', 'dist'));
   if(!fs.existsSync(dist)) {
@@ -62,7 +64,6 @@ async function main() {
   const profile = nconf.get('profile');
   if(!profile) {
     console.log("--profile it is necessary and must be an absolute path, you con configure it with:")
-    console.log(await localbrowser(), "--user-data-dir=profiles/your-new-profile");
     process.exit(1)
   }
   const udd = path.resolve(profile);
