@@ -135,11 +135,12 @@ async function operateBrowser(browser, directives, sourceUrl) {
           try {
             return JSON.parse(jsonHistory);
           } catch(error) {
-            console.log("Unable to extract profileStory, assuming a clean profile");
+            console.log("Unable to extract profileStory, assuming it is a clean profile?");
             return [];
           }
         });
-        console.log("Profile story (video logged in localstorage):", profileStory.length, "videos associated to this profile");
+        console.log("Profile story (video logged in localstorage):", 
+          profileStory ? profileStory.length: -1, "videos associated to this profile");
       } catch(error) {
         console.log("[!!!] Error in loading:", directive, "number", counter, "error", error.message, "details:\n", error.stack);
         // if it is fatal, it is because an explicit option say so
