@@ -148,7 +148,7 @@ async function produceCSV(userList, filename) {
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
-    // fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 2));
+    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 1));
     debug("Writing CSV...");
     fs.writeFileSync("downloadable/" + filename + ".csv", csv);
 
