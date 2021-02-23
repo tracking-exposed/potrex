@@ -7,12 +7,29 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const nconf = require('nconf');
 const fetch = require('node-fetch');
 const path = require('path');
+const util = require('util');
 const fs = require('fs');
 
 nconf.argv().env();
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
 const fatal = nconf.get('fatal') || false;
+
+async function localbrowser() {
+  const readdir = util.promisify(fs.readdir);
+  const localchromium = path.join(process.cwd(), 'node_modules', 'puppeteer', '.local-chromium');
+  const files = await readdir(localchromium);
+  // node_modules/puppeteer/.local-chromium/win64-722234/chrome-win/chrome.exe*
+  const platformdir = path.join(localchromium, files[0]);
+  const scndfiles = await readdir(platformdir);
+  const effectivedir = path.join(platformdir, scndfiles[0]);
+  if(scndfiles[0] == 'chrome-win') {
+    return path.join(effectivedir, 'chrome.exe');
+  } else {
+    console.log("Assuming if you're not on windows you're on Linux");
+    return path.join(effectivedir, 'chrome');
+  }
+}
 
 async function main() {
 
@@ -44,13 +61,14 @@ async function main() {
 
   const profile = nconf.get('profile');
   if(!profile) {
-    console.log("--profile it is necessary and must be an absolute path")
+    console.log("--profile it is necessary and must be an absolute path, you con configure it with:")
+    console.log(await localbrowser(), "--user-data-dir=profiles/your-new-profile");
     process.exit(1)
   }
   const udd = path.resolve(profile);
   if(!fs.existsSync(udd)) {
     console.log("--profile directory do not exist" + udd);
-    console.log("chromium --user-data-dir=profile/path to initialize a new profile");
+    console.log(await localbrowser(), "--user-data-dir=profiles/your-new-profile");
     process.exit(1)
   }
   if(DELAY < 10000)
@@ -102,7 +120,7 @@ async function operateBrowser(browser, directives, sourceUrl) {
   // await page.setViewport({width: 1024, height: 768});
   let counter = 0;
   await setPageEvent(page);
-  for (directive of directives) {
+  for (const directive of directives) {
     counter++;
     if(!(skip >= counter)) {
       try {
