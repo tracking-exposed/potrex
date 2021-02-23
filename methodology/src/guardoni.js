@@ -23,6 +23,9 @@ async function main() {
     directives = await response.json();
     if(!directives.length)
       throw new Error("directives missing!");
+    if(!_.startsWith(directives[0], 'http')) {
+      console.log("The directive downloaded do not contain a list with an URL.");
+    }
   } catch (error) {
     debug("Error: %s", error.message);
     console.log(error.response.body);
@@ -66,15 +69,15 @@ async function main() {
     try {
       await operateBrowser(browser, directives, sourceUrl);
     } catch(error) {
-      console.log("Error spotted in browser execution: %s", error.message);
+      console.log("Error spotted in browser execution: %s", error.message, "details", error.stack);
       console.log("Please take the last directive number and execute the command with --skip <number> as option");
     }
     await browser.close();
   } catch(error) {
     console.log("Error spotted in browser management:", error.message);
     await browser.close();
-    process.exit(1);
   }
+  process.exit(1);
 }
 
 async function setPageEvent(page) {
@@ -101,20 +104,21 @@ async function operateBrowser(browser, directives, sourceUrl) {
   for (directive of directives) {
     counter++;
     if(!(skip >= counter)) {
-      await page.goto(directive, { 
-        waitUntil: "networkidle0",
-      });
-      console.log("loaded", counter, "directive", directive, "from", sourceUrl);
-
-      await page.waitFor(DELAY);
-      // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
-      // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
-
-      const profileStory = await page.evaluate(() => {
-        const jsonHistory = localStorage.getItem('watchedVideoIds');
-        return JSON.parse(jsonHistory);
-      });
-      console.log("Profile story (video logged in localstorage):", profileStory.length, "videos associated to this profile");
+      try {
+        console.log("Loading directive", counter, "url:", directive, "from", sourceUrl);
+        await page.goto(directive, { 
+          waitUntil: "networkidle0",
+        });
+        debug("Loaded page! waiting", DELAY);
+        await page.waitFor(DELAY);
+        const profileStory = await page.evaluate(() => {
+          const jsonHistory = localStorage.getItem('watchedVideoIds');
+          return JSON.parse(jsonHistory);
+        });
+        console.log("Profile story (video logged in localstorage):", profileStory.length, "videos associated to this profile");
+      } catch(error) {
+        console.log("[!!!] Error in loading:", directive, "number", counter, "error", error.message, "details", error.stack);
+      }
     } else {
       console.log("Skipping directive", counter, directive, "from", sourceUrl);
     }
@@ -123,3 +127,6 @@ async function operateBrowser(browser, directives, sourceUrl) {
 }
 
 main ();
+
+      // const innerWidth = await page.evaluate(_ => { return window.innerWidth });
+      // const innerHeight = await page.evaluate(_ => { return window.innerHeight });
