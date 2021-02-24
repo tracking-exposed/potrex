@@ -163,5 +163,5 @@ async function produceCSV(userList, filename) {
 
 (async function() {
     await produceCSV(personalized_Activity, 'personalized-history');
-    await produceCSV(research_Home, 'research-home');
+    // await produceCSV(research_Home, 'research-home');
 })();

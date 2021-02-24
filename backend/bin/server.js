@@ -200,21 +200,21 @@ app.get('/api/v2/file/personalized-history.csv', function(req, res) {
     res.download(file); 
 });
 // https://pornhub.tracking.exposed/api/v2/file/research-home.csv
-app.get('/api/v2/file/research-home.csv', function(req, res) {
-    const file = `${__dirname}/../downloadable/research-home.csv`;
+app.get('/api/v2/file/research-home.csv.gz', function(req, res) {
+    const file = `${__dirname}/../downloadable/research-home.csv.gz`;
     debug("Downloading %s", file);
     res.download(file); 
 });
 
 // https://pornhub.tracking.exposed/api/v2/file/personalized-history.json
-app.get('/api/v2/file/personalized-history.json', function(req, res) {
-    const file = `${__dirname}/../downloadable/personalized-history.json`;
+app.get('/api/v2/file/personalized-history.json.gz', function(req, res) {
+    const file = `${__dirname}/../downloadable/personalized-history.json.gz`;
     debug("Downloading %s", file);
     res.download(file); 
 });
 // https://pornhub.tracking.exposed/api/v2/file/research-home.json
-app.get('/api/v2/file/research-home.json', function(req, res) {
-    const file = `${__dirname}/../downloadable/research-home.json`;
+app.get('/api/v2/file/research-home.json.gz', function(req, res) {
+    const file = `${__dirname}/../downloadable/research-home.json.gz`;
     debug("Downloading %s", file);
     res.download(file); 
 });
