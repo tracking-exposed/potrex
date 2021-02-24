@@ -1,15 +1,12 @@
 const _ = require('lodash');
-const moment = require('moment');
 const debug = require('debug')('routes:research');
 const nconf = require('nconf');
-const fs = require('fs');
-
+const fs = require('fs'); 
 const automo = require('../lib/automo');
 const mongo3 = require('../lib/mongo3');
 const CSV = require('../lib/CSV');
 const personal = require('../routes/personal');
 const research = require('../routes/research');
-const { max } = require('moment');
 
 /* this file implement API developed for research purpose, they might not have any 
  * use outside of Q1-2021 experiments */
@@ -18,10 +15,19 @@ nconf.env().argv().file({file: 'config/settings.json'});
 
 /* https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv */
 const personalized_Activity = {
-    "6yd7CZWjs9QLoFHStEgBnJujEZbs6PUxqw15nUgmExQm": "prelim1",
+    "6yd7CZWjs9QLoFHStEgBnJujEZbs6PUxqw15nUgmExQm": "claudioinc",
+    "6yMuccGDjFvyW12LjCJpMdsrTswPt8jkNB5ZogCZLNkb": "po4_2",
+    "Ce3rXua6QJdpRzN4QYumBV7QfkfV1yDNLifC83REzkmU": "po4_3",
+    "6FRVLZoyiX1VW81k7Vw3fciqAY68hEvYpFY3n7cRBLSb": "salvo_fetish",
+    "14QXWmb24bhwW4JRU4hprm3oNemgF8uqtSTfRNDDmT4n": "salvo_consent",
+    "488V9jLEg9d2GLdePP211MBw7R5odv6fjkriRpy9GimM": "podue",
+    "2fS3qNZoL9sfKfvY9Gwpky3hkTPsxxL9EqfiWt4x2q3k": "pouno",
+    "f6EJUkfuqu9QDVAizf7LKrnq1NcriNn23kxdM8ac5oS":  "giuc_consent",
+    "GUtNAFqyjcMn6iNw7WhoQkTYx9DuQn8vH95qgvEKeTXs": "giuc_fetish",
 }
 
-/* research-home.csv + https://github.com/tracking-exposed/experiments-data/tree/master/potests/potest_12-19feb */
+/* research-home.csv + https://github.com/tracking-exposed/experiments-data/tree/master/potests/potest_12-19feb 
+   https://pornhub.tracking.exposed/api/v2/file/research-home.json (and .csv)  */
 const research_Home = { 
     //"HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
     //"BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,

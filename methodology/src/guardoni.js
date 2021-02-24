@@ -15,6 +15,27 @@ const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
 const fatal = nconf.get('fatal') || false;
 
+const defaults = {
+  'windows': "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  'linux': "/usr/bin/google-chrome"
+};
+
+function findChromeExe(offered) {
+
+  if(!offered || !_.size(offered)) {
+    console.log("Mandatory you specify with --chrome the absolute path of chrome executable. For example:");
+    console.log(JSON.stringify(defaults, undefined, 2));
+    process.exit(1)
+  }
+
+  if(!fs.existsSync(offered)) {
+    console.log("The --chrome <absolute path> specifiy point at NON EXISTENT FILE\n", offered, "\nPlease review the --chrome option");
+    console.log("Defaults:", JSON.stringify(defaults, undefined, 2));
+    process.exit(1)
+  }
+  return offered;
+}
+
 async function localbrowser() {
   const readdir = util.promisify(fs.readdir);
   const localchromium = path.join(process.cwd(), 'node_modules', 'puppeteer', '.local-chromium');
@@ -52,6 +73,8 @@ async function main() {
     process.exit(1);
   }
 
+  const chromeExecutable = findChromeExe(nconf.get('chrome'));
+
   console.log("[XXXX IMPORTANT XXXXXX] you should run this command to build your dummy profile:\n",
     await localbrowser(), "--user-data-dir=profiles/your-new-profile");
   const cwd = process.cwd();
@@ -82,6 +105,7 @@ async function main() {
     browser = await puppeteer.launch({
         headless: false,
         userDataDir: udd,
+        executablePath: chromeExecutable,
         args: ["--no-sandbox",
           "--disabled-setuid-sandbox",
           "--load-extension=" + dist,
