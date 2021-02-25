@@ -183,6 +183,11 @@ app.get('/api/v2/research/query/:metadataId/guardoni', async (req, res) => {
     return await dispatchPromise('guardoniv1ByMetadata', req, res);
 });
 
+/* guardoni api -- e.g. /10/Anal/(fixed|random) */
+app.get('/api/v2/guardoni/:amount/:category/:type', async (req, res) => {
+    return await dispatchPromise('guardoniV2', req, res);
+});
+
 /* ADMIN */
 app.get('/api/v1/mirror/:key', async (req, res) => {
     return await dispatchPromise('getMirror', req, res);
@@ -193,26 +198,26 @@ app.get('/api/v1/mirror/:key', async (req, res) => {
     return await dispatchPromise('getMonitor', req, res);
 });
 
-// https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv
+// https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv.gz
 app.get('/api/v2/file/personalized-history.csv', function(req, res) {
     const file = `${__dirname}/../downloadable/personalized-history.csv`;
     debug("Downloading %s", file);
     res.download(file); 
 });
-// https://pornhub.tracking.exposed/api/v2/file/research-home.csv
+// https://pornhub.tracking.exposed/api/v2/file/research-home.csv.gz
 app.get('/api/v2/file/research-home.csv.gz', function(req, res) {
     const file = `${__dirname}/../downloadable/research-home.csv.gz`;
     debug("Downloading %s", file);
     res.download(file); 
 });
 
-// https://pornhub.tracking.exposed/api/v2/file/personalized-history.json
+// https://pornhub.tracking.exposed/api/v2/file/personalized-history.json.gz
 app.get('/api/v2/file/personalized-history.json.gz', function(req, res) {
     const file = `${__dirname}/../downloadable/personalized-history.json.gz`;
     debug("Downloading %s", file);
     res.download(file); 
 });
-// https://pornhub.tracking.exposed/api/v2/file/research-home.json
+// https://pornhub.tracking.exposed/api/v2/file/research-home.json.gz
 app.get('/api/v2/file/research-home.json.gz', function(req, res) {
     const file = `${__dirname}/../downloadable/research-home.json.gz`;
     debug("Downloading %s", file);

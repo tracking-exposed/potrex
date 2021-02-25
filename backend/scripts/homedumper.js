@@ -13,7 +13,7 @@ const research = require('../routes/research');
 
 nconf.env().argv().file({file: 'config/settings.json'});
 
-/* https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv */
+/* https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv.gz */
 const personalized_Activity = {
     "6yd7CZWjs9QLoFHStEgBnJujEZbs6PUxqw15nUgmExQm": "claudioinc",
     "6yMuccGDjFvyW12LjCJpMdsrTswPt8jkNB5ZogCZLNkb": "po4_2",
@@ -27,7 +27,7 @@ const personalized_Activity = {
 }
 
 /* research-home.csv + https://github.com/tracking-exposed/experiments-data/tree/master/potests/potest_12-19feb 
-   https://pornhub.tracking.exposed/api/v2/file/research-home.json (and .csv)  */
+   https://pornhub.tracking.exposed/api/v2/file/research-home.json.gz (and .csv)  */
 const research_Home = { 
     //"HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
     //"BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,
@@ -154,9 +154,14 @@ async function produceCSV(userList, filename) {
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
-    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(json.json.data, undefined, 1));
     debug("Writing CSV...");
     fs.writeFileSync("downloadable/" + filename + ".csv", csv);
+    debug("Writing JSON...");
+    const reduced = _.map(json.json.data, function(entry) {
+        return _.omit(entry, ['categorylist', 'macrolist']);
+    });
+    // reduced is the variable without the flattend lists 
+    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(reduced, undefined, 1));
 
     console.log("Writing complete");
 };

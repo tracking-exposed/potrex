@@ -1,10 +1,8 @@
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('routes:research');
-const nconf = require('nconf');
 
 const automo = require('../lib/automo');
-const mongo3 = require('../lib/mongo3');
 const CSV = require('../lib/CSV');
 const personal = require('./personal');
 
@@ -12,12 +10,6 @@ const collectedErrors = [];
 async function researchErrors() {
     return {
         json: collectedErrors
-    }
-}
-function addToErrors(celem) {
-    if(!_.find(collectedErrors, { name: celem.name })) {
-        debug("%d registering error — %j", collectedErrors.length, celem);
-        collectedErrors.push(celem);
     }
 }
 

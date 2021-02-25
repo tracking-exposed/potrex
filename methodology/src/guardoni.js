@@ -23,6 +23,18 @@ const defaults = {
 function findChromeExe(offered) {
 
   if(!offered || !_.size(offered)) {
+
+    const lucky = _.compact(_.map(defaults, function(cpath, syname) {
+      if(fs.existsSync(cpath)) {
+        console.log("Guessed you're on", syname, "using chrome from:", cpath);
+        return cpath;
+      } else
+        return null;
+    }))
+
+    if(lucky.length) // we're lucky to guess the chrome path
+      return lucky.pop();
+
     console.log("Mandatory you specify with --chrome the absolute path of chrome executable. For example:");
     console.log(JSON.stringify(defaults, undefined, 2));
     process.exit(1)
@@ -56,16 +68,32 @@ async function localbrowser() {
 
 async function main() {
 
+  const homeOnly = !!nconf.get('home') || false;
   const sourceUrl = nconf.get('source');
-  if(!sourceUrl) throw new Error("--source");
-  let directives;
+  let directives = null;
+  if(homeOnly) {
+    console.log("Loading a single directive to PH homepage");
+    directives = [ 'https://www.pornhub.com' ]
+  } else {
+    if(!sourceUrl) {
+      console.log("The directive should be a JSON file passed with --source option, for example:");
+      console.log("--source https://pornhub.tracking.exposed/json/twenty-homepages.json");
+      process.exit(1);
+    }
+  }
+
   try {
-    const response = await fetch(sourceUrl);
-    directives = await response.json();
-    if(!directives.length)
-      throw new Error("directives missing!");
-    if(!_.startsWith(directives[0], 'http')) {
-      console.log("The directive downloaded do not contain a list with an URL.");
+    if(!directives) {
+      const response = await fetch(sourceUrl);
+      directives = await response.json();
+      if(!directives.length) {
+        console.log("The directive downloaded looks like an empty list");
+        process.exit(1);
+      }
+      if(!_.startsWith(directives[0], 'http')) {
+        console.log("The directive downloaded do not contain a list with an URL.");
+        process.exit(1);
+      }
     }
   } catch (error) {
     debug("Error: %s", error.message);
@@ -75,10 +103,13 @@ async function main() {
 
   const chromeExecutable = findChromeExe(nconf.get('chrome'));
 
-  console.log("[XXXX IMPORTANT XXXXXX] you should run this command to build your dummy profile:\n",
-    await localbrowser(), "--user-data-dir=profiles/your-new-profile");
+  // console.log("[XXXX IMPORTANT XXXXXX] you should run this command to build your dummy profile:\n",
+  // await localbrowser(), "--user-data-dir=profiles/your-new-profile");
+  // not true anymore, and 'localbrowser' function isn't invoked anymore.
+
   const cwd = process.cwd();
   const dist = path.resolve(path.join(cwd, 'extension', 'dist'));
+
   if(!fs.existsSync(dist)) {
     console.log('Directory '+ dist +' not found, please download:');
     console.log('https://github.com/tracking-exposed/potrex/releases/download/0.4.99/extension.zip');

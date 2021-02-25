@@ -55,6 +55,9 @@ var apiList = {
     queries:           require('../routes/research').queries,
     queriesCSV:        require('../routes/research').queriesCSV,
     guardoniv1ByMetadata:require('../routes/research').guardoniv1ByMetadata,
+
+    /* Guardoni API */
+    guardoniV2:        require('../routes/guardoni').guardoniV2,
 };
 
 module.exports = {
