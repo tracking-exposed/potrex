@@ -150,8 +150,8 @@ function dataFilterAndEnhancement(data) {
     const preserved = _.filter(data, function(entry) {
         return _.startsWith(entry.sectionName, 'Recommended');
     });
-    debug("From %d elements we filtered %d (%d)",
-        _.size(data), _.size(preserved), ( _.size(data) / _.size(preserved) ) );
+    debug("From %d elements we filtered %d [ %d%% ]",
+        _.size(data), _.size(preserved), _.round( ( 100 / _.size(data) ) * _.size(preserved), 1) );
     debugger; 
 }
 
