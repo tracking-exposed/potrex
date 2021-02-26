@@ -192,7 +192,7 @@ async function produceCSV(userList, filename) {
         csv = CSV.produceCSVv1(nodes);
     }
 
-    debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
+    debug("researchHomeCSV: produced %d bytes from %d homes, returning %s",
         _.size(csv), json.json.data.length, _.size(nodes), filename);
 
     if(!_.size(csv))
