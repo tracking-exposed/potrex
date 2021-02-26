@@ -153,9 +153,8 @@ function dataFilterAndEnhancement(data) {
     debug("From %d elements we filtered %d [ %d%% ]",
         _.size(data), _.size(preserved), _.round( ( 100 / _.size(data) ) * _.size(preserved), 1) );
 
-    debugger;
+    writeJSON(preserved, "enhanced-nested");
     let categories = _.uniq(_.map(_.flatten(_.map(preserved, 'categories')), 'name'));
-    debugger;
     const enhanced = _.map(preserved, function(entry) {
         _.each(categories, function(catname) {
             let isPresent = !!_.find(entry.categories, { name: catname });
@@ -165,7 +164,6 @@ function dataFilterAndEnhancement(data) {
         return entry;
     });
     debug("Enhanment completed! a random sample looks like:")
-    console.log(_.sample(enhanced));
     return enhanced;
 }
 
