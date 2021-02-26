@@ -191,7 +191,7 @@ async function produceCSV(userList, filename) {
     }
 
     debug("researchHomeCSV: produced %d bytes from %d homes, returning %s",
-        _.size(csv), json.json.data.length, _.size(nodes), filename);
+        _.size(csv), json.json.data.length, filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
