@@ -13,6 +13,15 @@ const research = require('../routes/research');
 
 nconf.env().argv().file({file: 'config/settings.json'});
 
+const enhanced_Selection = {
+    "6yMuccGDjFvyW12LjCJpMdsrTswPt8jkNB5ZogCZLNkb": "po4_2",
+    "Ce3rXua6QJdpRzN4QYumBV7QfkfV1yDNLifC83REzkmU": "po4_3",
+    "2fS3qNZoL9sfKfvY9Gwpky3hkTPsxxL9EqfiWt4x2q3k": "pouno",
+    "488V9jLEg9d2GLdePP211MBw7R5odv6fjkriRpy9GimM": "podue",
+    "f6EJUkfuqu9QDVAizf7LKrnq1NcriNn23kxdM8ac5oS":  "giuc_consent",
+    "GUtNAFqyjcMn6iNw7WhoQkTYx9DuQn8vH95qgvEKeTXs": "giuc_fetish",
+}
+
 /* https://pornhub.tracking.exposed/api/v2/file/personalized-history.csv.gz */
 const personalized_Activity = {
     "6yd7CZWjs9QLoFHStEgBnJujEZbs6PUxqw15nUgmExQm": "claudioinc",
@@ -132,6 +141,20 @@ async function returnJSONfromKeys(userList) {
     return { json: { data: extended, overflow }};
 }
 
+function writeJSON(data, filename) {
+    debug("Writing JSON %s.json", filename);
+    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(data, undefined, 1));
+}
+
+function dataFilterAndEnhancement(data) {
+    const preserved = _.filter(data, function(entry) {
+        return _.startsWith(entry.sectionName, 'Recommended');
+    });
+    debug("From %d elements we filtered %d (%d)",
+        _.size(data), _.size(preserved), ( _.size(data) / _.size(preserved) ) );
+    debugger; 
+}
+
 async function produceCSV(userList, filename) {
     debug("Produring %s from %d entries", filename, _.size(_.keys(userList)));
     const json = await returnJSONfromKeys(userList);
@@ -140,13 +163,20 @@ async function produceCSV(userList, filename) {
         process.exit(1);
     }
 
-    const nodes = _.map(json.json.data, function(entry) {
-        entry.categorylist = _.map(entry.categories, 'name').join('+');
-        entry.macrolist = _.map(entry.categories, 'macro').join('-');
-        return _.omit(entry, ['thumbnail','categories']);
-    });
-
-    const csv = CSV.produceCSVv1(nodes);
+    let csv = null;
+    if(filename !== 'enhanced') {
+        writeJSON(json.data.data, fiename);
+        const nodes = _.map(json.json.data, function(entry) {
+            entry.categorylist = _.map(entry.categories, 'name').join('+');
+            entry.macrolist = _.map(entry.categories, 'macro').join('-');
+            return _.omit(entry, ['thumbnail','categories']);
+        });
+        csv = CSV.produceCSVv1(nodes);
+    } else {
+        /* no JSON for the enhanced file */
+        const nodes = dataFilterAndEnhancement(json.json.data);
+        csv = CSV.produceCSVv1(nodes);
+    }
 
     debug("researchHomeCSV: produced %d bytes from %d homes %d videos, returning %s",
         _.size(csv), json.json.data.length, _.size(nodes), filename);
@@ -156,17 +186,11 @@ async function produceCSV(userList, filename) {
 
     debug("Writing CSV...");
     fs.writeFileSync("downloadable/" + filename + ".csv", csv);
-    debug("Writing JSON...");
-    const reduced = _.map(json.json.data, function(entry) {
-        return _.omit(entry, ['categorylist', 'macrolist']);
-    });
-    // reduced is the variable without the flattend lists 
-    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(reduced, undefined, 1));
-
     console.log("Writing complete");
 };
 
 (async function() {
     await produceCSV(personalized_Activity, 'personalized-history');
+    await produceCSV(enhanced_Selection, 'enhanced');
     // await produceCSV(research_Home, 'research-home');
 })();
