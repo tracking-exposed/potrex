@@ -184,7 +184,7 @@ async function produceCSV(userList, filename) {
 
     let csv = null;
     if(filename !== 'enhanced') {
-        writeJSON(json.data.data, filename);
+        writeJSON(json.json.data, filename);
         const nodes = _.map(json.json.data, function(entry) {
             entry.categorylist = _.map(entry.categories, 'name').join('+');
             entry.macrolist = _.map(entry.categories, 'macro').join('-');
