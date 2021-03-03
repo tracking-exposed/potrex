@@ -171,7 +171,13 @@ function dataFilterAndEnhancement(data) {
     return enhanced;
 }
 
-async function produceCSV(userList, filename) {
+function shrinkData(bigen) {
+    const r = _.pick(bigen, ['title', 'authorName', 'publisherType', 'views', 'videoId', 'sectionOrder', 'sectionName', 'metadataId', 'savingTime']);
+    r.categories = _.map(bigen.categories, 'name');
+    return r;
+}
+
+async function produceCSV(userList, filename, opts) {
     debug("Produring %s from %d entries", filename, _.size(_.keys(userList)));
     const json = await returnJSONfromKeys(userList);
     if(!json.json.data) {
@@ -182,10 +188,16 @@ async function produceCSV(userList, filename) {
     if(json.json.overflow)
         console.warn("[!]\tWarning, overflow!?");
 
+    let data = null;
+    if(opts && opts.reduced)
+        data = _.map(json.json.data, shrinkData);
+    else
+        data = json.json.data;
+
     let csv = null;
     if(filename !== 'enhanced') {
-        writeJSON(json.json.data, filename);
-        const nodes = _.map(json.json.data, function(entry) {
+        writeJSON(data, (opts && opts.reduced) ? filename + "-reduced" : filename);
+        const nodes = _.map(data, function(entry) {
             entry.categorylist = _.map(entry.categories, 'name').join('+');
             entry.macrolist = _.map(entry.categories, 'macro').join('-');
             return _.omit(entry, ['thumbnail','categories']);
@@ -193,18 +205,18 @@ async function produceCSV(userList, filename) {
         csv = CSV.produceCSVv1(nodes);
     } else {
         /* no JSON for the enhanced file */
-        const nodes = dataFilterAndEnhancement(json.json.data);
+        const nodes = dataFilterAndEnhancement(data);
         csv = CSV.produceCSVv1(nodes);
     }
 
     debug("researchHomeCSV: produced %d bytes from %d homes, returning %s",
-        _.size(csv), json.json.data.length, filename);
+        _.size(csv), data.length, (opts && opts.reduced) ? filename + "-reduced" : filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
     debug("Writing CSV...");
-    fs.writeFileSync("downloadable/" + filename + ".csv", csv);
+    fs.writeFileSync("downloadable/" + (opts && opts.reduced) ? filename + "-reduced" : filename + ".csv", csv);
     console.log("Writing complete");
 };
 
@@ -215,5 +227,5 @@ async function produceCSV(userList, filename) {
     if(nconf.get('phase2'))
         await produceCSV(personalized_Activity, 'personalized-history');
     if(nconf.get('home'))
-        await produceCSV(research_Home, 'research-home');
+        await produceCSV(research_Home, 'research-home', { reduced: true});
 })();
