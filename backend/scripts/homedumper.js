@@ -37,7 +37,7 @@ const personalized_Activity = {
 
 /* research-home.csv + https://github.com/tracking-exposed/experiments-data/tree/master/potests/potest_12-19feb 
    https://pornhub.tracking.exposed/api/v2/file/research-home.json.gz (and .csv)  */
-const research_Home = { 
+const phase1_research_Home = {
     //"HBtwj85xBbpBhH2JrC85JkQ6Wwjqps85NDhjqvZbm269": 1,
     //"BbWJgn7r9RY66Ta81FxTkBZp5BUZSXLRK2D5jiUyg5w5": 2,
     //"48jnnhZBB8YiL1Jxoj7dEGZfbQZaz2sUVWAfFv8Sjqr4": 3,
@@ -86,6 +86,10 @@ const research_Home = {
     "3f3ymT6qyQf75jRVi2jWzHPQFsfhhaoGF5jxjMsCoTd5": "tre"
 };
     // "GyLrGkwLXzKWaUMEMFewjvm1AGtxzGx2iDeQRmL11jLe": "seicento",
+
+const research_Home = {
+    "Cde2MyF7TgZ81rsvVmYUCTa1Jew2UD1F8kcT9NHRCPqe": "mille"
+};
 
 async function returnJSONfromKeys(userList) {
 
@@ -163,7 +167,7 @@ function dataFilterAndEnhancement(data) {
         _.unset(entry, 'categories');
         return entry;
     });
-    debug("Enhanment completed! a random sample looks like:")
+    debug("Enhanment completed!");
     return enhanced;
 }
 
@@ -202,7 +206,11 @@ async function produceCSV(userList, filename) {
 };
 
 (async function() {
-    await produceCSV(enhanced_Selection, 'enhanced');
-    // await produceCSV(personalized_Activity, 'personalized-history');
-    // await produceCSV(research_Home, 'research-home');
+    console.log("looking for oprions --enhanced --pèhase2 and/or --home");
+    if(nconf.get('enhanced'))
+        await produceCSV(enhanced_Selection, 'enhanced');
+    if(nconf.get('phase2'))
+        await produceCSV(personalized_Activity, 'personalized-history');
+    if(nconf.get('home'))
+        await produceCSV(research_Home, 'research-home');
 })();
