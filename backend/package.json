@@ -13,9 +13,7 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
-    "bootstrap": "^3.3.7",
     "bs58": "^3.1.0",
-    "chai": "^4.2.0",
     "cookie": "^0.3.1",
     "cors": "^2.8.1",
     "debug": "^2.2.0",
@@ -32,7 +30,6 @@
     "nconf": "^0.8.4",
     "node-fetch": "^2.6.1",
     "nodemon": "^1.19.4",
-    "pug": "^2.0.4",
     "request": "^2.88.2",
     "tweetnacl": "^0.14.3"
   }
