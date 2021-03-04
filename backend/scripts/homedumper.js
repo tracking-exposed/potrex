@@ -151,7 +151,7 @@ async function returnJSONfromKeys(userList) {
             }
             return c;
         });
-        if(!c) missing++;
+        if(!c.length) missing++;
         video.id = video.videoOrder + video.metadataId.substring(0, 7);
         video.who = userList[video.publicKey];
         _.unset(video, 'publicKey');
@@ -242,11 +242,13 @@ async function produceCSV(userList, filename, opts) {
 };
 
 (async function() {
-    console.log("looking for oprions --enhanced --pèhase2 and/or --home");
+    console.log("looking for options --enhanced --phase2 --double and/or --home");
     if(nconf.get('enhanced'))
         await produceCSV(enhanced_Selection, 'enhanced');
     if(nconf.get('phase2'))
         await produceCSV(personalized_Activity, 'personalized-history');
     if(nconf.get('home'))
         await produceCSV(research_Home, 'research-home', { reduced: true});
+    if(nconf.get('double'))
+        await produceCSV(phase1_research_Home_v2, 'double');
 })();
