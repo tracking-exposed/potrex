@@ -112,6 +112,19 @@ const research_Home = {
     "Cde2MyF7TgZ81rsvVmYUCTa1Jew2UD1F8kcT9NHRCPqe": "mille"
 };
 
+const ragazzi = {
+    "4MzsSuGbjydTjMLu4W7fSpU9HCPz39sQLg9xp7yaicJg":"Maschio",
+    "DSSUzhtUK6cTiHCtWK8RHRGUDm125HZKBMfjJCznk8tf":"Nessuno",
+    "DafBtQsEjqX7zqtGQpw4pz2Uv7jyxCy6CJq54W81UN6r":"Femmina",
+    "9dDiwexPBPs8CxAFV2Rm8z77BRzUAaTrnfUo8X63HWTD":"Coppia",
+    "5ow6BYGHCTnX4f29VLzTMdCpCdSwn8pYa6QgaETF4H4A":"Coppia Donna",
+    "6cfUj2ayZs9mhtQKG9C81ioSJncRCcyaJHk1srsNshxp":"Coppia Uomo",
+    "8Zi3nwqj9ps4EmbjccwYREkitkiBSCZtwYvm4RRK1MuY":"Uomo trans",
+    "3rcXFnkjdcK4vR51YfRhUm4oT5zmPApYhp7btt1H7ZJk":"Donna trans",
+    "2eXXetwo2cPvCLT6frrsHbMy7BKUBX3z2oY22nonums3":"Altro",
+    "CpUPwehJqYdhHLUDAGk93c4ZLeotzDyziHAjKpxLd3eQ":"Non binario"
+}
+
 async function returnJSONfromKeys(userList) {
 
     const MAXDATA = 5000;
@@ -242,7 +255,7 @@ async function produceCSV(userList, filename, opts) {
 };
 
 (async function() {
-    console.log("looking for options --enhanced --phase2 --double and/or --home");
+    console.log("looking for options --enhanced --phase2 --double --ragazzi and/or --home");
     if(nconf.get('enhanced'))
         await produceCSV(enhanced_Selection, 'enhanced');
     if(nconf.get('phase2'))
@@ -251,4 +264,6 @@ async function produceCSV(userList, filename, opts) {
         await produceCSV(research_Home, 'research-home', { reduced: true});
     if(nconf.get('double'))
         await produceCSV(phase1_research_Home_v2, 'double');
+    if(nconf.get('ragazzi'))
+        await produceCSV(ragazzi, 'ragazzi');
 })();
