@@ -14,6 +14,26 @@ const research = require('../routes/research');
 
 nconf.env().argv().file({file: 'config/settings.json'});
 
+const phase1_research_Home_v2 = {
+    "4bWFa6wbt8Yh29VKq1oheAWfmCd8F5So9XBa5iwz5iCu": "1_2",
+    "mPr1LCeGLxYbHdU1nyjhSCduwcJ2GvnMu57ywkpo24p":  "2_2",
+    "EfidbHejm1Cs2zxVg83YWK3qgFqoGgZE6LjEXDu3my5T": "3_2",
+    "3EZdTYieKVL5SUXTxErrNyvB7fsetcBYeiYAXfis8Tk3": "4_2",
+    "H79g88Fd88mCrv34CqWCzCnfmHyKHQEtGuHTJwGWq96T": "5_2",
+    "32sTPzgshkEUEbY8ui4TpLnXAVdPQreo3uk3j8qu6dSQ": "6_2",
+    "F19XjkrZRgf3uwgYVvMpUdvFkdv4suFg9MqGHkptSnue": "7_2", 
+    "SZnCfiv9qteL49kQ2akCsSvKnjNgCnvbWoCeY3DHsVW": "8_2",
+    "8TfcSicg981ncMRymi7QouSvLqQoNoyBCaKqsZZ48it": "9_2a",
+    "3pSCWj8keAGUMu5TP32KjTK8oJ9Jydywyot3ryMDWury":"9_2b",
+    "G9imEEX63r7MDSbyFie6jfmVt6HBs4EGqg7XxnF3KQF7": "10_2",
+    "5ka2RBcyyRB1JqSojjiG5LnSB4RCQWVJBKcdq2QerAw7": "11_2",
+    "CSCxZfrAd5H3qbRkLRjSx1AHuDkC1MQJ9NYUU8gBYQn": "12_2",
+    "AfsQT25Yok9aYw2dtSC2Agpm66huaPG7JBCYSTimarsa": "13_2",
+    "CJRx6Rd614NVyTdvPLuAfR5iFDGjzTKqjfqBPSQtrBUd": "14_2",
+    "6sX8dFtKYeK3fPucWwhefBBc73GNgBEKeiAJxWDrP825": "15_2",
+    "4epv2nCBuYboTs4hHzs9Ay3rH7PJPXzgDsjAeui2MLh8": "16_2"
+}
+
 const enhanced_Selection = {
     "6yMuccGDjFvyW12LjCJpMdsrTswPt8jkNB5ZogCZLNkb": "po4_2",
     "Ce3rXua6QJdpRzN4QYumBV7QfkfV1yDNLifC83REzkmU": "po4_3",
