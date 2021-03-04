@@ -230,7 +230,7 @@ async function produceCSV(userList, filename, opts) {
 
     let csv = null;
     if(filename !== 'enhanced') {
-        writeJSON(data, (opts && opts.reduced) ? filename + "-reduced" : filename);
+        writeJSON(data, (!(opts && opts.reduced)) ? filename + "-reduced" : filename);
         const nodes = _.map(data, function(entry) {
             entry.categorylist = _.map(entry.categories, 'name').join('+');
             entry.macrolist = _.map(entry.categories, 'macro').join('-');
@@ -244,13 +244,13 @@ async function produceCSV(userList, filename, opts) {
     }
 
     debug("researchHomeCSV: produced %d bytes from %d homes, returning %s",
-        _.size(csv), data.length, (opts && opts.reduced) ? filename + "-reduced" : filename);
+        _.size(csv), data.length, (!(opts && opts.reduced)) ? filename + "-reduced" : filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
     debug("Writing CSV...");
-    fs.writeFileSync("downloadable/" + (opts && opts.reduced) ? filename + "-reduced" : filename + ".csv", csv);
+    fs.writeFileSync("downloadable/" + (!(opts && opts.reduced)) ? filename + "-reduced" : filename + ".csv", csv);
     console.log("Writing complete");
 };
 
