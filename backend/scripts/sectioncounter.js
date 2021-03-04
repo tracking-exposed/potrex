@@ -54,7 +54,7 @@ function attributeRole(section) {
         else
             return 'Anomaly';
     }
-    if(section.order == 3 && section.display.match(/\ -\ /) )
+    if(section.display.match(/\ -\ /) )
         return 'Recommended Category';
 
     if(section.display.match(/XXX/))
