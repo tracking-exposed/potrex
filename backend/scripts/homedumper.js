@@ -246,14 +246,14 @@ async function produceCSV(userList, filename, opts) {
         csv = CSV.produceCSVv1(nodes);
     }
 
-    debug("researchHomeCSV: produced %d bytes from %d homes, returning %s",
+    debug("researchHomeCSV: produced %d bytes from %d homes, returning %s(csv|json)",
         _.size(csv), data.length, (opts && opts.reduced == true) ? filename + "-reduced" : filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
     debug("Writing CSV...");
-    fs.writeFileSync("downloadable/" + (!(opts && opts.reduced)) ? filename + "-reduced" : filename + ".csv", csv);
+    fs.writeFileSync("downloadable/" + (opts && opts.reduced == true) ? filename + "-reduced.csv" : filename + ".csv", csv);
     console.log("Writing complete");
 };
 
