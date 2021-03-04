@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const _ = require('lodash');
 const debug = require('debug')('routes:research');
 const nconf = require('nconf');
@@ -8,8 +9,10 @@ nconf.env().argv().file({file: 'config/settings.json'});
 
 async function produceHomeStats(filename) {
 
+    const filter = nconf.get('d') ? { type: 'home', id: nconf.get('d') } : { type: 'home' };
+    debug("filter by: %j", filter);
     const pipeline = [
-        { "$match": { type: 'home' } },
+        { "$match": filter },
         { "$project": { "publicKey": true, "sections.display": true }},
         { "$group": {
             _id: "$publicKey",
@@ -25,12 +28,18 @@ async function produceHomeStats(filename) {
     const rv = _.map(c, function(e) {
         e.amount = _.size(e.names);
         e.l = e.names.join('——');
+        e.pk = e._id;
         _.unset(e, 'names');
+        _.unset(e, '_id');
         return e;
     });
-    debug("summary ready for saving")
-    fs.writeFileSync(filename + '.json', JSON.stringify(rv, undefined, 2));
-    debug("Produced %s.json", filename);
+    if(nconf.get('d')) {
+        console.log(JSON.stringify(rv, undefined, 2));
+    } else {
+        debug("summary ready for saving")
+        fs.writeFileSync(filename + '.json', JSON.stringify(rv, undefined, 2));
+        debug("Produced %s.json", filename);
+    }
     await mongoc.close();
 }
 
