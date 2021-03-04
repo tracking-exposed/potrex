@@ -223,14 +223,17 @@ async function produceCSV(userList, filename, opts) {
         console.warn("[!]\tWarning, overflow!?");
 
     let data = null;
-    if(opts && opts.reduced)
+    if(opts && opts.reduced == true) {
+        debug("+ applying reduction! from %d", _.size(JSON.stringify(json.json.data)));
         data = _.map(json.json.data, shrinkData);
+        debug("+ to %d", _.size(JSON.stringify(data)));
+    }
     else
         data = json.json.data;
 
     let csv = null;
     if(filename !== 'enhanced') {
-        writeJSON(data, (!(opts && opts.reduced)) ? filename + "-reduced" : filename);
+        writeJSON(data, (opts && opts.reduced == true) ? filename + "-reduced" : filename);
         const nodes = _.map(data, function(entry) {
             entry.categorylist = _.map(entry.categories, 'name').join('+');
             entry.macrolist = _.map(entry.categories, 'macro').join('-');
@@ -244,7 +247,7 @@ async function produceCSV(userList, filename, opts) {
     }
 
     debug("researchHomeCSV: produced %d bytes from %d homes, returning %s",
-        _.size(csv), data.length, (!(opts && opts.reduced)) ? filename + "-reduced" : filename);
+        _.size(csv), data.length, (opts && opts.reduced == true) ? filename + "-reduced" : filename);
 
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
