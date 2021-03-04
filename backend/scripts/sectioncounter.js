@@ -13,13 +13,13 @@ async function produceHomeStats(filename) {
     debug("filter by: %j", filter);
     const pipeline = [
         { "$match": filter },
-        { "$project": { "publicKey": true, "sections.display": true }},
+        { "$project": { "publicKey": true, "sections.display": true, "savingTime": true }},
         { "$group": {
             _id: "$publicKey",
             contributions: { "$sum": 1 },
-            names: { "$push": "$sections.display" }
+            names: { "$push": "$sections.display" },
         }},
-        { "$unwind": "$names" }
+        { "$unwind": "$names" } 
     ];
     const mongoc = await mongo3.clientConnect({concurrency: 10});
     debug("Sending pipeline to mongodb...");
@@ -43,6 +43,41 @@ async function produceHomeStats(filename) {
     await mongoc.close();
 }
 
+async function produceHomeSummary(filename) {
+
+    const filter = nconf.get('d') ? { type: 'home', id: nconf.get('d') } : { type: 'home' };
+    debug("filter by: %j", filter);
+    const pipeline = [
+        { "$match": filter },
+        { "$project": { "publicKey": true, "sections": true, "savingTime": true }}
+    ];
+    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    debug("Sending pipeline to mongodb...");
+    const c = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, pipeline);
+    debug("From DB retrieved %d objs", _.size(c));
+    const rv = _.reduce(c, function(memo, e) {
+        _.each(e.sections, function(section) {
+            if(!_.isNull(section))
+                memo.push({
+                    name: section.display,
+                    pk: e.publicKey,
+                    savingTime: e.savingTime,
+                    order: section.order +1,
+                });
+        })
+        return memo;
+    }, []);
+    if(nconf.get('d')) {
+        console.log(JSON.stringify(rv, undefined, 2));
+    } else {
+        debug("summary ready for saving")
+        fs.writeFileSync(filename + '.json', JSON.stringify(rv, undefined, 2));
+        debug("Produced %s.json", filename);
+    }
+    await mongoc.close();
+}
+
 (async function() {
-    await produceHomeStats('homestats');
+    // await produceHomeStats('homestats');
+    await produceHomeSummary('homesummary');
 })();
