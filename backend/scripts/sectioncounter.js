@@ -43,6 +43,26 @@ async function produceHomeStats(filename) {
     await mongoc.close();
 }
 
+function attributeRole(section) {
+    if(section.order == 0)
+        return 'hot-national';
+    if(section.order == 1)
+        return 'top-national';
+    if(section.order == 2) {
+        if(section.href == '/recommended')
+            return 'Recommended';
+        else
+            return 'Anomaly';
+    }
+    if(section.order == 3 && section.display.match(/\ -\ /) )
+        return 'Recommended Category';
+
+    if(section.display.match(/XXX/))
+        return 'XXX Featured';
+    
+    return 'Not-Guessed';
+}
+
 async function produceHomeSummary(filename) {
 
     const filter = nconf.get('d') ? { type: 'home', id: nconf.get('d') } : { type: 'home' };
@@ -60,6 +80,7 @@ async function produceHomeSummary(filename) {
             if(!_.isNull(section))
                 memo.push({
                     name: section.display,
+                    role: attributeRole(section),
                     pk: e.publicKey,
                     savingTime: e.savingTime,
                     order: section.order +1,
