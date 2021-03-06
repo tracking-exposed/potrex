@@ -147,6 +147,9 @@ const MACROc = [{
         name:"3D in Virtual Reality", href:"/video?c=642",
         macro:"Format",
     },{
+        name: '2D in Virtual Reality', href: '/video?c=632',
+        marco:"Format"
+    },{
         name:"POV in Virtual Reality", href:"/video?c=702",
         macro:"Format",
     },{
