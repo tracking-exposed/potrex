@@ -211,6 +211,20 @@ function shrinkData(bigen) {
     return r;
 }
 
+function produceDot(data, filename) {
+    
+    const dot = Object({links: [], nodes: []})
+    dot.links = _.map(data, function(video) { return { target: video.who, source: video.videoId, value: 1} });
+
+    const vList = _.uniq(_.map(data, function(video) { return video.videoId }));
+    const videoObject = _.map(vList, function(v) { return { id: v, group: 1 }});
+    const pList = _.uniq(_.map(data, function(video) { return video.who }));
+    const pseudoObject = _.map(pList, function(v) { return { id: v, group: 2 }});
+    dot.nodes = _.concat(videoObject, pseudoObject);
+
+    fs.writeFileSync(filename + '.dot', JSON.stringify(dot));
+}
+
 async function produceCSV(userList, filename, opts) {
     debug("Produring %s from %d entries", filename, _.size(_.keys(userList)));
     const json = await returnJSONfromKeys(userList);
@@ -230,6 +244,11 @@ async function produceCSV(userList, filename, opts) {
     }
     else
         data = json.json.data;
+
+    if(opts && opts.dot == true) {
+        debug("producing dot format for %s", filename);
+        produceDot(data, filename);
+    }
 
     let csv = null;
     if(filename !== 'enhanced') {
@@ -266,7 +285,7 @@ async function produceCSV(userList, filename, opts) {
     if(nconf.get('home'))
         await produceCSV(research_Home, 'research-home', { reduced: true});
     if(nconf.get('double'))
-        await produceCSV(phase1_research_Home_v2, 'double');
+        await produceCSV(phase1_research_Home_v2, 'double', { dot: true });
     if(nconf.get('ragazzi'))
         await produceCSV(ragazzi, 'ragazzi');
 })();
