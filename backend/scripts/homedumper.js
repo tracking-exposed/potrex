@@ -211,8 +211,10 @@ function shrinkData(bigen) {
     return r;
 }
 
-function produceDot(data, filename) {
-    
+function produceDot(allcatdata, filename) {
+   
+    // we only keep this category for this test
+    const data = _.filter(allcatdata, { sectionName: 'Recommended For You'}),
     const dot = Object({links: [], nodes: []})
     dot.links = _.map(data, function(video) { return { target: video.who, source: video.videoId, value: 1} });
 
