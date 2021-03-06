@@ -63,6 +63,44 @@ function attributeRole(section) {
     return 'Not-Guessed';
 }
 
+async function consistencyViews(filename) {
+
+    const filter = nconf.get('d') ? { type: 'home', id: nconf.get('d') } : { type: 'home' };
+    debug("filter by: %j", filter);
+    const pipeline = [
+        { "$match": filter },
+        { "$project": { "sections": true, "savingTime": true }}
+    ];
+    const mongoc = await mongo3.clientConnect({concurrency: 10});
+    debug("Sending pipeline to mongodb...");
+    const c = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, pipeline);
+    debug("From DB retrieved %d objs", _.size(c));
+    const rv = _.reduce(c, function(memo, e) {
+        _.each(e.sections, function(section) {
+            if(!_.isNull(section)) {
+                _.each(section.videos, function(video) {
+                    memo.push({
+                        videoId: video.videoId,
+                        sectionName: section.display,
+                        views: video.views,
+                        value: video.value,
+                        when: e.savingTime
+                    })
+                })
+            }
+        })
+        return memo;
+    }, []);
+    if(nconf.get('d')) {
+        console.log(JSON.stringify(rv, undefined, 2));
+    } else {
+        debug("views consistency ready for saving")
+        fs.writeFileSync(filename + '.json', JSON.stringify(rv, undefined, 2));
+        debug("Produced %s.json", filename);
+    }
+    await mongoc.close();
+}
+
 async function produceHomeSummary(filename) {
 
     const filter = nconf.get('d') ? { type: 'home', id: nconf.get('d') } : { type: 'home' };
@@ -101,4 +139,5 @@ async function produceHomeSummary(filename) {
 (async function() {
     // await produceHomeStats('homestats');
     await produceHomeSummary('homesummary');
+    await consistencyViews('consinstency');
 })();
