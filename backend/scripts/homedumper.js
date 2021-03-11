@@ -181,7 +181,7 @@ async function returnJSONfromKeys(userList) {
 
 function writeJSON(data, filename) {
     debug("Writing JSON %s.json", filename);
-    fs.writeFileSync("downloadable/" + filename + ".json", JSON.stringify(data, undefined, 1));
+    fs.writeFileSync("downloadable/" + filename + "-" + _.size(data) + ".json", JSON.stringify(data, undefined, 1));
 }
 
 function dataFilterAndEnhancement(data) {
@@ -273,8 +273,10 @@ async function produceCSV(userList, filename, opts) {
     if(!_.size(csv))
         return { text: "Error: no CSV generated 🤷" };
 
-    debug("Writing CSV...");
-    fs.writeFileSync("downloadable/" + (opts && opts.reduced == true) ? filename + "-reduced.csv" : filename + ".csv", csv);
+    debug("Writing CSV %s", ( (opts && opts.reduced == true) ? filename + "-reduced" : filename ) + _.size(data) + ".csv");
+    fs.writeFileSync("downloadable/" + (
+        (opts && opts.reduced == true) ? filename + "-reduced" : filename 
+    ) + _.size(data) + ".csv", csv);
     console.log("Writing complete");
 };
 
