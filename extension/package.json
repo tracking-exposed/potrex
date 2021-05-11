@@ -62,7 +62,7 @@
     "glob": "^7.1.6",
     "immutability-helper": "^2.8.1",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "marked": "^0.7.0",
     "mocha": "^8.2.1",
     "node-sass": "^4.13.1",
