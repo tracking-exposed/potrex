@@ -11,6 +11,7 @@ module.exports = {
      * after the newline there are modules that levegared on previously mined metadata */
     dissectorList: [
         'nature',
+        'advertising',
         'home',
         'video',
         'search',
@@ -19,6 +20,7 @@ module.exports = {
         'categorizer'
     ],
     nature: require('../parsers/nature'),
+    advertising: require('../parsers/advertising'),
     home: require('../parsers/home'),
     video: require('../parsers/video'),
     search: require('../parsers/search'),

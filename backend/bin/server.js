@@ -156,6 +156,11 @@ app.post('/api/v2/profile/:publicKey/tag', async (req, res) => {
     return await dispatchPromise("createTag", req, res);
 });
 
+/* debug API */
+app.get('/api/v2/debug/html/:htmlId', async (req, res) => {
+    return await dispatchPromise('getDebugHTML', req, res);
+});
+
 /* update and current profile */
 app.get('/api/v2/profile/:publicKey/tag', async (req, res) => {
     return await dispatchPromise('profileStatus', req, res);
