@@ -44,6 +44,7 @@ function buildMetadata(entry) {
     if(entry.findings.nature.type == 'home') {
         metadata = _.merge(
             _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
+            entry.findings.advertising,
             entry.findings.home,
             entry.findings.nature
         );
@@ -51,6 +52,7 @@ function buildMetadata(entry) {
     else if(entry.findings.nature.type == 'search') {
         metadata = _.merge(
             _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
+            entry.findings.advertising,
             entry.findings.search,
             entry.findings.params,
             entry.findings.related,
@@ -60,6 +62,7 @@ function buildMetadata(entry) {
     else if(entry.findings.nature.type == 'video') {
         metadata = _.merge(
             _.pick(entry.source.html, [ 'href', 'profileStory', 'publicKey']),
+            entry.findings.advertising,
             entry.findings.video,
             entry.findings.nature
         );

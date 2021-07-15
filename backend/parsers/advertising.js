@@ -14,7 +14,7 @@ function forceClean(uncleanStr) {
     _.set(memo, key, decodeURI(value));
     return memo;
   }, {});
-  if(decoded['amp;geo']) {
+  if(_.keys(decoded).length) {
     return {
       url: clean,
       params: decoded,
