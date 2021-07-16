@@ -123,13 +123,19 @@ function saveActivityLogs(ip, profile, info) {
     when,
     ip,
     ...info,
-  }, undefined, 2), 'utf-8');
+  }) + '\n', 'utf-8');
   debug("..saved!");
   return actlfp;
 }
 
-function extendActivityLogs(fname, additional) {
-  console.log("TODO", fname, additional);
+function extendActivityLogs(additional, fname, markAsError) {
+  fs.appendFileSync(fname, JSON.stringify(additional) + '\n', 'utf-8');
+  if(markAsError) {
+    const errorfname = `error-${fname.split('/')[1]}`;
+    const fullename = path.join('activitylog', errorfname);
+    fs.renameSync(fname, fullename);
+    console.log(`Renamed ${fname} to ${fullename}`);
+  }
 }
 
 function acquireCommandLineInfo() {
@@ -219,9 +225,6 @@ async function main() {
   if(nconf.get('chrome')) 
     puppeteerConfig.executablePath = nconf.get('chrome');
 
-  if(setupDelay)
-    await allowResearcherSomeTimeToSetupTheBrowser();
-
   try {
     activitylogfilen = saveActivityLogs(yourIP, profile, execInfo);
   } catch(error) {
@@ -232,10 +235,19 @@ async function main() {
   try {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch(puppeteerConfig);
+
+    if(setupDelay)
+      await allowResearcherSomeTimeToSetupTheBrowser();
+
     try {
       const results = await operateBrowser(browser, directives);
-      extendActivityLogs(results, activitylogfilen);
-      debug("Tasks completed: happyly closing thiz script!")
+      if(results.accessLog.length == directives.length) {
+        console.log(`GUARDONI completed! Updating ${activitylogfilen} and closing`);
+        extendActivityLogs(results, activitylogfilen);
+      } else {
+        console.log(`GUARDONI uncomplete execution =( Updating ${activitylogfilen} and marking as error`);
+        extendActivityLogs(results, activitylogfilen, true);
+      }
     } catch(error) {
       console.log("Fatal error in browser execution", error.message, "details", error.stack);
     }
@@ -279,26 +291,28 @@ async function operateBrowser(browser, directives) {
       await page.goto(directive.url, { 
         waitUntil: "networkidle2",
       });
-      debug(`Loaded page successfully, now waiting for ${DELAY}milliseconds`);
+      debug(`Loaded page successfully, now waiting for ${DELAY} milliseconds`);
       await page.waitFor(DELAY);
-      const profileStory = await page.evaluate(() => {
-        const jsonHistory = localStorage.getItem('watchedVideoIds');
-        try {
-          return JSON.parse(jsonHistory);
-        } catch(error) {
-          console.log("Unable to extract profileStory, assuming it is a clean profile?");
-          return [];
+
+      const localStorageData = await page.evaluate(() => {
+        let json = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          json[key] = localStorage.getItem(key);
         }
+        return json;
       });
-      // add cookies and localStorage 
+
+      const cookies = await page._client.send('Network.getAllCookies');
+
       retval.accessLog.push({
         when: new Date(),
         what: directive.url,
-        why: directive.name
-      })
-      const lamecookies = await page.cookies();
-      const cookies = await page._client.send('Network.getAllCookies');
-      debug("%j --- %j", lamecookies, cookies);
+        why: directive.name,
+        localStorageData,
+        cookies
+      });
+
     } catch(error) {
       console.log(`Error in directive execution ${error}`);
     }
