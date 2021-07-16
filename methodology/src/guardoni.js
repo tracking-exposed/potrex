@@ -36,9 +36,9 @@ async function keypress() {
 }
 
 async function allowResearcherSomeTimeToSetupTheBrowser() {
-  console.log("\nNow you can configure your browser!\nFor example, default settings, accept cookie banners, etc\n");
-  console.log("When you're done, press enter and the automated navigation would start");
-  console.log("\nThis happens because it is the profile initialization");
+  console.log("\nNow you can configure your browser!\nFor example, default settings, accept cookie banners, etc...");
+  console.log("This happens because it is the profile initialization");
+  console.log("When you're done, press [ENTER] and the automated navigation would start");
   await keypress();
 }
 
@@ -132,7 +132,7 @@ function extendActivityLogs(additional, fname, markAsError) {
   fs.appendFileSync(fname, JSON.stringify(additional) + '\n', 'utf-8');
   if(markAsError) {
     const errorfname = `error-${fname.split('/')[1]}`;
-    const fullename = path.join('activitylog', errorfname);
+    const fullename = path.join('activitylogs', errorfname);
     fs.renameSync(fname, fullename);
     console.log(`Renamed ${fname} to ${fullename}`);
   }
