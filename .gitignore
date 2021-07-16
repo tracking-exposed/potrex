@@ -17,10 +17,11 @@ extension/docs/
 extension/node_modules/
 
 backend/node_modules/
-backend/downloadable/*
+backend/downloadable/
 
 react-pieces/node_modules/
 
 methodology/node_modules/
-methodology/profiles/*
-methodology/extension
+methodology/profiles/
+methodology/extension/
+methodology/activitylogs/
