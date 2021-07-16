@@ -153,6 +153,7 @@ function acquireCommandLineInfo() {
 
 async function main() {
 
+  let browser, activitylogfilen, setupDelay = null;
   const execInfo = acquireCommandLineInfo();
 
   const sourceUrl = nconf.get('source');
@@ -178,7 +179,6 @@ async function main() {
     downloadExtension(tmpzipf);
   }
 
-
   if(!fs.existsSync(dist)) {
     console.log('Directory '+ dist +' not found, please download:');
     console.log('https://github.com/tracking-exposed/potrex/releases/download/0.4.99/extension.zip');
@@ -198,7 +198,6 @@ async function main() {
   const yourIP = await fetchAPIFY();
 
   /* profile last check and possible initialization */
-  let setupDelay = false;
   const udd = path.resolve(path.join('profiles', profile));
   if(!fs.existsSync(udd)) {
     console.log("--profile name hasn't an associated directory: " + udd + "\nLet's create it!");
@@ -208,7 +207,6 @@ async function main() {
     setupDelay = true;
   }
 
-  let browser = null;
   const puppeteerConfig = {
     headless: false,
     userDataDir: udd,
@@ -224,11 +222,10 @@ async function main() {
   if(setupDelay)
     await allowResearcherSomeTimeToSetupTheBrowser();
 
-  let activitylogfilen = null;
   try {
     activitylogfilen = saveActivityLogs(yourIP, profile, execInfo);
-  } catch(erro) {
-    console.log("Unable to save activity logs", erro);
+  } catch(error) {
+    console.log("Unable to save activity logs", error);
     process.exit(1)
   }
 
@@ -236,18 +233,16 @@ async function main() {
     puppeteer.use(pluginStealth());
     browser = await puppeteer.launch(puppeteerConfig);
     try {
-      const results = await operateBrowser(browser, directives, sourceUrl);
+      const results = await operateBrowser(browser, directives);
       extendActivityLogs(results, activitylogfilen);
       debug("Tasks completed: happyly closing thiz script!")
     } catch(error) {
-      console.log("Error spotted in browser execution: %s", error.message, "details", error.stack);
-      console.log("Please take the last directive number and execute the command with --skip <number> as option");
+      console.log("Fatal error in browser execution", error.message, "details", error.stack);
     }
-    await browser.close();
   } catch(error) {
-    console.log("Error spotted in browser management:", error.message);
-    await browser.close();
+    console.log("Fatal error in browser management", error.message, "details", error.stack);
   }
+  await browser.close();
   process.exit(1);
 }
 
@@ -267,15 +262,15 @@ async function setPageEvent(page) {
       debug(`requestfail: ${request.failure().errorText} ${request.url()}`)); */
 }
 
-async function operateBrowser(browser, directives, sourceUrl) {
+async function operateBrowser(browser, directives) {
+  let counter = 0;
   const page = (await browser.pages())[0];
   const version = await page.browser().version();
   const retval = {
     version,
     accessLog: []
   }
-  // await page.setViewport({width: 1024, height: 768});
-  let counter = 0;
+
   await setPageEvent(page);
   for (const directive of directives) {
     counter++;
