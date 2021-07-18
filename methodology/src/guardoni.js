@@ -292,7 +292,7 @@ async function operateBrowser(browser, directives) {
         waitUntil: "networkidle2",
       });
       debug(`Loaded page successfully, now waiting for ${DELAY} milliseconds`);
-      await page.waitFor(DELAY);
+      await page.waitFor(directive.loadFor);
 
       const localStorageData = await page.evaluate(() => {
         let json = {};
