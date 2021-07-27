@@ -42,7 +42,7 @@ async function allowResearcherSomeTimeToSetupTheBrowser() {
   await keypress();
 }
 
-function timeconv(maybestr, defaultMs) {
+function timeconv(maybestr) {
   if(_.isInteger(maybestr) && maybestr > 100) {
     // it is already ms 
     return maybestr;
@@ -72,8 +72,8 @@ async function fetchAndEnrichDirectives(sourceUrl, profile, experiment) {
       retval = await response.json();
       debug("directives loaded from URL: %j", _.map(retval, 'name'));
     } else {
-      directives = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
-      debug("directives loaded from file: %j", _.map(retval, 'name'));
+      retval = JSON.parse(fs.readFileSync(sourceUrl, 'utf-8'));
+      debug("directives loaded from file %s: %j", sourceUrl, _.map(retval, 'name'));
     }
     if(!retval.length) {
       console.log("URL/file do not include any directive in expected format");
@@ -92,8 +92,9 @@ async function fetchAndEnrichDirectives(sourceUrl, profile, experiment) {
       const screenshotAfterSwp = d.screenshotAfter;
       const loadForSwp = d.loadFor;
 
-      d.loadFor = timeconv(loadForSwp, 3000);
-      d.screenshotAfter = timeconv(screenshotAfterSwp, 20000);
+      d.loadFor = timeconv(loadForSwp);
+      d.screenshotAfter = screenshotAfterSwp && screenshotAfterSwp.length ? 
+        timeconv(screenshotAfterSwp) : null;
       d.profile = profile;
       if(experiment)
         d.experiment = experiment;
@@ -291,7 +292,7 @@ async function operateBrowser(browser, directives) {
       await page.goto(directive.url, { 
         waitUntil: "networkidle2",
       });
-      debug(`Loaded page successfully, now waiting for ${DELAY} milliseconds`);
+      debug(`Loaded page ${directive.url} ${directive.name} successfully, now waiting for ${DELAY} milliseconds`);
       await page.waitFor(directive.loadFor);
 
       const localStorageData = await page.evaluate(() => {
@@ -305,14 +306,28 @@ async function operateBrowser(browser, directives) {
 
       const cookies = await page._client.send('Network.getAllCookies');
 
-      retval.accessLog.push({
+      const lasturllog = {
         when: new Date(),
-        what: directive.url,
-        why: directive.name,
+        url: directive.url,
+        directiveName: directive.name,
         localStorageData,
-        cookies
-      });
+        cookies,
+        accessCount: counter,
+      };
 
+      if(directive.screenshotAfter) {
+        debug("Collecting screenshot after an addition delay of %dms", directive.screenshotAfter)
+        page.waitFor(directive.screenshotAfter);
+        const screenshotname = path.join('activitylogs','screenshots',
+            directive.profile + "-" + directive.name + "-" + moment().format("DD-HH-mm") + ".png");
+        await page.screenshot({                      // Screenshot the website using defined options
+            path: screenshotname,
+            fullPage: true
+        });
+        debug("Screenshot take in %s", screenshotname);
+        lasturllog.screenshotfile = screenshotname;
+      }
+      retval.accessLog.push(lasturllog);
     } catch(error) {
       console.log(`Error in directive execution ${error}`);
     }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const _ = require('lodash');
-const debug = require('debug')('routes:research');
+const debug = require('debug')('scripts:homedumper');
 const nconf = require('nconf');
 const fs = require('fs'); 
 const automo = require('../lib/automo');
