@@ -12,7 +12,6 @@ const path = require('path');
 const util = require('util');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
-const { fn } = require('moment');
 
 nconf.argv().env();
 const DELAY = nconf.get('delay') || 10000;
