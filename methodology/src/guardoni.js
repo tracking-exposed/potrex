@@ -217,7 +217,12 @@ async function main() {
   const puppeteerConfig = {
     headless: false,
     userDataDir: udd,
-    args: ["--no-sandbox",
+    // ignoreDefaultArgs: ['--enable-automation'], // this remove "automated chrome" message, but other message appear
+    args: [ 
+      // "--app=https://www.google.com/",  // this removes the url too
+      // "--no-default-browser-check",
+      // "--suppress-message-center-popups", // this take out the messages like "chrome is not default browser"
+      "--no-sandbox",
       "--disabled-setuid-sandbox",
       "--load-extension=" + dist,
       "--disable-extensions-except=" + dist
