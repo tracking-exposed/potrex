@@ -214,7 +214,7 @@ async function main() {
   }
 
   const puppeteerConfig = {
-    headless: true,
+    headless: false,
     userDataDir: udd,
     args: ["--no-sandbox",
       "--disabled-setuid-sandbox",
