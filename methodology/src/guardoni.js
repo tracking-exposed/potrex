@@ -18,6 +18,10 @@ nconf.argv().env();
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
 
+nconf.defaults({
+  'headless': false
+});
+
 const COMMANDJSONEXAMPLE = "https://pornhub.tracking.exposed/json/guardoni.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/potrex/releases/download/0.4.99/extension.zip';
 
@@ -214,8 +218,9 @@ async function main() {
     setupDelay = true;
   }
 
+  const headless = nconf.get('headless');
   const puppeteerConfig = {
-    headless: false,
+    headless: headless,
     userDataDir: udd,
     // ignoreDefaultArgs: ['--enable-automation'], // this remove "automated chrome" message, but other message appear
     args: [ 
