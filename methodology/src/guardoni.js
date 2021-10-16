@@ -220,7 +220,7 @@ async function main() {
 
   const headless = nconf.get('headless');
   const puppeteerConfig = {
-    headless: headless,
+    headless,
     userDataDir: udd,
     // ignoreDefaultArgs: ['--enable-automation'], // this remove "automated chrome" message, but other message appear
     args: [ 
