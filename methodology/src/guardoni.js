@@ -16,6 +16,10 @@ nconf.argv().env().file("guardoniconf.json");
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
 
+nconf.defaults({
+  'headless': false
+});
+
 const COMMANDJSONEXAMPLE = "https://pornhub.tracking.exposed/json/guardoni.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/potrex/releases/download/0.4.99/extension.zip';
 
@@ -213,10 +217,16 @@ async function main() {
     setupDelay = true;
   }
 
+  const headless = nconf.get('headless');
   const puppeteerConfig = {
-    headless: false,
+    headless,
     userDataDir: udd,
-    args: ["--no-sandbox",
+    // ignoreDefaultArgs: ['--enable-automation'], // this remove "automated chrome" message, but other message appear
+    args: [ 
+      // "--app=https://www.google.com/",  // this removes the url too
+      // "--no-default-browser-check",
+      // "--suppress-message-center-popups", // this take out the messages like "chrome is not default browser"
+      "--no-sandbox",
       "--disabled-setuid-sandbox",
       "--load-extension=" + dist,
       "--disable-extensions-except=" + dist
