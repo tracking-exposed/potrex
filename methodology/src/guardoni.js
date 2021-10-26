@@ -3,7 +3,6 @@ const _ = require('lodash');
 const debug = require('debug')('guardoni:po-cli');
 const bcons = require('debug')('browser:console');
 const puppeteer = require("puppeteer-extra")
-const { TimeoutError } = require("puppeteer/lib/api");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const nconf = require('nconf');
 const moment = require('moment');
@@ -13,7 +12,7 @@ const util = require('util');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
 
-nconf.argv().env();
+nconf.argv().env().file("guardoniconf.json");
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
 
@@ -148,8 +147,9 @@ function acquireCommandLineInfo() {
   const browser = nconf.get('browser');
   const city = nconf.get('city');
 
-  if(!os || !device || !browser || !city) {
+  if( (!os.length || !device.length || !browser.length || !city.length) && !nconf.get('nope')) {
     console.log("Mandatory options: --os --device --browser --city");
+    console.log(os, device, browser, city);
     process.exit(1)
   }
 
