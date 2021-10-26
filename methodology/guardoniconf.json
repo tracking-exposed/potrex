@@ -1,6 +1,6 @@
 {
+    "device": "Lenovo",
     "os": "Windows",
-    "browser": "Chrome",
     "city": "Zagarolo",
-    "device": "Lenovo"
+    "source": "phase2/userN"
 }
