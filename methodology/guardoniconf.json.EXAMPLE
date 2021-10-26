@@ -3,6 +3,6 @@
     "os": "Windows",
     "browser": "Chrome",
     "city": "",
-    "json": "user1 or user2 ..."
+    "profile": "your profile name",
     "please_fill_up_the_values_above": true
 }
