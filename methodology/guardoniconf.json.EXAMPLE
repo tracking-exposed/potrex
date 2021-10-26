@@ -3,6 +3,6 @@
     "os": "Windows",
     "browser": "Chrome",
     "city": "",
-    "device": "Lenovo",
+    "json": "user1 or user2 ..."
     "please_fill_up_the_values_above": true
 }
