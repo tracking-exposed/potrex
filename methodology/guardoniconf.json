@@ -1,6 +1,8 @@
 {
     "device": "Lenovo",
     "os": "Windows",
-    "city": "Zagarolo",
-    "source": "phase2/userN"
+    "browser": "Chrome",
+    "city": "",
+    "device": "Lenovo",
+    "please_fill_up_the_values_above": true
 }

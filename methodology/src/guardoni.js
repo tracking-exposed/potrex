@@ -15,6 +15,7 @@ const execSync = require('child_process').execSync;
 nconf.argv().env().file("guardoniconf.json");
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
+let publicKey = null;
 
 nconf.defaults({
   'headless': false
@@ -46,10 +47,10 @@ async function allowResearcherSomeTimeToSetupTheBrowser() {
 
 function timeconv(maybestr) {
   if(_.isInteger(maybestr) && maybestr > 100) {
-    // it is already ms 
+    // it is already ms
     return maybestr;
   } else if(_.isInteger(maybestr) && maybestr < 100) {
-    // throw an error as it is unclear if you forgot the unit 
+    // throw an error as it is unclear if you forgot the unit
     throw new Error("Did you forget unit? " + maybestr + " milliseconds is too little!");
   } else if(_.isString(maybestr) && _.endsWith(maybestr, 's')) {
     return _.parseInt(maybestr) * 1000;
@@ -95,7 +96,7 @@ async function fetchAndEnrichDirectives(sourceUrl, profile, experiment) {
       const loadForSwp = d.loadFor;
 
       d.loadFor = timeconv(loadForSwp);
-      d.screenshotAfter = screenshotAfterSwp && screenshotAfterSwp.length ? 
+      d.screenshotAfter = screenshotAfterSwp && screenshotAfterSwp.length ?
         timeconv(screenshotAfterSwp) : null;
       d.profile = profile;
       if(experiment)
@@ -121,20 +122,23 @@ async function fetchAPIFY() {
 function saveActivityLogs(ip, profile, info) {
   const when = moment().format("YYYY-MM-DD_HH-mm");
   const actlfp = path.join('activitylogs', `${profile}-${when}.json`)
+  if(publicKey) // global variable
+    info.publicKey = publicKey;
+
   debug("Saving activity log for %s %s %j in %s", ip, profile, info, actlfp);
   fs.writeFileSync(actlfp, JSON.stringify({
     when,
     ip,
     ...info,
   }) + '\n', 'utf-8');
-  debug("..saved!");
+  debug("..saved with keys [%j]!", _.keys(info));
   return actlfp;
 }
 
 function extendActivityLogs(additional, fname, markAsError) {
   fs.appendFileSync(fname, JSON.stringify(additional) + '\n', 'utf-8');
   if(markAsError) {
-    const errorfname = `error-${fname.split('/')[1]}`;
+    const errorfname = `error-${fname}`;
     const fullename = path.join('activitylogs', errorfname);
     fs.renameSync(fname, fullename);
     console.log(`Renamed ${fname} to ${fullename}`);
@@ -149,7 +153,7 @@ function acquireCommandLineInfo() {
 
   if( (!os.length || !device.length || !browser.length || !city.length) && !nconf.get('nope')) {
     console.log("Mandatory options: --os --device --browser --city");
-    console.log(os, device, browser, city);
+    console.log("They are usually supply from file 'guardoniconf.json' PLEASE EDIT IT!");
     process.exit(1)
   }
 
@@ -159,6 +163,27 @@ function acquireCommandLineInfo() {
     browser,
     city
   }
+}
+
+function getChromePath() {
+  // this function check for standard chrome executabled path and
+  // return it. If not found, raise an error
+  const knownPaths = [
+    "/usr/bin/google-chrome",
+    "/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+  ];
+
+  const chromePath = _.find(knownPaths, function(p) {
+    return fs.existsSync(p);
+  })
+  if(!chromePath) {
+    console.log("Tried to guess your Chrome executable and wasn't found");
+    console.log("Solutions: Install Google Chrome in your system or contact the developers");
+    process.exit(1);
+  }
+  return chromePath;
 }
 
 async function main() {
@@ -222,7 +247,7 @@ async function main() {
     headless,
     userDataDir: udd,
     // ignoreDefaultArgs: ['--enable-automation'], // this remove "automated chrome" message, but other message appear
-    args: [ 
+    args: [
       // "--app=https://www.google.com/",  // this removes the url too
       // "--no-default-browser-check",
       // "--suppress-message-center-popups", // this take out the messages like "chrome is not default browser"
@@ -232,8 +257,7 @@ async function main() {
       "--disable-extensions-except=" + dist
     ],
   };
-  if(nconf.get('chrome')) 
-    puppeteerConfig.executablePath = nconf.get('chrome');
+  puppeteerConfig.executablePath = getChromePath();
 
   try {
     activitylogfilen = saveActivityLogs(yourIP, profile, execInfo);
@@ -255,7 +279,7 @@ async function main() {
         console.log(`GUARDONI completed! Updating ${activitylogfilen} and closing`);
         extendActivityLogs(results, activitylogfilen);
       } else {
-        console.log(`GUARDONI uncomplete execution =( Updating ${activitylogfilen} and marking as error`);
+        console.log(`GUARDONI uncomplete execution =( Updating ${activitylogfilen} and marking as an error`);
         extendActivityLogs(results, activitylogfilen, true);
       }
     } catch(error) {
@@ -275,6 +299,7 @@ async function setPageEvent(page) {
       if(message.text().match(/publicKey/)) {
           const extensioninfo = JSON.parse(message.text());
           console.log("The publicKey: ", extensioninfo.publicKey);
+          publicKey = extensioninfo.publicKey;
       }
     })
     .on('pageerror', ({ message }) => debug('error' + message)) /*
@@ -298,11 +323,11 @@ async function operateBrowser(browser, directives) {
     counter++;
     try {
       console.log(`directive ${counter} ${directive.name} ${directive.url}`);
-      await page.goto(directive.url, { 
+      await page.goto(directive.url, {
         waitUntil: "networkidle2",
       });
       debug(`Loaded page ${directive.url} ${directive.name} successfully, now waiting for ${DELAY} milliseconds`);
-      await page.waitFor(directive.loadFor);
+      await page.waitForTimeout(directive.loadFor);
 
       const localStorageData = await page.evaluate(() => {
         let json = {};
@@ -326,7 +351,7 @@ async function operateBrowser(browser, directives) {
 
       if(directive.screenshotAfter) {
         debug("Collecting screenshot after an addition delay of %dms", directive.screenshotAfter)
-        page.waitFor(directive.screenshotAfter);
+        page.waitForTimeout(directive.screenshotAfter);
         const screenshotname = path.join('activitylogs','screenshots',
             directive.profile + "-" + directive.name + "-" + moment().format("DD-HH-mm") + ".png");
         await page.screenshot({                      // Screenshot the website using defined options
