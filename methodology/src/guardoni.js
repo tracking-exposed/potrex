@@ -19,6 +19,7 @@ let publicKey = null;
 
 nconf.defaults({
   'headless': false
+  'proxy': ""
 });
 
 const COMMANDJSONEXAMPLE = "https://pornhub.tracking.exposed/json/guardoni.json";
@@ -242,7 +243,13 @@ async function main() {
     setupDelay = true;
   }
 
+  // check if headless flag is defined
   const headless = nconf.get('headless');
+
+  var proxy = nconf.get('proxy');
+  if(proxy) {
+    proxy = "--proxy-server=" + proxy
+  }
   const puppeteerConfig = {
     headless,
     userDataDir: udd,
@@ -254,7 +261,8 @@ async function main() {
       "--no-sandbox",
       "--disabled-setuid-sandbox",
       "--load-extension=" + dist,
-      "--disable-extensions-except=" + dist
+      "--disable-extensions-except=" + dist,
+      proxy
     ],
   };
   puppeteerConfig.executablePath = getChromePath();
