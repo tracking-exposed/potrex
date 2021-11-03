@@ -12,15 +12,20 @@ const util = require('util');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
 
-nconf.argv().env().file("guardoniconf.json");
+nconf.argv().env();
+
 const DELAY = nconf.get('delay') || 10000;
 const skip = nconf.get('skip') || 0;
 let publicKey = null;
 
 nconf.defaults({
-  'headless': false
+  'headless': false,
+  'proxy': "",
+  'config_file' : "guardoniconf.json"
 });
 
+const config_file = nconf.get('config_file');
+nconf.file(config_file);
 const COMMANDJSONEXAMPLE = "https://pornhub.tracking.exposed/json/guardoni.json";
 const EXTENSION_WITH_OPT_IN_ALREADY_CHECKED='https://github.com/tracking-exposed/potrex/releases/download/0.4.99/extension.zip';
 
@@ -242,7 +247,13 @@ async function main() {
     setupDelay = true;
   }
 
+  // check if headless flag is defined
   const headless = nconf.get('headless');
+
+  let proxy = nconf.get('proxy');
+  if(proxy) {
+    proxy = "--proxy-server=" + proxy
+  }
   const puppeteerConfig = {
     headless,
     userDataDir: udd,
@@ -254,7 +265,8 @@ async function main() {
       "--no-sandbox",
       "--disabled-setuid-sandbox",
       "--load-extension=" + dist,
-      "--disable-extensions-except=" + dist
+      "--disable-extensions-except=" + dist,
+      proxy
     ],
   };
   puppeteerConfig.executablePath = getChromePath();
