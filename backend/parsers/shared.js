@@ -90,30 +90,57 @@ function getFeatured(D) {
   return returned;
 }
 
+/* PH used a certain format which remain true only for
+   Featured XXX Videos */
+function getPrimaryTag(node, order) {
+    const link = node.querySelector('a');
+    const display = node.textContent;
+    if(!link)
+      return null;
+    return {
+        order,
+        tagName: node.children[0].tagName,
+        href: link.getAttribute('href'),
+        display: display.trim(),
+    }
+}
+
+function getSecondaryTag(node, order) {
+
+    const secondTag = node.children[1].tagName;
+    if(!(node.children[1].children && node.children[1].children[0] &&
+          node.children[1].children[0].tagName) ) {
+            // debug("No section name (location %d from 0) in: {%s}", order, node.children[1].outerHTML);
+            return null;
+        }
+
+    if(_.startsWith(secondTag,'H')) {
+        return {
+            order,
+            tagName: node.children[1].tagName,
+            href: node.children[1].children[0].getAttribute('href'),
+            display: node.children[1].children[0].textContent.trim(),
+        }
+    }   
+    debug("Failed in pick a section at order %d", order);
+    return null;
+}
+
 function getHomeVideos(D) {
     
     let titles = D.querySelectorAll('.sectionTitle');
-
     const sections = _.map(titles, function(node, order) {
-        const secondTag = node.children[1].tagName;
-        if(!(node.children[1].children && node.children[1].children[0] &&
-             node.children[1].children[0].tagName) ) {
-                debug("No section name (location %d from 0) in: {%s}", order, node.children[1].outerHTML);
-                return null;
-            }
+
+        let sectionBlock = getSecondaryTag(node, order);
+        if(!sectionBlock)
+          sectionBlock = getPrimaryTag(node, order);
+        if(!sectionBlock)
+          return null;
 
         let videos = _.map(node.parentNode.querySelectorAll(".linkVideoThumb"), dissectV);
-        
-        if(_.startsWith(secondTag,'H')) {
-            return {
-                order,
-                tagName: node.children[1].tagName,
-                href: node.children[1].children[0].getAttribute('href'),
-                display: node.children[1].children[0].textContent.trim(),
-                videos,
-            }
-        }   
-        return null;
+        debug("Section %s (%d)", sectionBlock.display, videos.length);
+        sectionBlock.videos = videos;
+        return sectionBlock;
     });
 
     // debug("Potential titles %d -> %s", _.size(titles), _.map(sections, 'display'));

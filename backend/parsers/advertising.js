@@ -11,7 +11,11 @@ function forceClean(uncleanStr) {
   const urlo = new URL(clean);
   const params = querystring.parse(urlo.search);
   const decoded = _.reduce(params, function(memo, value, key) {
-    _.set(memo, key, decodeURI(value));
+    try {
+      _.set(memo, key, decodeURI(value));
+    } catch(error) {
+      debug("[E] %s %s", key, /* value, */ error.message);
+    }
     return memo;
   }, {});
   if(_.keys(decoded).length) {
