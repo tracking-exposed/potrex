@@ -58,6 +58,9 @@ var apiList = {
 
     /* Guardoni API */
     guardoniV2:        require('../routes/guardoni').guardoniV2,
+
+    /* special analysis to assist on the 2021 analysis */
+    getSpecial:           require('../routes/special').special,
 };
 
 module.exports = {
