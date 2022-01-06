@@ -99,7 +99,7 @@ function getPrimaryTag(node, order) {
       return null;
     return {
         order,
-        tagName: node.children[0].tagName,
+        // tagName: node.children[0].tagName,
         href: link.getAttribute('href'),
         display: display.trim(),
     }
@@ -107,7 +107,13 @@ function getPrimaryTag(node, order) {
 
 function getSecondaryTag(node, order) {
 
+  /* this strange condition si triggered on 'Watch Again' */
+    if(node.children.length === 1)
+        return null;
+
     const secondTag = node.children[1].tagName;
+    if(!secondTag)
+      debug("Problem in %s\n%s", node.outerHTML, node.textContent);
     if(!(node.children[1].children && node.children[1].children[0] &&
           node.children[1].children[0].tagName) ) {
             // debug("No section name (location %d from 0) in: {%s}", order, node.children[1].outerHTML);
@@ -117,7 +123,7 @@ function getSecondaryTag(node, order) {
     if(_.startsWith(secondTag,'H')) {
         return {
             order,
-            tagName: node.children[1].tagName,
+            // tagName: node.children[1].tagName,
             href: node.children[1].children[0].getAttribute('href'),
             display: node.children[1].children[0].textContent.trim(),
         }
