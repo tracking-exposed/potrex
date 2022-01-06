@@ -93,7 +93,7 @@ async function recommendedCategoryAnalysis(publicKey) {
     const mongoc = await mongo3.clientConnect({concurrency: 1});
 
     const homedata = await mongo3.aggregate(mongoc, nconf.get('schema').metadata, [
-        { $match: { publicKey, type:'home', profileStory: { "$exists": true }} },
+        { $match: { ...publicKey, type:'home' } },
         { $unwind: "$sections" },
         { $unwind: "$sections.videos" },
         { $lookup: {
@@ -107,32 +107,61 @@ async function recommendedCategoryAnalysis(publicKey) {
     await mongoc.close();
 
     const ready = _.compact(_.map(homedata, function(metae) {
+        if(_.startsWith(metae.sections.display, "Recommended Cat")) {
+            return {
+                savingTime: metae.savingTime,
+                sectionName: metae.sections.display,
+                publicKey: metae.publicKey,
+                profileStory: metae.profileStory === -1 ? 0: metae.profileStory,
+                pornHubHentai:
+                    _.map(metae?.categories[0]?.categories, 'name').indexOf('Hentai') !== -1,
+                categories: _.map(metae?.categories[0]?.categories, 'name').join(","),
+                videoTitle: metae.sections.videos.title,
+                authorName: metae.sections.videos.authorName,
+                authorLink: "https://www.pornhub.com" + metae.sections.videos.authorLink,
+                id: metae.id,
+            }
+        }
+
         if(metae.sections.display !== "Recommended For You")
             return null;
 
         return {
-            day: moment(metae.savingTime).format("YYYY-MM-DD"),
+            savingTime: metae.savingTime,
             sectionName: metae.sections.display,
-            profileStory: metae.profileStory,
-            // categories: _.map(metae.categories[0].categories, 'name'),
+            // Recommended For You
+            publicKey: metae.publicKey,
+            profileStory: metae.profileStory === -1 ? 0: metae.profileStory,
+            pornHubHentai:
+                 _.map(metae?.categories[0]?.categories, 'name').indexOf('Hentai') !== -1,
+            categories: _.map(metae?.categories[0]?.categories, 'name').join(","),
             videoTitle: metae.sections.videos.title,
             authorName: metae.sections.videos.authorName,
-            authorLink: metae.sections.videos.authorLink,
+            authorLink: "https://www.pornhub.com" + metae.sections.videos.authorLink,
+            id: metae.id,
         }
     }));
 
-    const grouped = _.groupBy(ready, 'day');
-    return { json: grouped };
-
+    console.table(ready); /*
+    const csv = CSV.produceCSVv1(ready);
+     return {
+        headers: {
+            "Content-Type": "csv/text",
+            "Content-Disposition": "attachment; filename=" + ("RAW_" + ready.length + "_" + csv.length + ".csv")
+        },
+        text: csv,
+    }; */
+    // const grouped = _.groupBy(ready, 'day');
+    return { json: ready };
 };
 
 async function special(req) {
-    const k =  req.params.publicKey;
     const analysis = req.params.analysis;
     const allow = ['recommended-category']
 
+    const k = req.params.publicKey;
     if(analysis === allow[0])
-        return await recommendedCategoryAnalysis(k);
+        return await recommendedCategoryAnalysis({ publicKey: k });
     else
         return { 'text': "Error, only allow: " + allow }
 };
