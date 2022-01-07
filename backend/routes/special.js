@@ -107,6 +107,7 @@ async function recommendedCategoryAnalysis(publicKey) {
     await mongoc.close();
 
     const ready = _.compact(_.map(homedata, function(metae) {
+        /*
         if(_.startsWith(metae.sections.display, "Recommended Cat")) {
             return {
                 savingTime: metae.savingTime,
@@ -121,7 +122,7 @@ async function recommendedCategoryAnalysis(publicKey) {
                 authorLink: "https://www.pornhub.com" + metae.sections.videos.authorLink,
                 id: metae.id,
             }
-        }
+        } */
 
         if(metae.sections.display !== "Recommended For You")
             return null;
@@ -142,15 +143,15 @@ async function recommendedCategoryAnalysis(publicKey) {
         }
     }));
 
-    console.table(ready); /*
+    console.table(ready);
     const csv = CSV.produceCSVv1(ready);
      return {
         headers: {
             "Content-Type": "csv/text",
-            "Content-Disposition": "attachment; filename=" + ("RAW_" + ready.length + "_" + csv.length + ".csv")
+            "Content-Disposition": "attachment; filename=" + ("SALV_" + ready.length + "_" + csv.length + ".csv")
         },
         text: csv,
-    }; */
+    };
     // const grouped = _.groupBy(ready, 'day');
     return { json: ready };
 };
