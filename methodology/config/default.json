@@ -1,0 +1,9 @@
+{
+    "device": "Lenovo",
+    "os": "Windows",
+    "browser": "Chrome",
+    "city": "Internet",
+    "profile": "defaultProfile",
+    "3rd": true,
+    "headless": false
+}
