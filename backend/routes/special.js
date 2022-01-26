@@ -68,7 +68,14 @@ async function special(req) {
     const keys = req.params.publicKey.split(',');
     debug("found %d keys as parameters", keys.length);
     const filter = {"$in": keys };
-    return await recommendedCategoryAnalysis({ publicKey: filter });
+    try {
+        const retval = await recommendedCategoryAnalysis({ publicKey: filter });
+        return retval;
+    } catch(error) {
+        debug("Error in special: %s", error.message);
+        console.log(error.stack);
+        return { "text": error.message };
+    }
 };
 
 module.exports = {
