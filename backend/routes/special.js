@@ -27,6 +27,7 @@ async function recommendedCategoryAnalysis(contribFilter) {
 
     await mongoc.close();
 
+    debug("mongodb returned %d homedata matching filter %o", homedata.length, contribFilter);
     const ready = _.compact(_.map(homedata, function(metae) {
 
         if(!_.startsWith(metae.sections.display, "Recommended Cat") &&
@@ -47,6 +48,7 @@ async function recommendedCategoryAnalysis(contribFilter) {
             id: metae.id,
         }
     }));
+    debug("after _.compact we got %d elements ready", ready.length);
 
     // console.table(ready);
     const csv = CSV.produceCSVv1(ready);
@@ -62,8 +64,7 @@ async function recommendedCategoryAnalysis(contribFilter) {
 };
 
 async function special(req) {
-    const analysis = req.params.analysis;
-    const allow = ['recommended-category', 'for-you', 'all'];
+    // optional param not actually used -> req.params.analysis;
 
     const keys = req.params.publicKey.split(',');
     debug("found %d keys as parameters", keys.length);
