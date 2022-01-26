@@ -142,7 +142,7 @@ app.get('/api/v1/personal/:publicKey/csv', async (req, res) => {
 app.get('/api/v1/personal/:publicKey/:what?', async (req, res) => {
     return await dispatchPromise('getPersonal', req, res);
 });
-app.get('/api/v2/special/:publicKey/:analysis', async (req, res) => {
+app.get('/api/v2/special/:publicKey/:analysis?', async (req, res) => {
     return await dispatchPromise('getSpecial', req, res);
 });
 app.delete('/api/v2/personal/:publicKey/selector/id/:id', async (req, res) => {
