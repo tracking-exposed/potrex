@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { parse } = require('cookie');
+const fs = require('fs');
 const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('potrex:parserv3');
@@ -150,9 +150,13 @@ async function actualExecution(actualRepeat) {
                 htmlFilter.processed = { $exists: false };
 
             if(filter) {
-                debug("Focus filter on %d IDs", _.size(filter));
-                htmlFilter.id = { '$in': filter };
+                debug("Embedding filter with the --filter .json file (%o)", filter);
+                htmlFilter = {
+                    ...filter,
+                    ...htmlFilter
+                };
             }
+
             if(id) {
                 debug("Targeting a specific htmls.id");
                 htmlFilter = { id }
