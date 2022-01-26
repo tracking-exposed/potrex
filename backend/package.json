@@ -28,7 +28,7 @@
     "mongodb3": "npm:mongodb@3.2.3",
     "nacl-signature": "^1.0.0",
     "nconf": "^0.8.4",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "nodemon": "^1.19.4",
     "request": "^2.88.2",
     "tweetnacl": "^0.14.3"
