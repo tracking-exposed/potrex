@@ -38,13 +38,14 @@ async function recommendedCategoryAnalysis(contribFilter) {
             savingTime: metae.savingTime,
             sectionName: metae.sections.display,
             publicKey: metae.publicKey,
-            profileStory: metae.profileStory === -1 ? 0: metae.profileStory,
+            watchedStorageSize: metae.profileStory === -1 ? 0: metae.profileStory,
             pornHubHentai:
                  _.map(metae?.categories[0]?.categories, 'name').indexOf('Hentai') !== -1,
             categories: _.map(metae?.categories[0]?.categories, 'name').join(","),
             videoTitle: metae.sections.videos.title,
             authorName: metae.sections.videos.authorName,
             authorLink: "https://www.pornhub.com" + metae.sections.videos.authorLink,
+            videoLink: "https://www.pornhub.com" + metae.sections.videos.href,
             id: metae.id,
         }
     }));
