@@ -111,7 +111,7 @@ function manageThirdParty(profinfo, reqpptr) {
         reqlogfilename,
         JSON.stringify(full3rdparty, undefined, 1) + ",\n"
     );
-    if(thirdParties[up.host])
+    if(!thirdParties[up.host])
         thirdParties[up.host] = 1;
     else
         thirdParties[up.host] += 1;
