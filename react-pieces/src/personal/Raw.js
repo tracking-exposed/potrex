@@ -1,4 +1,4 @@
-import moment from 'moment';
+import _ from 'lodash';
 import React from 'react';
 
 import { Card, ListItemText } from '@material-ui/core';
@@ -39,7 +39,7 @@ class Raw extends React.Component{
   render () {
 
     if(!this.state || this.state.status == 'fetching')
-      return (<div>Loading raw information on collected evidences...</div>)
+      return (<h3 className="title">Loading raw information on collected evidences...</h3>)
 
     if(this.state.status !== 'done') {
       console.log("Incomplete info before render");
@@ -61,21 +61,24 @@ class Raw extends React.Component{
     try {
       for (const rawe of this.state.data.content) {
         // sevid.id it is a list temporarly ignored, maybe usable in advanced searches
-        items.push(<pre key={_.random(0, 0xffff)}>
-          {JSON.stringify(rawe, undefined, 2)}
-        </pre>);
+        const key=_.random(0, 0xfffff);
+        items.push(<p className="name" key={key}>
+          id: <code>{rawe.id}</code>
+          <br/>
+          metadataId: <code>{rawe.metadataId}</code>
+        </p>);
         items.push(<Divider variant="inset" component="li" />);
       }
-      console.log("Raw elements produced successfully", items.length);
+      console.log("Raw elements processed successfully", items.length);
     } catch(e) {
-      items.push("<p>No raw data!</p>");
+      items.push(e + "<p>No raw data!</p>");
     }
 
     return (
       <div>
         <Card>
-          <FormHelperText>
-            Everything this account sent (considering only last 30 elements)
+          <FormHelperText className="helper" id="raw">
+            Everything received and processed
           </FormHelperText>
           <List>
             {items}

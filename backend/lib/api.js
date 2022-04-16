@@ -3,9 +3,6 @@ var apiList = {
     processEvents2:   require('../routes/events').processEvents2,
     getMirror:        require('../routes/events').getMirror,
 
-    /* for revision */
-    unitById:         require('./htmlunit').unitById,
-
     /* return basic data, the video-impression unit, and support optional parameters */
     getBasicData:     require('./basic').all,
     /* return the content for one supporter only */

@@ -18,6 +18,7 @@ class SearchedTerm extends React.Component{
     const amount = this.props.amount;
     const totalVideos = this.props.totalVideos;
     const S = amount + " evidences, (" + totalVideos + " videos)";
+    console.log(this.props);
 
     return (
       <ListItem>

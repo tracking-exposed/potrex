@@ -52,23 +52,34 @@ function main () {
     } else {
         ReactDOM.render(
             <ThemeProvider theme={theme}>
-                <h5>
+                <h5><ul>
+                  <li>
                     <a href={buildCSVlinks('homeCSV')} target="_blank">
                         Last 2000 Home CSV 
                     </a> 
-                    ― same, but enhanced with <a href={buildCSVlinks('homeUnwindedCSV')} target="_blank">
-                        flattened categories (CSV)
+                  </li>
+                  <li>
+                    <a href={buildCSVlinks('homeUnwindedCSV')} target="_blank">
+                        Enhanced with categories (CSV)
                     </a>
-                    ― <a href={buildCSVlinks('personal/' + key + '/csv')} target="_blank">
+                  </li>
+                  <li>
+                    <a href={buildCSVlinks('personal/' + key + '/csv')} target="_blank">
                         Your Metadata CSV (Home only)
                     </a>
-                     ― preview:
-                </h5>
-                <Homes pkey={key}/>
+                  </li>
+               </ul></h5>
                 Raw content submit by this profile
-                <Raw pkey={key} />
+               <div className="row">
+                <div className="col-6">
+                  <Raw pkey={key} />
+                </div>
+                <div className="col-6">
+                  <Homes pkey={key}/>
+                </div>
+               </div>
                 Profile info:
-                <code>TODO</code>
+                <div id="profile">TODO</div>
             </ThemeProvider>, document.getElementById('react--provided')
         );
     }

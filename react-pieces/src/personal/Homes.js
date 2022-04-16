@@ -1,17 +1,14 @@
-import moment from 'moment';
 import React from 'react';
+import _ from 'lodash';
+import moment from 'moment';
 
 import { Card } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
-import BeachAccessIcon from '@material-ui/icons/BeachAccess';
-
-import Evidence from './Evidence';
 
 const styles = {
-
 };
 
 const LOCALHOST_SERVER = 'http://localhost:10000';
@@ -39,7 +36,7 @@ class Homes extends React.Component{
   render () {
 
     if(!this.state || this.state.status == 'fetching')
-      return (<div>Loading the most recently accessed homepages...</div>)
+      return (<h1 className="title">Loading the most recently accessed homepages...</h1>)
 
     console.log('X: props status', this.props, this.state);
 
@@ -68,21 +65,45 @@ class Homes extends React.Component{
         </div>
       );
     }
-    
+
+    /* <pre id={detk}>
+          {JSON.stringify(rawe, undefined, 2)}
+        </pre> */
+
     const items = []
-    for (const sevid of home) {
-      // console.log(sevid);
-      items.push(<pre key={_.random(0, 0xffff)}>
-        {JSON.stringify(sevid, undefined, 2)}
-      </pre>
-      );
+    const grouped = _.groupBy(home, 'savingTime');
+    console.log(grouped);
+    const redone = _.map(grouped, function(videolist, savingTime) {
+      const timeago = moment.duration(
+        moment(savingTime) - moment.now()
+      ).humanize(true)
+      return {
+        timeago,
+        savingTime,
+        videolist
+      };
+    });
+    for (const e of redone) {
+      console.log(e);
+      const key=_.random(0, 0xffff);
+      items.push(<div key={key}>
+        <ul>
+          <li key={_.random(0, 0xffff)} className="name">profile has story:
+            {e.videolist[0].profileStory}, publishers type:
+            {JSON.stringify(_.countBy(e.videolist, 'publisherType'))}</li>
+          <li><span key={_.random(0, 0xfffff)} className="name">{e.timeago}</span>:
+            {e.savingTime} ({e.videolist.length} videos)
+            {JSON.stringify(_.countBy(e.videolist, 'sectionName'))}
+          </li>
+        </ul>
+     </div>);
       items.push(<Divider variant="inset" component="li" />);
     }
 
     return (
       <div style={styles}>
         <Card>
-          <FormHelperText>
+          <FormHelperText className="helper">
             Recent Homepage accessed 
           </FormHelperText>
           <List>
