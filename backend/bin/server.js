@@ -176,6 +176,10 @@ app.post('/api/v2/profile/:publicKey', async (req, res) => {
 app.get('/api/v2/raw/:publicKey/:paging?', async (req, res) => {
     return await dispatchPromise('getSubmittedRAW', req, res);
 });
+/* extra dump infp */
+app.get('/api/v2/filtered/:publicKey/:type', async (req, res) => {
+    return await dispatchPromise('getPersByFilter', req, res);
+});
 
 /* reserarch api */
 app.get('/api/v2/research/homes/errors', async (req, res) => {

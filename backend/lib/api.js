@@ -24,8 +24,10 @@ var apiList = {
     getPersonalCSV:   require('../routes/personal').getPersonalCSV,
     getUnwindedHomeCSV:require('../routes/personal').getUnwindedHomeCSV,
 
-    /* return user' last videos */
     getSubmittedRAW:    require('../routes/personal').getSubmittedRAW,
+    /* get any metadata by filter + pubkey */
+    getPersByFilter:    require('../routes/personal').getSubmittedByFilter,
+    /* return user' last videos, prior to supporter auth */
     getPersonal:        require('../routes/personal').getPersonal,
     getPersonalRelated: require('../routes/personal').getPersonalRelated,
 

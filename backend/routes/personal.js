@@ -168,16 +168,18 @@ async function getUnwindedHomeCSV(req) {
 }
 
 
-async function getSubmittedRAW(req) {
-    const MAX = 30;
+async function getSubmittedByFilter(req) {
+    const MAX = 100;
     const k =  req.params.publicKey;
+    const type = req.params.type;
 
-    const htmlFilter = { publicKey: k };
-    const stored = await automo.getLastHTMLs(htmlFilter, 0, MAX);
-    const trimmed = _.map(stored.content, function(h) {
-        return _.pick(h, ['id', 'metadataId', 'size', 'processed', 'href', 'savingTime']);
+    const htmlFilter = { publicKey: k, type };
+    const paging = { amount: MAX, skip: 0 };
+    const metadata = await automo.getMetadataByFilter(htmlFilter, paging);
+    const trimmed = _.map(metadata, function(m) {
+        return _.omit(m, ['_id', 'sections', 'advertising', 'categories', 'publicKey', 'clientTime', 'htmlId', 'related', 'results', 'params']);
     })
-    return { json: { content: trimmed, amount: MAX, overflow: stored.overflow} };
+    return { json: { content: trimmed, paging } };
 }
 
 async function getPersonalRelated(req) {
@@ -248,15 +250,27 @@ async function removeEvidence(req) {
     return { json: { success: true, result }};
 };
 
+async function getSubmittedRAW(req) {
+    const MAX = 30;
+    const k =  req.params.publicKey;
+
+    const htmlFilter = { publicKey: k };
+    const stored = await automo.getLastHTMLs(htmlFilter, 0, MAX);
+    const trimmed = _.map(stored.content, function(h) {
+        return _.pick(h, ['id', 'metadataId', 'size', 'processed', 'href', 'savingTime']);
+    })
+    return { json: { content: trimmed, amount: MAX, overflow: stored.overflow} };
+}
 
 module.exports = {
     getPersonal,
-    getSubmittedRAW,
+    getSubmittedByFilter,
     getPersonalCSV,
     getUnwindedHomeCSV,
     getPersonalRelated,
     getEvidences,
     removeEvidence,
+    getSubmittedRAW,
 
     unNestHome,
     unNestQuery,
