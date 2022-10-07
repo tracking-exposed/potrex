@@ -1,0 +1,5 @@
+[{
+    "name": "Homepage first",
+    "url": "chrome://settings/",
+    "loadFor": "30m"
+}]
